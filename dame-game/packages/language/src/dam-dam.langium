@@ -43,7 +43,7 @@ Rules:
 
 
 Rule:
-   MoveRule | DiceRule | CaptureRule | BoundaryRule | ActionRule | ChainRule;
+   MoveRule | DiceRule | CaptureRule | ActionRule ;
 
 
 MoveRule:
@@ -70,22 +70,9 @@ CaptureRule:
    '}';
 
 
-BoundaryRule:
-   'boundary' '{'
-       'stayInside' stayInside=BOOLEAN
-   '}';
-
-
 ActionRule:
    'action' '{'
        'type' type=('move' | 'capture' | 'both')
-   '}';
-
-
-ChainRule:
-   'chaining' '{'
-       'captures' capturesAllowed=BOOLEAN
-       'moves' movesAllowed=BOOLEAN
    '}';
 
 
