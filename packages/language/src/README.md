@@ -31,8 +31,7 @@
      - Effectuer un déplacement, ou
      - Manger un pion adverse.  
 
-4. **Manger :**
-   - Le joueur doit dire “nomnomnomnom” lorsqu’il mange un pion adverse.  
+4. **Manger :** 
    - Il est possible d’enchaîner plusieurs prises (manger plusieurs pions à la suite).  
    - Les enchaînements de déplacements vides (sans manger) sont interdits.  
 
