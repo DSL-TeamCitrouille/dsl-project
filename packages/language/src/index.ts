@@ -1,4 +1,3 @@
-
 /**
  * CLI entry to parse & validate DAM files with optional "variant" constraints.
  * ESM-friendly (no `require.main`); works with `tsx`.

@@ -14,30 +14,36 @@
     "main": "./out/index.js",
     "module": "./out/index.js",
     "exports": {
-      ".": {
-        "types": "./out/index.d.ts",
-        "default": "./out/index.js"
-      }
+        ".": {
+            "types": "./out/index.d.ts",
+            "default": "./out/index.js"
+        }
     },
     "typesVersions": {
-      "*": {
-        ".": [
-          "out/index"
-        ]
-      }
+        "*": {
+            ".": [
+                "out/index"
+            ]
+        }
     },
     "scripts": {
         "clean": "shx rm -fr *.tsbuildinfo out",
         "build": "echo 'No build step'",
         "build:clean": "npm run clean && npm run build",
         "langium:generate": "langium generate",
-        "langium:watch": "langium generate --watch"
+        "langium:watch": "langium generate --watch",
+        "test": "vitest",
+        "test:ui": "vitest --ui",
+        "test:run": "vitest run",
+        "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
         "langium": "~4.1.0"
     },
     "devDependencies": {
-        "langium-cli": "~4.1.0"
+        "@vitest/ui": "^3.2.4",
+        "langium-cli": "~4.1.0",
+        "vitest": "^3.2.4"
     },
     "volta": {
         "node": "20.19.2",
