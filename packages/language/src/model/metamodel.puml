@@ -1,0 +1,97 @@
+@startuml
+class Game {
+        name: String = "Jeu de plateau en damier"
+        + demarrer()
+        + verifierVictoire()
+    }
+
+    class Parameter {
+        name: String
+        kind: {compile, run}
+        domain: String
+        default: String
+    }
+
+    class Preset {
+        name: String
+        description: String
+    }
+
+    class Player {
+        id: String
+        couleur: Couleur
+        nbJetons: int
+    }
+
+    class State {
+        damier: Damier
+        tourActuel: Couleur
+        nbTours: int
+    }
+
+    class Move {
+        name: String
+        description: String
+        + appliquer()
+    }
+
+    class Rule {
+        when: String
+        then: String
+    }
+
+    class Randomness {
+        source: String = "Dé à 6 faces"
+        + lancerDe(): int
+    }
+
+    class Goal {
+        kind: String
+        description: String
+    }
+
+    class Damier {
+        tailleX: int = 10
+        tailleY: int = 10
+        cases: Case[][]
+    }
+
+    class Case {
+        x: int
+        y: int
+        pion: Pion?
+    }
+
+    class Pion {
+        couleur: Couleur
+        position: Position
+    }
+
+    class Position {
+        x: int
+        y: int
+    }
+
+    class Couleur {
+        <<enumeration>>
+        BLANC
+        NOIR
+    }
+
+
+    Game "1" --> "many" Parameter
+    Game "0..*" --> "many" Preset
+    Game "2" --> "many" Player
+    Game "1" --> "1" State
+    Game "1" --> "many" Move
+    Game "1" --> "many" Rule
+    Game "1" --> "1" Randomness
+    Game "1..*" --> "many" Goal
+
+    State --> Damier
+    Damier --> Case
+    Case --> Pion
+    Pion --> Position
+    Player --> Couleur
+    Pion --> Couleur
+@enduml
