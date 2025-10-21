@@ -1,3 +1,6 @@
+//cd packages/language 
+//npx tsx src/index.ts --file src/variant1.dam --variant variant1
+
 game ClassicCheckers {
     board {
         size 8 x 8
