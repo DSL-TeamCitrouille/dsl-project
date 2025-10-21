@@ -18,8 +18,7 @@
 ## **Coups / Règles**
 
 1. **Tour de jeu :**
-   - Les déplacements se font en alternance entre les joueurs noir et blanc.  
-   - Les blancs commencent la partie.  
+   - Les déplacements se font en alternance entre les joueurs noir et blanc.    
 
 2. **Déplacements :**
    - Interdiction de sortir du damier.  
