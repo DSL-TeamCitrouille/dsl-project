@@ -4,9 +4,7 @@
 
 | Nom du paramètre | Type | Domaine | CT / RT | Valeur par défaut | Contraintes / Effet |
 |------------------|------|----------|----------|-------------------|---------------------|
-| **board_width** | entier | [4–20] | CT | 10 | Largeur du plateau ; modifie la topologie. |
-| **board_height** | entier | [4–20] | CT | 10 | Hauteur du plateau. |
-| **board_type** | enum | {square, hexagonal} | CT | square | Type de grille ; impacte les déplacements. |
+| **board_size** | entier | [4–20] | CT | 10 | Taille du plateau (carré N×N). |
 | **piece_colors** | tuple | {(noir, blanc), (rouge, bleu)} | CT | (noir, blanc) | Couleurs des camps. |
 | **piece_quantity** | entier | [1–30] | CT | 20 | Nombre de pions par camp. |
 | **dice_enabled** | booléen | {true, false} | CT | true | Active le lancer de dés dans les règles. |
@@ -26,7 +24,7 @@
 ## 2. Presets (combinaisons typiques CT)
 
 ### **Preset 1 — Dames classiques**
-- Plateau : 10×10, type carré  
+- Plateau : 10×10  
 - Pièces : noir/blanc, 20 par camp  
 - Dé : désactivé  
 - Règles : alternance, capture autorisée, chaînes autorisées  
@@ -61,9 +59,9 @@
 ## 3. Scénarios d’usage
 
 ### **Scénario 1 — Modification Compile-time**
-Un concepteur change `board_type` de `square` à `hexagonal`.  
-→ La structure du plateau et les directions de mouvement sont régénérées.  
-→ Les règles `MoveRule` et `BoundaryRule` sont réinterprétées selon la nouvelle géométrie.
+Un concepteur modifie `board_size` de 10 à 8.  
+→ Le DSL régénère automatiquement la configuration du plateau, la position initiale des pièces et les limites de déplacement.  
+→ Les règles de capture et de mouvement s’adaptent à la nouvelle taille, modifiant la durée moyenne et la complexité du jeu.
 
 ---
 
