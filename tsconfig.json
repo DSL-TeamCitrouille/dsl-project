@@ -20,7 +20,7 @@
   "include": [
      "**/src/**/*",
      "**/test/**/*"
-  ],
+, "packages/cli"  ],
   "exclude": [
      "**/lib/**/*",
      "**/out/**/*",

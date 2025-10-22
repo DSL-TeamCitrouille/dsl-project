@@ -23,7 +23,9 @@
     },
     "workspaces": [
         "packages/language",
-        "packages/extension"
+        "packages/extension",
+        "packages/cli"
+
     ],
     "dependencies": {
         "langium": "^4.1.0"
