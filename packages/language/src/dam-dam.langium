@@ -2,17 +2,26 @@ grammar DamDam
 
 entry Damier:
    'game' name=ID '{'
+
+       // COMPILE-TIME: Game structure and rules (what the game IS)
        board=Board
        pieces=Pieces
        (dice=Dice)?
        rules=Rules
        objective=Objective
+       
+       // UI/SKIN: Visual appearance (how the game LOOKS)
+       (ui=UI)?
+       
+       // RUN-TIME: User experience settings (how the game FEELS)
+       (settings=Settings)?
    '}';
 
 
+// ===== COMPILE-TIME (Game Structure) =====
 Board:
    'board' '{'
-       'size' width=INT 'x' height=INT
+       'size' size=INT
    '}';
 
 
@@ -32,19 +41,15 @@ Piece:
 Dice:
    'dice' '{'
        'faces' faces=INT
-       ('quantity' quantity=INT)?
    '}';
-
 
 Rules:
    'rules' '{'
        (rule+=Rule)*
    '}';
 
-
 Rule:
-   MoveRule | DiceRule | CaptureRule | ActionRule ;
-
+   MoveRule | CaptureRule | ActionRule ;
 
 MoveRule:
    'movement' '{'
@@ -52,45 +57,31 @@ MoveRule:
        ('firstPlayer' firstPlayer=ID)?
        ('direction' direction=('diagonal' | 'orthogonal' | 'any'))
        ('canMoveBackward' canMoveBackward=BOOLEAN)?
-       ('exceptWhen' exception=STRING)?
    '}';
-
-
-DiceRule:
-   'dice' '{'
-       'diceRolls' rolls=INT
-   '}';
-
 
 CaptureRule:
    'capture' '{'
-       'allowed' allowed=BOOLEAN
-       ('action' action=STRING)?
+       ('mandatory' mandatory=BOOLEAN)?
        ('message' message=STRING)?
    '}';
-
 
 ActionRule:
    'action' '{'
        'type' type=('move' | 'capture' | 'both')
    '}';
 
-
 Objective:
    'objective' '{'
        (goal+=Goal)*
    '}';
 
-
 Goal:
    WinByCapture | WinBySolitaire | WinByForfeit;
-
 
 WinByCapture:
    'winByCapture' '{'
        'captureAll' target=ID
    '}';
-
 
 WinBySolitaire:
    'winBySolitaire' '{'
@@ -98,13 +89,42 @@ WinBySolitaire:
        'noMoreMoves' movesLeft=INT
    '}';
 
-
 WinByForfeit:
    'winByForfeit' '{'
        'allowed' allowed=BOOLEAN
    '}';
 
 
+// ===== UI/SKIN (Visual Appearance) =====
+UI:
+   'ui' '{'
+       (theme=Theme)?
+       (layout=Layout)?
+   '}';
+
+Theme:
+   'theme' '{'
+       ('lightSquares' ':' lightSquares=STRING)?
+       ('darkSquares' ':' darkSquares=STRING)?
+       ('highlight' ':' highlight=STRING)?
+   '}';
+
+Layout:
+   'layout' '{'
+       ('showCaptured' showCaptured=BOOLEAN)?
+   '}';
+
+
+// ===== RUN-TIME (User Experience) =====
+Settings:
+   'settings' '{'
+       ('animationSpeed' ':' animationSpeed=INT)?
+       ('showLegalMoves' ':' showLegalMoves=BOOLEAN)?
+       ('aiDifficulty' ':' aiDifficulty=INT)?
+   '}';
+
+
+// ===== TERMINALS =====
 terminal INT returns number: /[0-9]+/;
 terminal BOOLEAN returns boolean: /true|false/;
 terminal STRING: /"[^"]*"|'[^']*'/;

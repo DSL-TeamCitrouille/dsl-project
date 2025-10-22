@@ -35,26 +35,21 @@ Piece:
    'piece' name=ID '{'
        'color' color=ID
        'quantity' quantity=INT
-       ('canPromote' canPromote=BOOLEAN)?
    '}';
 
 
 Dice:
    'dice' '{'
        'faces' faces=INT
-       ('quantity' quantity=INT)?
    '}';
-
 
 Rules:
    'rules' '{'
        (rule+=Rule)*
    '}';
 
-
 Rule:
-   MoveRule | DiceRule | CaptureRule | ActionRule ;
-
+   MoveRule | CaptureRule | ActionRule ;
 
 MoveRule:
    'movement' '{'
@@ -62,54 +57,37 @@ MoveRule:
        ('firstPlayer' firstPlayer=ID)?
        ('direction' direction=('diagonal' | 'orthogonal' | 'any'))
        ('canMoveBackward' canMoveBackward=BOOLEAN)?
-       ('mandatoryCapture' mandatoryCapture=BOOLEAN)?
-       ('exceptWhen' exception=STRING)?
    '}';
-
-
-DiceRule:
-   'dice' '{'
-       'diceRolls' rolls=INT
-   '}';
-
 
 CaptureRule:
    'capture' '{'
-       'allowed' allowed=BOOLEAN
        ('mandatory' mandatory=BOOLEAN)?
-       ('action' action=STRING)?
        ('message' message=STRING)?
    '}';
-
 
 ActionRule:
    'action' '{'
        'type' type=('move' | 'capture' | 'both')
    '}';
 
-
 Objective:
    'objective' '{'
        (goal+=Goal)*
    '}';
 
-
 Goal:
    WinByCapture | WinBySolitaire | WinByForfeit;
-
 
 WinByCapture:
    'winByCapture' '{'
        'captureAll' target=ID
    '}';
 
-
 WinBySolitaire:
    'winBySolitaire' '{'
        'removeOwn' removeOwn=BOOLEAN
        'noMoreMoves' movesLeft=INT
    '}';
-
 
 WinByForfeit:
    'winByForfeit' '{'
