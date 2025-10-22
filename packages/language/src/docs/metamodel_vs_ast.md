@@ -6,29 +6,29 @@
 
 | Métamodèle (PlantUML) | AST Langium (Grammaire) | Type de Relation | Commentaires |
 |----------------------|------------------------|------------------|--------------|
-| **Game** | **Damier** | Renommage | Le concept principal a été renommé pour refléter le domaine (damier vs game générique) |
-| Game.name | Damier.name | ✅ Direct | Correspondance exacte |
-| Game.demarrer() | ❌ Non présent | Suppression | Les méthodes ne sont pas dans l'AST (logique runtime à implémenter ailleurs) |
-| Game.verifierVictoire() | ❌ Non présent | Suppression | Idem - logique métier externe |
+| **Game** | **Damier** | Renommage | Meilleur reflet du domaine |
+| Game.name | Damier.name | Direct
+| Game.demarrer() | Non présent | Suppression | Les méthodes ne sont pas dans l'AST (logique runtime à implémenter ailleurs) |
+| Game.verifierVictoire() | Non présent | Suppression | A implémenter ailleurs également |
 
 ### Structure de Jeu (Compile-time)
 
 | Métamodèle | AST Langium | Type | Commentaires |
 |------------|-------------|------|--------------|
-| **Damier** | **Board** | Renommage inversé | Le plateau physique est "Board" dans la grammaire |
-| Damier.tailleX, tailleY | Board.size (INT) | Fusion | Simplifié en une seule dimension (plateau carré) |
-| Damier.cases[][] | ❌ Non présent | Suppression | Structure générée dynamiquement au runtime |
-| **Case** | ❌ Non présent | Suppression | Cases créées à l'exécution, pas dans l'AST |
-| Case.x, y, pion | ❌ Non présent | Suppression | État du jeu, pas structure |
+| **Damier** | **Board** | Renommage | L'ancien Damier est renommé en Board dans la grammaire |
+| Damier.tailleX, tailleY | Board.size (INT) | Fusion | Ajout de la contrainte d'un plateau carré |
+| Damier.cases[][] | Non présent | Suppression | Structure générée dynamiquement au runtime |
+| **Case** | Non présent | Suppression | Cases créées à l'exécution, pas dans l'AST |
+| Case.x, y, pion | Non présent | Suppression | État du jeu, pas structure |
 
 ### Pièces et Joueurs
 
 | Métamodèle | AST Langium | Type | Commentaires |
 |------------|-------------|------|--------------|
 | **Pion** | **Piece** | Renommage | Terme anglais adopté |
-| Pion.couleur | Piece.color | ✅ Direct | Correspondance directe |
-| Pion.position | ❌ Non présent | Suppression | Position = état runtime |
-| **Player** | ❌ Non présent explicite | Ajout conceptuel | Les joueurs sont implicites via les couleurs dans les règles |
+| Pion.couleur | Piece.color | Direct | Correspondance directe |
+| Pion.position | Non présent | Suppression | Position = état runtime |
+| **Player** | Non présent | Ajout | Les joueurs sont implicites via les couleurs dans les règles |
 | Player.id, couleur, nbJetons | Piece.color, quantity | Fusion partielle | Quantité dans Piece, identification par couleur |
 | **Couleur** (enum) | ID (terminal) | Transformation | Flexible - accepte n'importe quel identifiant de couleur |
 
@@ -37,10 +37,10 @@
 | Métamodèle | AST Langium | Type | Commentaires |
 |------------|-------------|------|--------------|
 | **Rule** (when/then) | **Rules** { rule[] } | Restructuration | Approche déclarative avec types de règles spécifiques |
-| Rule.when, then | ❌ Non présent | Suppression | Remplacé par des règles typées |
+| Rule.when, then | Non présent | Suppression | Remplacé par des règles typées |
 | **Move** | **MoveRule** | Spécialisation | Plus structuré et spécifique |
-| ❌ Non présent | **CaptureRule** | Ajout | Séparation explicite capture/mouvement |
-| ❌ Non présent | **ActionRule** | Ajout | Distinction claire des types d'actions |
+| Non présent | **CaptureRule** | Ajout | Séparation explicite capture/mouvement |
+| Non présent | **ActionRule** | Ajout | Distinction claire des types d'actions |
 | Move.description | MoveRule (propriétés) | Éclatement | Structure plus fine (direction, alternating, etc.) |
 
 ### Objectifs
@@ -49,18 +49,18 @@
 |------------|-------------|------|--------------|
 | **Goal** | **Objective** { goal[] } | Renommage | Terme plus formel |
 | Goal.kind, description | **WinByCapture** / **WinBySolitaire** / **WinByForfeit** | Spécialisation | Types d'objectifs explicites au lieu d'un champ "kind" |
-| ❌ Non présent | WinByCapture.target | Ajout | Précision sur la pièce à capturer |
-| ❌ Non présent | WinBySolitaire.removeOwn, movesLeft | Ajout | Paramètres spécifiques au solitaire |
+| Non présent | WinByCapture.target | Ajout | Précision sur la pièce à capturer |
+| Non présent | WinBySolitaire.removeOwn, movesLeft | Ajout | Paramètres spécifiques au solitaire |
 
 ### État et Randomisation
 
 | Métamodèle | AST Langium | Type | Commentaires |
 |------------|-------------|------|--------------|
-| **State** | ❌ Non présent | Suppression | État runtime, pas dans la définition du jeu |
-| State.tourActuel, nbTours | ❌ Non présent | Suppression | Géré par le moteur de jeu |
+| **State** | Non présent | Suppression | État runtime, pas dans la définition du jeu |
+| State.tourActuel, nbTours | Non présent | Suppression | Géré par le moteur de jeu |
 | **Randomness** | **Dice** (optionnel) | Renommage | Plus spécifique - dés au lieu de randomness générique |
 | Randomness.source | Dice.faces | Transformation | Nombre de faces au lieu de description textuelle |
-| Randomness.lancerDe() | ❌ Non présent | Suppression | Méthode implémentée côté runtime |
+| Randomness.lancerDe() | Non présent | Suppression | Méthode implémentée côté runtime |
 
 ### UI et Paramètres
 
@@ -68,11 +68,11 @@
 |------------|-------------|------|--------------|
 | **Parameter** (compile/run) | Séparation **UI** / **Settings** | Restructuration majeure | Distinction claire compile-time vs runtime |
 | Parameter.kind | Implicite (UI=skin, Settings=runtime) | Transformation | Structure architecturale vs métadonnée |
-| ❌ Non présent | **Theme** (lightSquares, darkSquares, highlight) | Ajout | Personnalisation visuelle détaillée |
-| ❌ Non présent | **Sprites** | Ajout | Support des sprites personnalisés |
-| ❌ Non présent | **Layout** (showCaptured) | Ajout | Options de disposition |
-| ❌ Non présent | **Settings** (animationSpeed, showLegalMoves, aiDifficulty) | Ajout | Paramètres UX détaillés |
-| **Preset** | ❌ Non présent | Suppression | Presets gérables via fichiers .damdam séparés |
+| Non présent | **Theme** (lightSquares, darkSquares, highlight) | Ajout | Personnalisation visuelle détaillée |
+| Non présent | **Sprites** | Ajout | Support des sprites personnalisés |
+| Non présent | **Layout** (showCaptured) | Ajout | Options de disposition |
+| Non présent | **Settings** (animationSpeed, showLegalMoves, aiDifficulty) | Ajout | Paramètres UX détaillés |
+| **Preset** | Non présent | Suppression | Presets gérables via fichiers .damdam séparés |
 
 ---
 
@@ -149,27 +149,3 @@
    - **Avant** : Énumération fixe BLANC/NOIR
    - **Après** : Identifiants libres (ex: "red", "blue", "green")
    - **Justification** : Flexibilité pour jeux multi-joueurs ou thématiques
-
----
-
-## 3. Analyse Architecturale
-
-### Forces de l'AST Langium
-
-**Séparation claire** compile-time / run-time / UI  
-**Typage fort** via règles spécialisées (pas de stringly-typed `kind`)  
-**Extensibilité** (optionnels UI/Settings/Dice)  
-**Validation** intégrée (via la grammaire)  
-
-### Limites identifiées
-
-**Plateaux carrés uniquement** (size unique)  
-**Pas de support multi-fichiers** (imports)  
-**Randomness limitée** aux dés (pas de cartes, etc.)  
-**Mouvements simplifiés** (pas de mouvements en L, de saut complexe)  
-
-### Recommandations d'évolution
-
-1. **Court terme** : Ajouter `width` et `height` à Board (au lieu de `size`)
-2. **Moyen terme** : Support des imports (`import './chess-base.damdam'`)
-3. **Long terme** : Système de patterns de mouvements plus expressif (ex: Bézier, vecteurs)
