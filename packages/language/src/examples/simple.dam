@@ -1,0 +1,47 @@
+//cd packages/language 
+//npx tsx src/index.ts --file src/variant1.dam --variant variant1
+
+game ClassicCheckers {
+    board {
+        size 3
+    }
+
+    pieces {
+        piece blackToken {
+            color black
+            quantity 1
+        }
+        piece whiteToken {
+            color white
+            quantity 1
+        }
+    }
+
+    rules {
+        movement {
+            alternating black and white
+            firstPlayer white
+            direction diagonal
+            canMoveBackward false
+        }
+
+        capture {
+            mandatory true
+            message "nomnomnom"
+        }
+
+        action {
+            type both
+        }
+    }
+
+    objective {
+        winByCapture {
+            captureAll opponent
+        }
+        winByForfeit {
+            allowed true
+        }
+
+    }
+}
