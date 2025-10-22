@@ -1,97 +1,178 @@
-@startuml Damier
-class Game {
-        name: String = "Jeu de plateau en damier"
-        + demarrer()
-        + verifierVictoire()
-    }
+@startuml
+'==== LÉGENDE ====
+'Noir plein = Concepts compile-time (dans l'AST)
+'Gris pointillé = Concepts runtime (hors AST)
 
-    class Parameter {
-        name: String
-        kind: {compile, run}
-        domain: String
-        default: String
-    }
+'==== COMPILE-TIME: Structure du jeu (AST) ====
 
-    class Preset {
-        name: String
-        description: String
-    }
+class Damier <<entry>> {
+    name: String
+    + demarrer()
+    + verifierVictoire()
+}
 
-    class Player {
-        id: String
-        couleur: Couleur
-        nbJetons: int
-    }
+class Board {
+    size: int
+}
 
-    class State {
-        damier: Damier
-        tourActuel: Couleur
-        nbTours: int
-    }
+class Pieces {
+}
 
-    class Move {
-        name: String
-        description: String
-        + appliquer()
-    }
+class Piece {
+    name: String
+    color: String
+    quantity: int
+}
 
-    class Rule {
-        when: String
-        then: String
-    }
+class Dice {
+    faces: int
+    + lancerDe(): int
+}
 
-    class Randomness {
-        source: String = "Dé à 6 faces"
-        + lancerDe(): int
-    }
+class Rules {
+}
 
-    class Goal {
-        kind: String
-        description: String
-    }
+abstract class Rule {
+}
 
-    class Damier {
-        tailleX: int = 10
-        tailleY: int = 10
-        cases: Case[][]
-    }
+class MoveRule {
+    between: String[]
+    firstPlayer: String
+    direction: enum {diagonal, orthogonal, any}
+    canMoveBackward: boolean
+}
 
-    class Case {
-        x: int
-        y: int
-        pion: Pion?
-    }
+class CaptureRule {
+    mandatory: boolean
+    message: String
+}
 
-    class Pion {
-        couleur: Couleur
-        position: Position
-    }
+class ActionRule {
+    type: enum {move, capture, both}
+}
 
-    class Position {
-        x: int
-        y: int
-    }
+class Objective {
+}
 
-    class Couleur {
-        <<enumeration>>
-        BLANC
-        NOIR
-    }
+abstract class Goal {
+}
 
+class WinByCapture {
+    target: String
+}
 
-    Game "1" --> "many" Parameter
-    Game "0..*" --> "many" Preset
-    Game "2" --> "many" Player
-    Game "1" --> "1" State
-    Game "1" --> "many" Move
-    Game "1" --> "many" Rule
-    Game "1" --> "1" Randomness
-    Game "1..*" --> "many" Goal
+class WinBySolitaire {
+    removeOwn: boolean
+    movesLeft: int
+}
 
-    State --> Damier
-    Damier --> Case
-    Case --> Pion
-    Pion --> Position
-    Player --> Couleur
-    Pion --> Couleur
+class WinByForfeit {
+    allowed: boolean
+}
+
+'==== UI/SKIN: Apparence visuelle ====
+
+class UI {
+}
+
+class Theme {
+    lightSquares: String
+    darkSquares: String
+    highlight: String
+}
+
+class Sprites {
+}
+
+class SpriteDef {
+    key: String
+    path: String
+}
+
+class Layout {
+    showCaptured: boolean
+}
+
+'==== RUNTIME: Paramètres UX ====
+
+class Settings {
+    animationSpeed: int
+    showLegalMoves: boolean
+    aiDifficulty: int
+}
+
+'==== RUNTIME: État du jeu (hors AST) ====
+
+class State <<runtime>> {
+    tourActuel: String
+    nbTours: int
+}
+
+class Player <<runtime>> {
+    id: String
+    couleur: String
+    nbJetons: int
+}
+
+class Damier_Physical <<runtime>> {
+    tailleX: int
+    tailleY: int
+    cases: Case[][]
+}
+
+class Case <<runtime>> {
+    x: int
+    y: int
+    pion: Pion?
+}
+
+class Pion <<runtime>> {
+    couleur: String
+    position: Position
+}
+
+class Position <<runtime>> {
+    x: int
+    y: int
+}
+
+'==== RELATIONS COMPILE-TIME ====
+
+Damier "1" --> "1" Board : définit
+Damier "1" --> "1" Pieces : contient
+Damier "1" --> "0..1" Dice : utilise
+Damier "1" --> "1" Rules : applique
+Damier "1" --> "1" Objective : poursuit
+
+Pieces "1" --> "1..*" Piece : déclare
+
+Rules "1" --> "1..*" Rule : contient
+Rule <|-- MoveRule
+Rule <|-- CaptureRule
+Rule <|-- ActionRule
+
+Objective "1" --> "1..*" Goal : définit
+Goal <|-- WinByCapture
+Goal <|-- WinBySolitaire
+Goal <|-- WinByForfeit
+
+Damier "1" --> "0..1" UI : personnalise
+UI "1" --> "0..1" Theme : applique
+UI "1" --> "0..1" Sprites : charge
+UI "1" --> "0..1" Layout : configure
+
+Sprites "1" --> "0..*" SpriteDef : contient
+
+Damier "1" --> "0..1" Settings : configure
+
+'==== RELATIONS RUNTIME ====
+
+Damier ..> State : << génère >>
+State ..> Damier_Physical : << maintient >>
+State ..> Player : << gère >>
+Damier_Physical ..> Case : << compose >>
+Case ..> Pion : << contient >>
+Pion ..> Position : << occupe >>
+Player ..> Pion : << possède >>
+
 @enduml
