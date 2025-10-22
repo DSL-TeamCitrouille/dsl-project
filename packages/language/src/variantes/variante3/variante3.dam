@@ -1,0 +1,38 @@
+game DamDamLimited {
+  board { size 8 }
+
+  pieces {
+    piece white { color white quantity 8 }
+    piece black { color black quantity 8 }
+  }
+
+  rules {
+    movement {
+      alternating white and black
+      direction orthogonal
+      canMoveBackward false
+    }
+    capture {
+      mandatory true
+      message "Captures obligatoires"
+    }
+  }
+
+  objective {
+    winByForfeit { allowed true }
+    WinByCapture { captureAll opponent }
+  }
+
+  ui {
+    theme {
+      lightSquares: "gray"
+      darkSquares: "blue"
+      highlight: "red"
+    }
+  }
+
+  settings {
+    animationSpeed: 3
+    aiDifficulty: 4
+  }
+}

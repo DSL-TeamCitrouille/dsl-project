@@ -1,0 +1,43 @@
+game DamDamFastDark {
+  board { size 6 }
+
+  pieces {
+    piece whiteShadow { color silver quantity 10 }
+    piece blackShadow { color black quantity 10 }
+  }
+
+  rules {
+    movement {
+      alternating whiteShadow and blackShadow
+      direction diagonal
+      canMoveBackward true
+    }
+    capture {
+      mandatory true
+      message "Une capture illumine brièvement le plateau."
+    }
+    action {
+      type both
+    }
+  }
+
+  objective {
+    winByForfeit { allowed true }
+    WinByCapture { captureAll opponent }
+  }
+
+  ui {
+    theme {
+      lightSquares: "darkgray"
+      darkSquares: "black"
+      highlight: "crimson"
+    }
+    layout { showCaptured false }
+  }
+
+  settings {
+    animationSpeed: 5
+    showLegalMoves: false
+    aiDifficulty: 3
+  }
+}

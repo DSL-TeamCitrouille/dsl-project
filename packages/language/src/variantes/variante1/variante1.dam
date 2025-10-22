@@ -1,0 +1,41 @@
+game DamDamClassic {
+  board {
+    size 8
+  }
+
+  pieces {
+    piece white { color white quantity 12 }
+    piece black { color black quantity 12 }
+  }
+
+  rules {
+    movement {
+      alternating white and black
+      direction diagonal
+      canMoveBackward false
+    }
+    capture {
+      mandatory true
+      message "Capture obligatoire !"
+    }
+  }
+
+  objective {
+    winByCapture { captureAll opponent }
+  }
+
+  ui {
+    theme {
+      lightSquares: "beige"
+      darkSquares: "brown"
+      highlight: "yellow"
+    }
+    layout { showCaptured true }
+  }
+
+  settings {
+    animationSpeed: 2
+    showLegalMoves: true
+    aiDifficulty: 2
+  }
+}

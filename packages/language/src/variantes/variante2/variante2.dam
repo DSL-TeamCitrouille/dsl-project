@@ -1,0 +1,40 @@
+game DamDamRoyal {
+  board { size 10 }
+
+  pieces {
+    piece white { color gold quantity 12 }
+    piece black { color purple quantity 12 }
+  }
+
+  dice { faces 6 }
+
+  rules {
+    movement {
+      alternating white and black
+      direction any
+      canMoveBackward true
+    }
+    action {
+      type move
+    }
+    capture {
+      mandatory false
+      message "Captures facultatives — la chance décide !"
+    }
+  }
+
+  objective { 
+    winByForfeit { allowed true} 
+    WinByCapture { captureAll opponent }
+        }
+
+  ui {
+    theme {
+      lightSquares: "gold"
+      darkSquares: "indigo"
+      highlight: "pink"
+    }
+  }
+
+  settings { animationSpeed: 3 aiDifficulty: 3 }
+}

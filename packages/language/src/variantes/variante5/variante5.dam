@@ -1,0 +1,42 @@
+game DamDamSolitaireLight {
+  board { size 7 }
+
+  pieces {
+    piece marble { color white quantity 32 }
+  }
+
+  rules {
+    movement {
+      alternating marble
+      direction orthogonal
+      canMoveBackward false
+      firstPlayer marble
+    }
+    capture {
+      mandatory true
+      message "Sauter un pion pour la retirer du plateau."
+    }
+  }
+
+  objective {
+    winBySolitaire {
+      removeOwn true
+      noMoreMoves 1
+    }
+  }
+
+  ui {
+    theme {
+      lightSquares: "ivory"
+      darkSquares: "lightblue"
+      highlight: "limegreen"
+    }
+    layout { showCaptured true }
+  }
+
+  settings {
+    animationSpeed: 2
+    showLegalMoves: true
+    aiDifficulty: 0
+  }
+}
