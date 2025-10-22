@@ -19,8 +19,8 @@ game ClassicCheckers {
 
     rules {
         movement {
-            alternating black and white
-            firstPlayer white
+            alternating blackToken and whiteToken
+            firstPlayer whiteToken
             direction diagonal
             canMoveBackward false
         }

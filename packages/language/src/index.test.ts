@@ -18,8 +18,8 @@ function validateVariant1(model: Damier): string[] {
   const board = model?.board;
   
   if (!board) errors.push('Missing board section');
-  else if (board.width !== 8 || board.height !== 8) {
-    errors.push(`Board must be 8x8 (got ${board.width}x${board.height})`);
+  else if (board.size !== 8) {
+    errors.push(`Board must be 8x8 (got ${board.size}`);
   }
   
   if (model?.dice) errors.push('Dice section not allowed');
@@ -48,8 +48,7 @@ describe('DamDam Parser', () => {
     const model = doc.parseResult.value;
     
     expect(model.name).toBe("ClassicCheckers");
-    expect(model.board?.width).toBe(8);
-    expect(model.board?.height).toBe(8);
+    expect(model.board?.size).toBe(8);
     expect(model.pieces?.piece).toHaveLength(2);
     expect(model.dice).toBeUndefined();
     expect(doc.diagnostics ?? []).toHaveLength(0);
