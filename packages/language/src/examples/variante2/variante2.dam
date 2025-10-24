@@ -18,8 +18,8 @@ game DamDamRoyal {
       type move
     }
     capture {
-      mandatory false
-      message "Captures facultatives — la chance décide !"
+      mandatory true
+      message "Nomnomnomnom"
     }
   }
 

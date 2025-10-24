@@ -7,7 +7,7 @@
 | 2. Royal | 10 | 12 | Oui | Non | Gold/Purple | 3 | 3 |
 | 3. Limited | 8 | 8  | Non | Non | Gris/Bleu | 3 | 4 |
 | 4. FastDark | 6 | 10 | Non | Non | Jaune/Vert | 2 | 1 |
-| 5. Solitaire | 7 | 32 (1 joueur) | Non | Oui | Blac/Bleu | 2 | 0 |
+| 5. Solitaire | 7 | 48 (1 joueur) | Non | Oui | Ivoire/BleuClair | 2 | 0 |
 
 ## Validation des Contraintes TP
 
@@ -42,7 +42,7 @@ Variant 5 – SolitaireLight : Thème ivoire/bleu clair/vert, visuel apaisant et
 
 Taille plateau : varie de 6 à 10 cases (plus petit = plus rapide, plus grand = plus stratégique).
 
-Nombre de pions : de 8 à 32 selon la variante (1 joueur pour Solitaire).
+Nombre de pions : de 8 à 48 selon la variante (1 joueur pour Solitaire).
 
 Dés : présents (variant 2 – Royal), absents (variants 1, 3, 4, 5).
 

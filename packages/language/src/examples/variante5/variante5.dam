@@ -2,7 +2,7 @@ game DamDamSolitaireLight {
   board { size 7 }
 
   pieces {
-    piece marble { color white quantity 32 }
+    piece marble { color white quantity 48 }
   }
 
   rules {
