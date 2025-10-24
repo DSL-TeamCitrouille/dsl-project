@@ -1,0 +1,96 @@
+@startuml
+title Instance 1 : Jeu de Dames Classique
+
+object ":Damier" as damier1 {
+    name = "Dames Françaises"
+}
+
+object ":Board" as board1 {
+    size = 10
+}
+
+object ":Pieces" as pieces1 {
+}
+
+object "pion:Piece" as piece1 {
+    name = "Pion"
+    color = "noir/blanc"
+    quantity = 20
+}
+
+object "dame:Piece" as piece2 {
+    name = "Dame"
+    color = "noir/blanc"
+    quantity = 0
+}
+
+object ":Rules" as rules1 {
+}
+
+object ":MoveRule" as move1 {
+    between = ["case noire"]
+    firstPlayer = "blanc"
+    direction = diagonal
+    canMoveBackward = false
+}
+
+object ":CaptureRule" as capture1 {
+    mandatory = true
+    message = "Prise obligatoire !"
+}
+
+object ":ActionRule" as action1 {
+    type = both
+}
+
+object ":Objective" as objective1 {
+}
+
+object ":WinByCapture" as win1 {
+    target = "tous les pions adverses"
+}
+
+object ":WinByForfeit" as win2 {
+    allowed = true
+}
+
+object ":UI" as ui1 {
+}
+
+object ":Theme" as theme1 {
+    lightSquares = "#F0D9B5"
+    darkSquares = "#B58863"
+    highlight = "#BACA44"
+}
+
+object ":Layout" as layout1 {
+    showCaptured = true
+}
+
+object ":Settings" as settings1 {
+    animationSpeed = 300
+    showLegalMoves = true
+    aiDifficulty = 2
+}
+
+damier1 --> board1
+damier1 --> pieces1
+damier1 --> rules1
+damier1 --> objective1
+damier1 --> ui1
+damier1 --> settings1
+
+pieces1 --> piece1
+pieces1 --> piece2
+
+rules1 --> move1
+rules1 --> capture1
+rules1 --> action1
+
+objective1 --> win1
+objective1 --> win2
+
+ui1 --> theme1
+ui1 --> layout1
+
+@enduml

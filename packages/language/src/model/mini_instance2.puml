@@ -1,0 +1,100 @@
+@startuml
+title Instance 2 : Solitaire avec Dé
+
+object ":Damier" as damier2 {
+    name = "Solitaire Peg"
+}
+
+object ":Board" as board2 {
+    size = 7
+}
+
+object ":Pieces" as pieces2 {
+}
+
+object "bille:Piece" as piece3 {
+    name = "Bille"
+    color = "rouge"
+    quantity = 32
+}
+
+object ":Dice" as dice1 {
+    faces = 6
+}
+
+object ":Rules" as rules2 {
+}
+
+object ":MoveRule" as move2 {
+    between = ["case adjacente"]
+    firstPlayer = "joueur unique"
+    direction = orthogonal
+    canMoveBackward = true
+}
+
+object ":CaptureRule" as capture2 {
+    mandatory = false
+    message = "Sautez par-dessus une bille"
+}
+
+object ":ActionRule" as action2 {
+    type = capture
+}
+
+object ":Objective" as objective2 {
+}
+
+object ":WinBySolitaire" as win3 {
+    removeOwn = true
+    movesLeft = 1
+}
+
+object ":UI" as ui2 {
+}
+
+object ":Theme" as theme2 {
+    lightSquares = "#FFFFFF"
+    darkSquares = "#8B4513"
+    highlight = "#FFD700"
+}
+
+object ":Sprites" as sprites1 {
+}
+
+object "bille_sprite:SpriteDef" as sprite1 {
+    key = "bille"
+}
+
+object ":Layout" as layout2 {
+    showCaptured = false
+}
+
+object ":Settings" as settings2 {
+    animationSpeed = 500
+    showLegalMoves = false
+    aiDifficulty = 0
+}
+
+damier2 --> board2
+damier2 --> pieces2
+damier2 --> dice1
+damier2 --> rules2
+damier2 --> objective2
+damier2 --> ui2
+damier2 --> settings2
+
+pieces2 --> piece3
+
+rules2 --> move2
+rules2 --> capture2
+rules2 --> action2
+
+objective2 --> win3
+
+ui2 --> theme2
+ui2 --> sprites1
+ui2 --> layout2
+
+sprites1 --> sprite1
+
+@enduml
