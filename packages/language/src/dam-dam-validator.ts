@@ -10,13 +10,18 @@ export function registerValidationChecks(services: DamDamServices) {
     const validator = services.validation.DamDamValidator;
     const checks: ValidationChecks<DamDamAstType> = {
 
-        Damier: validator.checkBoardSizeIsValid,
+        Damier: [
+            validator.checkBoardSizeIsValid,
+            validator.checkValidPieceCount,
+        ],
 
         MoveRule: [
             validator.checkMovementPiecesExist,
         ],
 
         Piece: validator.checkPieceColorConsistency,
+
+
     };
     registry.register(checks, validator);
 }
@@ -35,7 +40,8 @@ export class DamDamValidator {
     }
     /**
      * Board Size Constraint - COMPILE-TIME 
-     * Ensures the board size is within reasonable bounds (between 2 and 26)
+     * Ensures the board size is within reasonable bounds (between 2 and 26) and it is a pair number
+     * This prevents impractical board sizes that could affect gameplay
      */
     checkBoardSizeIsValid(damier: Damier, accept: ValidationAcceptor): void {
         const boardSize = damier.board.size;
@@ -52,6 +58,12 @@ export class DamDamValidator {
         if (boardSize > MAX_SIZE) {
             accept('error',
                 `Board size should not exceed ${MAX_SIZE} (practical limit). Current size: ${boardSize}.`,
+                { node: damier.board, property: 'size' }
+            );
+        }
+        if (boardSize % 2 !== 0) {
+            accept('error',
+                `Board size should be an even number for balanced gameplay. Current size: ${boardSize}.`,
                 { node: damier.board, property: 'size' }
             );
         }
@@ -126,4 +138,71 @@ export class DamDamValidator {
             );
         }
     }
+
+    /**
+     * Valid Piece Count
+     * CONSTRAINT: Ensures there are enough pieces defined for gameplay
+     * This prevents scenarios where gameplay is impossible due to lack of pieces
+     */
+    checkValidPieceCount(damier: Damier, accept: ValidationAcceptor): void {
+        const pieces = damier.pieces.piece;
+        const direction = damier.rules.rule.find((r: any): r is MoveRule => 'direction' in r)?.direction || 'any';
+        const boardSize = damier.board.size;
+
+        if (pieces.length === 2 && direction === 'diagonal') {
+            if( pieces[0].quantity != pieces[1].quantity ||  pieces[0].quantity % (boardSize / 2) != 0) {
+                accept('error',
+                    `For diagonal movement with 2 persons, both pieces must have equal quantities that are multiples of ${boardSize / 2}.`,
+                    { node: damier.pieces }
+                );
+            }
+        }
+        
+        if (pieces.length === 2 && direction === 'orthogonal') {
+            if( pieces[0].quantity != pieces[1].quantity ||  pieces[0].quantity % boardSize != 0) {
+                accept('error',
+                    `For orthogonal movement with 2 persons, both pieces must have equal quantities that are multiples of ${boardSize}.`,
+                    { node: damier.pieces }
+                );
+            }
+        }
+
+        if (pieces.length === 2 && direction === 'any') {
+            if( pieces[0].quantity != pieces[1].quantity ||  pieces[0].quantity % boardSize != 0) {
+                accept('error',
+                    `For any-direction movement with 2 persons, both pieces must have equal quantities that are multiples of ${boardSize}.`,
+                    { node: damier.pieces }
+                );
+            }
+        }
+
+        if (pieces.length === 1 && direction === 'diagonal') {
+            if( pieces[0].quantity != (boardSize**2/2-1) ) {
+                accept('error',
+                    `For diagonal movement with 1 person, the piece quantity must be ${(boardSize/2)-1}.`,
+                    { node: damier.pieces }
+                );
+            }
+        }
+
+        if (pieces.length === 1 && direction === 'orthogonal') {
+            if( pieces[0].quantity != (boardSize**2)-1 ) {
+                accept('error',
+                    `For orthogonal movement with 1 person, the piece quantity must be ${(boardSize**2)-1}.`,
+                    { node: damier.pieces }
+                );
+            }
+        }
+
+        if (pieces.length === 1 && direction === 'any') {
+            if( pieces[0].quantity != (boardSize**2)-1 ) {
+                accept('error',
+                    `For any movement with 1 person, the piece quantity must be ${(boardSize**2)-1}.`,
+                    { node: damier.pieces }
+                );
+            }
+        }
+
+    }
+
 }

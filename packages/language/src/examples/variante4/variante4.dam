@@ -2,7 +2,7 @@ game DamDamFastDark {
   board { size 8 }
 
   pieces {
-    piece whiteShadow { color silver quantity 12 }
+    piece whiteShadow { color silver quantity 10 }
     piece blackShadow { color silver quantity 12 }
   }
 
