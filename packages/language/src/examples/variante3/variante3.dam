@@ -20,7 +20,7 @@ game DamDamLimited {
 
   objective {
     winByForfeit { allowed true }
-    WinByCapture { captureAll opponent }
+    winByCapture { captureAll opponent }
   }
 
   ui {

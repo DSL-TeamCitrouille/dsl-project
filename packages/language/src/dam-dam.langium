@@ -53,7 +53,7 @@ Rule:
 
 MoveRule:
    'movement' '{'
-       'alternating' between+=ID ('and' between+=ID)*
+       'alternating' between+=ID ('and' between+=ID)?
        ('firstPlayer' firstPlayer=ID)?
        ('direction' direction=('diagonal' | 'orthogonal' | 'any'))
        ('canMoveBackward' canMoveBackward=BOOLEAN)?

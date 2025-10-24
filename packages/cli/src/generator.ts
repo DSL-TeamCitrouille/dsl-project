@@ -1,4 +1,4 @@
-import type { Damier, Piece } from 'dam-dam-language';
+import type { Damier, MoveRule, Piece } from 'dam-dam-language';
 import * as fs from 'node:fs';
 import { extractDestinationAndName } from './util.js';
 
@@ -29,12 +29,13 @@ function generateBoardHTML(model: Damier): string {
   const boardSize = model.board.size;
   const pieces = model.pieces.piece;
   const theme = model.ui?.theme;
+  const direction = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r)?.direction || 'any';
 
   const lightColor = theme?.lightSquares || '#f0d9b5';
   const darkColor = theme?.darkSquares || '#b58863';
   const highlightColor = theme?.highlight || '#ffeb3b';
 
-  const boardHTML = generateBoard(boardSize, pieces, lightColor, darkColor);
+  const boardHTML = generateBoard(boardSize, pieces, direction);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -225,74 +226,162 @@ function generateBoardHTML(model: Damier): string {
 // ============= Helper Functions =============
 
 function generateBoard(
-  size: number,
-  pieces: Piece[],
-  lightColor: string,
-  darkColor: string
+    size: number,
+    pieces: Piece[],
+    direction: string
 ): string {
-  let html = '';
-  const piecesPlaced = placePieces(size, pieces);
+    let html = '';
+    const piecesPlaced = placePieces(size, pieces, direction);
 
-  for (let row = 0; row < size; row++) {
-    for (let col = 0; col < size; col++) {
-      const isPlayable = (row + col) % 2 === 1;
-      const squareClass = isPlayable ? 'dark playable' : 'light';
-      const squareId = `square-${row}-${col}`;
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+        const isPlayable = (row + col) % 2 === 1;
+        const squareClass = isPlayable ? 'dark playable' : 'light';
+        const squareId = `square-${row}-${col}`;
 
-      const piece = piecesPlaced.get(`${row}-${col}`);
+        const piece = piecesPlaced!.get(`${row}-${col}`);
 
-      html += `<div class="square ${squareClass}" id="${squareId}">`;
-      if (piece) {
-        html += `<div class="piece ${piece.color}" title="${piece.name}"></div>`;
-      }
-      html += `</div>`;
+        html += `<div class="square ${squareClass}" id="${squareId}">`;
+        if (piece) {
+            html += `<div class="piece ${piece.color}" title="${piece.name}"></div>`;
+        }
+        html += `</div>`;
+        }
     }
-  }
 
-  return html;
+    return html;
 }
 
 function placePieces(
-  boardSize: number,
-  pieces: Piece[]
-): Map<string, { name: string; color: string }> {
-  const placed = new Map<string, { name: string; color: string }>();
+    boardSize: number,
+    pieces: Piece[],
+    direction: string
+): Map<string, { name: string; color: string }> | undefined{
+    const placed = new Map<string, { name: string; color: string }>();
 
-  // Get pieces by color to place them on correct sides
-  const whitePiece = pieces.find(p => p.color.toLowerCase() === 'white');
-  const blackPiece = pieces.find(p => p.color.toLowerCase() === 'black');
+    // Get pieces by color to place them on correct sides
+    const whitePiece = pieces[0];
+    const blackPiece = pieces.length === 2 ? pieces[1] : undefined;
 
-  // Place white pieces on top (first 3 rows, dark squares only)
-  if (whitePiece) {
-    let piecesPlaced = 0;
-    for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
-      for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
-        if ((row + col) % 2 === 1) {
-          placed.set(`${row}-${col}`, {
-            name: whitePiece.name,
-            color: whitePiece.color,
-          });
-          piecesPlaced++;
+    if(pieces.length === 2 && direction === 'diagonal') {
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
+            for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                if ((row + col) % 2 === 1) {
+                placed.set(`${row}-${col}`, {
+                    name: whitePiece.name,
+                    color: whitePiece.color,
+                });
+                piecesPlaced++;
+                }
+            }
+            }
         }
-      }
-    }
-  }
-
-  // Place black pieces on bottom (last 3 rows, dark squares only)
-  if (blackPiece) {
-    let piecesPlaced = 0;
-    for (let row = boardSize - 3; row < boardSize && piecesPlaced < blackPiece.quantity; row++) {
-      for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
-        if ((row + col) % 2 === 1) {
-          placed.set(`${row}-${col}`, {
-            name: blackPiece.name,
-            color: blackPiece.color,
-          });
-          piecesPlaced++;
+        if (blackPiece) {
+            let piecesPlaced = 0;
+            for (let row = boardSize - 1; row >= boardSize-3 && piecesPlaced < blackPiece.quantity; row--) {
+            for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
+                if ((row + col) % 2 === 1) {
+                placed.set(`${row}-${col}`, {
+                    name: blackPiece.name,
+                    color: blackPiece.color,
+                });
+                piecesPlaced++;
+                }
+            }
+            }
         }
-      }
     }
-  }
 
+    if(pieces.length === 2 && direction === 'orthogonal') {
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 1; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
+            for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                placed.set(`${row}-${col}`, {
+                    name: whitePiece.name,
+                    color: whitePiece.color,
+                });
+                piecesPlaced++;
+            }
+            }
+        }
+        if (blackPiece) {
+            let piecesPlaced = 0;
+            for (let row = boardSize-2; row >= boardSize-3 && piecesPlaced < blackPiece.quantity; row--) {
+            for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
+                placed.set(`${row}-${col}`, {
+                    name: blackPiece.name,
+                    color: blackPiece.color,
+                });
+                piecesPlaced++;
+            }
+            }
+        }
+    }
+
+    if(pieces.length === 2 && direction === 'any') {
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 1; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
+            for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                placed.set(`${row}-${col}`, {
+                    name: whitePiece.name,
+                    color: whitePiece.color,
+                });
+                piecesPlaced++;
+            }
+            }
+        }
+        if (blackPiece) {
+            let piecesPlaced = 0;
+            for (let row = boardSize-2; row >= boardSize-3 && piecesPlaced < blackPiece.quantity; row--) {
+            for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
+                placed.set(`${row}-${col}`, {
+                    name: blackPiece.name,
+                    color: blackPiece.color,
+                });
+                piecesPlaced++;
+            }
+            }
+        }
+    }
+
+    if(pieces.length === 1 && ( direction === 'diagonal' || direction === 'any' )) {
+        const center = Math.floor(boardSize / 2);
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
+                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                    if( col != center || col != center) {
+                        placed.set(`${row}-${col}`, {
+                            name: whitePiece.name,
+                            color: whitePiece.color,
+                        });
+                        piecesPlaced++;
+                    }
+                }
+            }
+        }
+
+        if(pieces.length === 1 && direction === 'diagonal') {
+            if (whitePiece) {
+                let piecesPlaced = 0;
+                for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
+                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                    if ((row + col) % 2 === 1) {
+                    placed.set(`${row}-${col}`, {
+                        name: whitePiece.name,
+                        color: whitePiece.color,
+                    });
+                    piecesPlaced++;
+                    }
+                }
+                }
+            }
+        }
+    }
   return placed;
+
 }
