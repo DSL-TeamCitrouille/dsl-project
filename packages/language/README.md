@@ -22,3 +22,16 @@ If you selected the test option as well, then the following files will be presen
 - [test/linking.test.ts](test/linking.test.ts) - Unit tests checking linking.
 - [test/parsing.test.ts](test/parsing.test.ts) - Unit tests regarding parsing.
 - [test/validating.test.ts](test/validating.test.ts) - Unit tests regarding validation.
+
+## How to generate code 
+
+- npm run langium:generate
+- npm run build
+- node packages/cli/bin/cli.js generate packages/language/src/examples/[variante_folder/variante_nam.dam] packages/language/src/examples/[variante_folder/preview/variante_res]
+
+## Where are the stuff
+
+- Varitantes : 
+- Generation de code :
+- validator : 
+- note de variabilité : 
