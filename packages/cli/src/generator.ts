@@ -208,7 +208,6 @@ function generateBoardHTML(model: Damier): string {
     <div class="game-container">
         <div class="game-header">
             <h1>🎮 ${model.name}</h1>
-            <p>Checkers Board Visualization</p>
         </div>
 
         <div class="board-wrapper">
