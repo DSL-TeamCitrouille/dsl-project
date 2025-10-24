@@ -30,12 +30,15 @@ function generateBoardHTML(model: Damier): string {
   const pieces = model.pieces.piece;
   const theme = model.ui?.theme;
   const direction = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r)?.direction || 'any';
+  const dice = model.dice;
 
   const lightColor = theme?.lightSquares || '#f0d9b5';
   const darkColor = theme?.darkSquares || '#b58863';
   const highlightColor = theme?.highlight || '#ffeb3b';
 
   const boardHTML = generateBoard(boardSize, pieces, direction);
+
+  const diceHTML = dice ? generateDiceHTML(dice.faces) : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -217,8 +220,49 @@ function generateBoardHTML(model: Damier): string {
                     ${boardHTML}
                 </div>
             </div>
+            ${diceHTML}
         </div>
     </div>
+
+    <script>
+        let isRolling = false;
+
+        function throwDice() {
+            const diceElement = document.querySelector('.dice');
+            const resultElement = document.querySelector('.dice-result');
+            const button = document.querySelector('.throw-button');
+            
+            if (isRolling) return;
+            
+            isRolling = true;
+            button.disabled = true;
+            resultElement.textContent = '';
+
+            // Add rolling animation
+            diceElement.classList.add('rolling');
+
+            // Simulate dice roll
+            setTimeout(() => {
+                const faces = parseInt(diceElement.dataset.faces) || 6;
+                const result = Math.floor(Math.random() * faces) + 1;
+                
+                diceElement.classList.remove('rolling');
+                resultElement.textContent = '🎲 ' + result;
+                
+                isRolling = false;
+                button.disabled = false;
+            }, 600);
+        }
+
+        // Make throw button clickable
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('.throw-button');
+            if (button) {
+                button.addEventListener('click', throwDice);
+            }
+        });
+    </script>
+
 </body>
 </html>`;
 }
@@ -384,4 +428,18 @@ function placePieces(
     }
   return placed;
 
+}
+
+function generateDiceHTML(faces: number): string {
+  return `
+    <div class="dice-container">
+        <h3 style="color: #1e3c72; margin: 0;">🎲 Dice</h3>
+        <div class="dice-display">
+            <div class="dice" data-faces="${faces}">
+            </div>
+        </div>
+        <div class="dice-result"></div>
+        <button class="throw-button">Throw Dice</button>
+    </div>
+  `;
 }

@@ -2,8 +2,8 @@ game DamDamRoyal {
   board { size 10 }
 
   pieces {
-    piece white { color gold quantity 12 }
-    piece black { color purple quantity 12 }
+    piece white { color white quantity 12 }
+    piece black { color black quantity 12 }
   }
 
   dice { faces 6 }
@@ -25,7 +25,7 @@ game DamDamRoyal {
 
   objective { 
     winByForfeit { allowed true} 
-    WinByCapture { captureAll opponent }
+    winByCapture { captureAll opponent }
         }
 
   ui {
