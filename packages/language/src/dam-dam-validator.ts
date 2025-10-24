@@ -1,4 +1,4 @@
-// npx tsx src/dam-dam-validator.ts --file src/examples/simple.dam
+// npx tsx src/dam-dam-validator.ts --file src/variantes/variante1/variante1.dam
 
 import type { ValidationAcceptor, ValidationChecks } from 'langium';
 import type { DamDamAstType, Damier, Piece, MoveRule } from './generated/ast.js';

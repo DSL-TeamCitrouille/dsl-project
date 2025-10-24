@@ -28,7 +28,7 @@ game DamDamClassic {
     theme {
       lightSquares: "beige"
       darkSquares: "brown"
-      highlight: "yellow"
+      highlight: "sandybrown"
     }
     layout { showCaptured true }
   }
