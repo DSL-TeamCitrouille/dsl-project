@@ -1,9 +1,9 @@
 game DamDamFastDark {
-  board { size 6 }
+  board { size 8 }
 
   pieces {
-    piece whiteShadow { color silver quantity 10 }
-    piece blackShadow { color black quantity 10 }
+    piece whiteShadow { color silver quantity 12 }
+    piece blackShadow { color silver quantity 12 }
   }
 
   rules {
@@ -23,7 +23,7 @@ game DamDamFastDark {
 
   objective {
     winByForfeit { allowed true }
-    WinByCapture { captureAll opponent }
+    winByCapture { captureAll opponent }
   }
 
   ui {

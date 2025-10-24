@@ -1,16 +1,16 @@
 game DamDamSolitaireLight {
-  board { size 7 }
+  board { size 6 }
 
   pieces {
-    piece marble { color white quantity 48 }
+    piece marble { color black quantity 35 }
   }
 
   rules {
     movement {
-      alternating marble
+      alternating marble      
+      firstPlayer marble
       direction orthogonal
       canMoveBackward false
-      firstPlayer marble
     }
     capture {
       mandatory true

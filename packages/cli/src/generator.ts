@@ -310,109 +310,7 @@ function placePieces(
     if(pieces.length === 2 && direction === 'diagonal') {
         if (whitePiece) {
             let piecesPlaced = 0;
-            for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
-            for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
-                if ((row + col) % 2 === 1) {
-                placed.set(`${row}-${col}`, {
-                    name: whitePiece.name,
-                    color: whitePiece.color,
-                });
-                piecesPlaced++;
-                }
-            }
-            }
-        }
-        if (blackPiece) {
-            let piecesPlaced = 0;
-            for (let row = boardSize - 1; row >= boardSize-3 && piecesPlaced < blackPiece.quantity; row--) {
-            for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
-                if ((row + col) % 2 === 1) {
-                placed.set(`${row}-${col}`, {
-                    name: blackPiece.name,
-                    color: blackPiece.color,
-                });
-                piecesPlaced++;
-                }
-            }
-            }
-        }
-    }
-
-    if(pieces.length === 2 && direction === 'orthogonal') {
-        if (whitePiece) {
-            let piecesPlaced = 0;
-            for (let row = 1; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
-            for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
-                placed.set(`${row}-${col}`, {
-                    name: whitePiece.name,
-                    color: whitePiece.color,
-                });
-                piecesPlaced++;
-            }
-            }
-        }
-        if (blackPiece) {
-            let piecesPlaced = 0;
-            for (let row = boardSize-2; row >= boardSize-3 && piecesPlaced < blackPiece.quantity; row--) {
-            for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
-                placed.set(`${row}-${col}`, {
-                    name: blackPiece.name,
-                    color: blackPiece.color,
-                });
-                piecesPlaced++;
-            }
-            }
-        }
-    }
-
-    if(pieces.length === 2 && direction === 'any') {
-        if (whitePiece) {
-            let piecesPlaced = 0;
-            for (let row = 1; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
-            for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
-                placed.set(`${row}-${col}`, {
-                    name: whitePiece.name,
-                    color: whitePiece.color,
-                });
-                piecesPlaced++;
-            }
-            }
-        }
-        if (blackPiece) {
-            let piecesPlaced = 0;
-            for (let row = boardSize-2; row >= boardSize-3 && piecesPlaced < blackPiece.quantity; row--) {
-            for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
-                placed.set(`${row}-${col}`, {
-                    name: blackPiece.name,
-                    color: blackPiece.color,
-                });
-                piecesPlaced++;
-            }
-            }
-        }
-    }
-
-    if(pieces.length === 1 && ( direction === 'diagonal' || direction === 'any' )) {
-        const center = Math.floor(boardSize / 2);
-        if (whitePiece) {
-            let piecesPlaced = 0;
-            for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
-                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
-                    if( col != center || col != center) {
-                        placed.set(`${row}-${col}`, {
-                            name: whitePiece.name,
-                            color: whitePiece.color,
-                        });
-                        piecesPlaced++;
-                    }
-                }
-            }
-        }
-
-        if(pieces.length === 1 && direction === 'diagonal') {
-            if (whitePiece) {
-                let piecesPlaced = 0;
-                for (let row = 0; row < 3 && piecesPlaced < whitePiece.quantity; row++) {
+            for (let row = 0; row < boardSize && piecesPlaced < whitePiece.quantity; row++) {
                 for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
                     if ((row + col) % 2 === 1) {
                     placed.set(`${row}-${col}`, {
@@ -422,10 +320,122 @@ function placePieces(
                     piecesPlaced++;
                     }
                 }
+            }
+        }
+        if (blackPiece) {
+            let piecesPlaced = 0;
+            for (let row = boardSize - 1; row >= 0 && piecesPlaced < blackPiece.quantity; row--) {
+                for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
+                    if ((row + col) % 2 === 1) {
+                    placed.set(`${row}-${col}`, {
+                        name: blackPiece.name,
+                        color: blackPiece.color,
+                    });
+                    piecesPlaced++;
+                    }
                 }
             }
         }
     }
+
+    if(pieces.length === 2 && direction === 'orthogonal') {
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 1; row < boardSize && piecesPlaced < whitePiece.quantity; row++) {
+                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                    placed.set(`${row}-${col}`, {
+                        name: whitePiece.name,
+                        color: whitePiece.color,
+                    });
+                    piecesPlaced++;
+                }
+            }
+        }
+        if (blackPiece) {
+            let piecesPlaced = 0;
+            for (let row = boardSize-2; row >= 0 && piecesPlaced < blackPiece.quantity; row--) {
+                for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
+                    placed.set(`${row}-${col}`, {
+                        name: blackPiece.name,
+                        color: blackPiece.color,
+                    });
+                    piecesPlaced++;
+                }
+            }
+        }
+    }
+
+    if(pieces.length === 2 && direction === 'any') {
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 1; row < boardSize && piecesPlaced < whitePiece.quantity; row++) {
+                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                    placed.set(`${row}-${col}`, {
+                        name: whitePiece.name,
+                        color: whitePiece.color,
+                    });
+                    piecesPlaced++;
+                }
+            }
+        }
+        if (blackPiece) {
+            let piecesPlaced = 0;
+            for (let row = boardSize-2; row >= 0 && piecesPlaced < blackPiece.quantity; row--) {
+                for (let col = 0; col < boardSize && piecesPlaced < blackPiece.quantity; col++) {
+                    placed.set(`${row}-${col}`, {
+                        name: blackPiece.name,
+                        color: blackPiece.color,
+                    });
+                    piecesPlaced++;
+                }
+            }
+        }
+    }
+
+    if(pieces.length === 1 && ( direction === 'orthogonal' || direction === 'any' )) {
+        const center = Math.floor(boardSize / 2);
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 0; row < boardSize && piecesPlaced < whitePiece.quantity; row++) {
+                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                    if( col == center && row == center){
+                        continue;
+                    }
+                    else{
+                        placed.set(`${row}-${col}`, {
+                            name: whitePiece.name,
+                            color: whitePiece.color,
+                        });
+                        piecesPlaced++;
+                    }
+                }
+            }
+        }
+    }
+
+    if(pieces.length === 1 && direction === 'diagonal') {
+        const center = Math.floor(boardSize / 2);
+        if (whitePiece) {
+            let piecesPlaced = 0;
+            for (let row = 0; row < boardSize && piecesPlaced < whitePiece.quantity; row++) {
+                for (let col = 0; col < boardSize && piecesPlaced < whitePiece.quantity; col++) {
+                    if( col == center && row == center){
+                        continue;
+                    }
+                    else{
+                        if ((row + col) % 2 === 1){
+                        placed.set(`${row}-${col}`, {
+                            name: whitePiece.name,
+                            color: whitePiece.color,
+                        });
+                        piecesPlaced++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
   return placed;
 
 }
