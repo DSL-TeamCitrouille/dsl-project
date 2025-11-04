@@ -24,7 +24,8 @@
     "workspaces": [
         "packages/language",
         "packages/extension",
-        "packages/cli"
+        "packages/cli",
+        "packages/cli/backends/html"
 
     ],
     "dependencies": {
