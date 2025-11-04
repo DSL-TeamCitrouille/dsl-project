@@ -131,7 +131,7 @@ Le paramètre `dice_enabled` passe de `false` à `true`, avec `dice_faces: 6` et
 ## 4. Séparation des responsabilités
 
 ### **Compile-Time (CT) — Structure du jeu**
-Définit CE QU'EST le jeu :
+Définit ce qu'est le jeu :
 - Taille du plateau
 - Nombre et type de pièces
 - Règles de mouvement et de capture
@@ -141,7 +141,7 @@ Définit CE QU'EST le jeu :
 **Ces paramètres nécessitent une recompilation/régénération car ils changent la logique fondamentale.**
 
 ### **UI/Skin — Apparence visuelle**
-Définit COMMENT le jeu APPARAÎT :
+Définit comment le jeu apparaît :
 - Couleurs du plateau (cases claires/sombres)
 - Sprites des pièces
 - Style de rendu (grille 2D, isométrique, 3D)
@@ -150,7 +150,7 @@ Définit COMMENT le jeu APPARAÎT :
 **Ces paramètres sont purement cosmétiques et ne modifient pas la logique.**
 
 ### **Run-Time (RT) — Expérience utilisateur**
-Définit COMMENT le jeu EST RESSENTI :
+Définit comment le jeu est ressenti :
 - Vitesse des animations
 - Aides visuelles (coups légaux)
 - Sons activés/désactivés

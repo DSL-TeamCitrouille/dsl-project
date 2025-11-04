@@ -18,7 +18,7 @@
 | **Damier** | **Board** | Renommage | L'ancien Damier est renommé en Board dans la grammaire |
 | Damier.tailleX, tailleY | Board.size (INT) | Fusion | Ajout de la contrainte d'un plateau carré |
 | Damier.cases[][] | Non présent | Suppression | Structure générée dynamiquement au runtime |
-| **Case** | Non présent | Suppression | Cases créées à l'exécution, pas dans l'AST |
+| Case | Non présent | Suppression | Cases créées à l'exécution, pas dans l'AST |
 | Case.x, y, pion | Non présent | Suppression | État du jeu, pas structure |
 
 ### Pièces et Joueurs
@@ -28,9 +28,9 @@
 | **Pion** | **Piece** | Renommage | Terme anglais adopté |
 | Pion.couleur | Piece.color | Direct | Correspondance directe |
 | Pion.position | Non présent | Suppression | Position = état runtime |
-| **Player** | Non présent | Ajout | Les joueurs sont implicites via les couleurs dans les règles |
+| Player | Non présent | Ajout | Les joueurs sont implicites via les couleurs dans les règles |
 | Player.id, couleur, nbJetons | Piece.color, quantity | Fusion partielle | Quantité dans Piece, identification par couleur |
-| **Couleur** (enum) | ID (terminal) | Transformation | Flexible - accepte n'importe quel identifiant de couleur |
+| Couleur (enum) | ID (terminal) | Transformation | Flexible - accepte n'importe quel identifiant de couleur |
 
 ### Règles et Mouvements
 
@@ -38,9 +38,9 @@
 |------------|-------------|------|--------------|
 | **Rule** (when/then) | **Rules** { rule[] } | Restructuration | Approche déclarative avec types de règles spécifiques |
 | Rule.when, then | Non présent | Suppression | Remplacé par des règles typées |
-| **Move** | **MoveRule** | Spécialisation | Plus structuré et spécifique |
-| Non présent | **CaptureRule** | Ajout | Séparation explicite capture/mouvement |
-| Non présent | **ActionRule** | Ajout | Distinction claire des types d'actions |
+| Move | MoveRule | Spécialisation | Plus structuré et spécifique |
+| Non présent | CaptureRule | Ajout | Séparation explicite capture/mouvement |
+| Non présent | ActionRule | Ajout | Distinction claire des types d'actions |
 | Move.description | MoveRule (propriétés) | Éclatement | Structure plus fine (direction, alternating, etc.) |
 
 ### Objectifs
@@ -48,7 +48,7 @@
 | Métamodèle | AST Langium | Type | Commentaires |
 |------------|-------------|------|--------------|
 | **Goal** | **Objective** { goal[] } | Renommage | Terme plus formel |
-| Goal.kind, description | **WinByCapture** / **WinBySolitaire** / **WinByForfeit** | Spécialisation | Types d'objectifs explicites au lieu d'un champ "kind" |
+| Goal.kind, description | WinByCapture / WinBySolitaire / WinByForfeit | Spécialisation | Types d'objectifs explicites au lieu d'un champ "kind" |
 | Non présent | WinByCapture.target | Ajout | Précision sur la pièce à capturer |
 | Non présent | WinBySolitaire.removeOwn, movesLeft | Ajout | Paramètres spécifiques au solitaire |
 
@@ -58,7 +58,7 @@
 |------------|-------------|------|--------------|
 | **State** | Non présent | Suppression | État runtime, pas dans la définition du jeu |
 | State.tourActuel, nbTours | Non présent | Suppression | Géré par le moteur de jeu |
-| **Randomness** | **Dice** (optionnel) | Renommage | Plus spécifique - dés au lieu de randomness générique |
+| Randomness | Dice (optionnel) | Renommage | Plus spécifique - dés au lieu de randomness générique |
 | Randomness.source | Dice.faces | Transformation | Nombre de faces au lieu de description textuelle |
 | Randomness.lancerDe() | Non présent | Suppression | Méthode implémentée côté runtime |
 
@@ -66,13 +66,13 @@
 
 | Métamodèle | AST Langium | Type | Commentaires |
 |------------|-------------|------|--------------|
-| **Parameter** (compile/run) | Séparation **UI** / **Settings** | Restructuration majeure | Distinction claire compile-time vs runtime |
+| **Parameter** (compile/run) | Séparation UI / Settings | Restructuration majeure | Distinction claire compile-time vs runtime |
 | Parameter.kind | Implicite (UI=skin, Settings=runtime) | Transformation | Structure architecturale vs métadonnée |
-| Non présent | **Theme** (lightSquares, darkSquares, highlight) | Ajout | Personnalisation visuelle détaillée |
-| Non présent | **Sprites** | Ajout | Support des sprites personnalisés |
-| Non présent | **Layout** (showCaptured) | Ajout | Options de disposition |
-| Non présent | **Settings** (animationSpeed, showLegalMoves, aiDifficulty) | Ajout | Paramètres UX détaillés |
-| **Preset** | Non présent | Suppression | Presets gérables via fichiers .damdam séparés |
+| Non présent | Theme (lightSquares, darkSquares, highlight) | Ajout | Personnalisation visuelle détaillée |
+| Non présent | Sprites | Ajout | Support des sprites personnalisés |
+| Non présent | Layout (showCaptured) | Ajout | Options de disposition |
+| Non présent | Settings (animationSpeed, showLegalMoves, aiDifficulty) | Ajout | Paramètres UX détaillés |
+| Preset | Non présent | Suppression | Presets gérables via fichiers .damdam séparés |
 
 ---
 
