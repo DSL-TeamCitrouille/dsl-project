@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DamDamFastDark - Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-header h1 {
+            color: #1e3c72;
+            font-size: 2.2em;
+            margin-bottom: 8px;
+        }
+
+        .game-header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .board-wrapper {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .board-container {
+            flex: 0 0 auto;
+        }
+
+        .board {
+            display: inline-grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            border: 4px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .square.light {
+            background-color: darkgray;
+        }
+
+        .square.dark {
+            background-color: black;
+        }
+
+        .square:hover {
+            background-color: crimson !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .square.playable {
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .piece {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            font-size: 1.1em;
+            transition: transform 0.2s;
+        }
+
+        .square:hover .piece {
+            transform: scale(1.1);
+        }
+
+        .piece.white {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            color: #333;
+        }
+
+        .piece.black {
+            background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            .board-wrapper {
+                gap: 20px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar {
+                min-width: auto;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .info-card {
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .square {
+                width: 40px;
+                height: 40px;
+            }
+
+            .piece {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9em;
+            }
+
+            .game-header h1 {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🎮 DamDamFastDark</h1>
+        </div>
+
+        <div class="board-wrapper">
+            <div class="board-container">
+                <div class="board">
+                    <div class="square light" id="square-0-0"></div><div class="square dark playable" id="square-0-1"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-0-2"></div><div class="square dark playable" id="square-0-3"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-0-4"></div><div class="square dark playable" id="square-0-5"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-0-6"></div><div class="square dark playable" id="square-0-7"><div class="piece gray" title="whiteShadow"></div></div><div class="square dark playable" id="square-1-0"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-1-1"></div><div class="square dark playable" id="square-1-2"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-1-3"></div><div class="square dark playable" id="square-1-4"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-1-5"></div><div class="square dark playable" id="square-1-6"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-1-7"></div><div class="square light" id="square-2-0"></div><div class="square dark playable" id="square-2-1"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-2-2"></div><div class="square dark playable" id="square-2-3"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-2-4"></div><div class="square dark playable" id="square-2-5"><div class="piece gray" title="whiteShadow"></div></div><div class="square light" id="square-2-6"></div><div class="square dark playable" id="square-2-7"><div class="piece gray" title="whiteShadow"></div></div><div class="square dark playable" id="square-3-0"></div><div class="square light" id="square-3-1"></div><div class="square dark playable" id="square-3-2"></div><div class="square light" id="square-3-3"></div><div class="square dark playable" id="square-3-4"></div><div class="square light" id="square-3-5"></div><div class="square dark playable" id="square-3-6"></div><div class="square light" id="square-3-7"></div><div class="square light" id="square-4-0"></div><div class="square dark playable" id="square-4-1"></div><div class="square light" id="square-4-2"></div><div class="square dark playable" id="square-4-3"></div><div class="square light" id="square-4-4"></div><div class="square dark playable" id="square-4-5"></div><div class="square light" id="square-4-6"></div><div class="square dark playable" id="square-4-7"></div><div class="square dark playable" id="square-5-0"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-5-1"></div><div class="square dark playable" id="square-5-2"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-5-3"></div><div class="square dark playable" id="square-5-4"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-5-5"></div><div class="square dark playable" id="square-5-6"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-5-7"></div><div class="square light" id="square-6-0"></div><div class="square dark playable" id="square-6-1"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-6-2"></div><div class="square dark playable" id="square-6-3"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-6-4"></div><div class="square dark playable" id="square-6-5"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-6-6"></div><div class="square dark playable" id="square-6-7"><div class="piece silver" title="blackShadow"></div></div><div class="square dark playable" id="square-7-0"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-7-1"></div><div class="square dark playable" id="square-7-2"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-7-3"></div><div class="square dark playable" id="square-7-4"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-7-5"></div><div class="square dark playable" id="square-7-6"><div class="piece silver" title="blackShadow"></div></div><div class="square light" id="square-7-7"></div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        let isRolling = false;
+
+        function throwDice() {
+            const diceElement = document.querySelector('.dice');
+            const resultElement = document.querySelector('.dice-result');
+            const button = document.querySelector('.throw-button');
+            
+            if (isRolling) return;
+            
+            isRolling = true;
+            button.disabled = true;
+            resultElement.textContent = '';
+
+            // Add rolling animation
+            diceElement.classList.add('rolling');
+
+            // Simulate dice roll
+            setTimeout(() => {
+                const faces = parseInt(diceElement.dataset.faces) || 6;
+                const result = Math.floor(Math.random() * faces) + 1;
+                
+                diceElement.classList.remove('rolling');
+                resultElement.textContent = '🎲 ' + result;
+                
+                isRolling = false;
+                button.disabled = false;
+            }, 600);
+        }
+
+        // Make throw button clickable
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('.throw-button');
+            if (button) {
+                button.addEventListener('click', throwDice);
+            }
+        });
+    </script>
+
+</body>
+</html>
