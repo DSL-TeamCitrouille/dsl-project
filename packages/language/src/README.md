@@ -4,11 +4,12 @@
 
 ### **Concepts Objets**
 - **Jetons :**  
-  - 20 jetons noirs  
-  - 20 jetons blancs  
-  - Variante : possibilité de changer les couleurs  
+  - X jetons de couleur 1  
+  - X jetons de couleur 2  
+  - Variante : possibilité de changer les couleurs des jetons
 - **Damier :**  
-  - Plateau 10 × 10 cases  
+  - Plateau  size×size cases  
+  - Variante : possibilité de changer la taille du plateau
 
 ### **Hasard**
 - Dé à 6 faces utilisé pour influencer les déplacements ou les actions  
@@ -18,11 +19,11 @@
 ## **Coups / Règles**
 
 1. **Tour de jeu :**
-   - Les déplacements se font en alternance entre les joueurs noir et blanc.    
+   - Les déplacements se font en alternance entre les joueurs.    
 
 2. **Déplacements :**
    - Interdiction de sortir du damier.  
-   - Un seul lancé de dé par tour.  
+   - Un seul lancé de dé par tour [s'il y a présence du dé ou non].  
    - Interdiction de revenir en arrière, sauf pour manger un pion adverse.  
 
 3. **Actions possibles :**

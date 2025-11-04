@@ -28,7 +28,7 @@ npx tsx packages/language/src/test/generation-test.ts
 |   |   |   ├── cli.js      
 |   │   ├── src/
 |   |   |   ├── generator.js
-|   |   |   ├── htmlGenerator.js
+|   |   |   ├── htmlGenerator.js    
 |   |   |   └── main.js
 |   ├── extension/...
 │   ├── language/
@@ -46,7 +46,9 @@ npx tsx packages/language/src/test/generation-test.ts
 |   |   |   |   ├── variante2/...
 |   |   |   |   └── ...
 |   |   |   ├── model/...
-|   |   |   ├── outputGenerator/...
+|   |   |   ├── outputGenerator/
+|   |   |   |   ├── variante1.html
+|   |   |   |   └── ...
 |   |   |   ├── test/
 |   |   |   |   ├── generation-test.ts
 |   |   |   |   └── validation-test.ts

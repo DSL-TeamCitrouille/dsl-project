@@ -27,5 +27,4 @@ If you selected the test option as well, then the following files will be presen
 
 - npm run langium:generate
 - npm run build
-- node packages/cli/bin/cli.js generate packages/language/src/examples/[variante_folder/variante_nam.dam] packages/language/src/examples/[variante_folder/preview/variante_res]
 
