@@ -2,8 +2,8 @@ game DamDamRoyal {
   board { size 10 }
 
   pieces {
-    piece white { color white quantity 12 }
-    piece black { color black quantity 12 }
+    piece white { color white quantity 10 }
+    piece black { color black quantity 10 }
   }
 
   dice { faces 6 }

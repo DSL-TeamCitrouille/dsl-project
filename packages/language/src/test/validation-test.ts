@@ -13,7 +13,7 @@ import type { Damier } from '../generated/ast.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const examplesDir = path.resolve(__dirname, './examples');
+const examplesDir = path.resolve(__dirname, '../examples');
 
 function getDamFiles(dir: string): string[] {
     const entries = fs.readdirSync(dir, { withFileTypes: true });

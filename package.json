@@ -13,6 +13,7 @@
         "langium:watch": "npm run --workspace packages/language langium:watch"
     },
     "devDependencies": {
+        "@types/cheerio": "^0.22.35",
         "@types/node": "~20.17.48",
         "shx": "~0.4.0",
         "typescript": "~5.8.3"
@@ -26,9 +27,9 @@
         "packages/extension",
         "packages/cli",
         "packages/cli/backends/html"
-
     ],
     "dependencies": {
+        "cheerio": "^1.1.2",
         "langium": "^4.1.0"
     }
 }
