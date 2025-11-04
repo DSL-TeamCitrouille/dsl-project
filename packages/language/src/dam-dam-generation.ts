@@ -1,15 +1,11 @@
-// packages/language/src/dam-dam-generator.ts
 import * as fs from 'fs';
-import * as cheerio from 'cheerio'; // pour analyser le HTML
+import * as cheerio from 'cheerio';
 
 export interface GeneratorDiagnostic {
   message: string;
   severity: 'error' | 'warning' | 'ok';
 }
 
-/**
- * Vérifie qu’un fichier HTML généré respecte les règles attendues
- */
 export function validateGeneratedHTML(filePath: string): GeneratorDiagnostic[] {
   const diagnostics: GeneratorDiagnostic[] = [];
 

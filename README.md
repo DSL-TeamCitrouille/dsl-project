@@ -6,16 +6,19 @@ npm run build
 ```
 ## Pour lancer les variantes avec X étant l'index de la variantes: 
 ```
-node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/examples/[varianteX/preview/variante_res]
+node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
 ```
 
 ## Pour lancer les tests
 ```
+npx tsx packages/language/src/test/validation-test.ts
+npx tsx packages/language/src/test/generation-test.ts 
 ```
+/!\ Pour que la validation des fichiers générés fonctionnnent, il faut que ceux-ci soient placés dans le dossier packages/language/src/outputGenerator/* comme expliqué précédemment
+
 ---
 
 # Hiérarchie du projet
-
 
 ```
 .
@@ -23,7 +26,10 @@ node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/
 |   ├── cli/
 |   │   ├── bin/
 |   |   |   ├── cli.js      
-|   │   ├── src/...
+|   │   ├── src/
+|   |   |   ├── generator.js
+|   |   |   ├── htmlGenerator.js
+|   |   |   └── main.js
 |   ├── extension/...
 │   ├── language/
 |   |   ├── src/
@@ -32,20 +38,22 @@ node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/
 |   |   |   |   ├── services_notes.md
 |   |   |   |   ├── state_of_the_art.md
 |   |   |   |   └── variability.md
-│   │   |   ├── dam-dam.langium
-│   │   |   ├── dam-dam-validator.ts
-│   │   |   ├── generator/
 |   |   |   ├── examples/      
 |   |   |   |   ├── variante1/
-|   |   |   |   |   ├── preview/
-|   |   |   |   |   |   ├── variante_res
+|   |   |   |   |   ├── variante_preview
 |   |   |   |   |   ├── variante1.dam
 |   |   |   |   |   └── NOTESV1.md
 |   |   |   |   ├── variante2/...
 |   |   |   |   └── ...
+|   |   |   ├── model/...
+|   |   |   ├── outputGenerator/...
+|   |   |   ├── test/
+|   |   |   |   ├── generation-test.ts
+|   |   |   |   └── validation-test.ts
+│   │   |   ├── dam-dam.langium
+│   │   |   ├── dam-dam-validator.ts
+|   |   |   ├── dam-dam-generation.ts
 |   |   |   ├── README.md
-|   |   |   ├── tests/
-|   |   |   │   └── generation-test.ts
 |   |   |   └── ...
 |   ├── package.json
 |   ├── README.md
