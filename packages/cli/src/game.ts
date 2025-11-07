@@ -128,12 +128,19 @@ export class Game {
     }
     
     // Otherwise allow normal moves
-    const dirs =
+    let dirs =
       this.direction === 'diagonal'
         ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
         : this.direction === 'orthogonal'
           ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
           : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+
+    // Only forward movement (no backward)
+    if (piece.player === 0) {
+      dirs = dirs.filter(([dr]) => dr > 0); // Player 0 can only move down (increasing row)
+    } else {
+      dirs = dirs.filter(([dr]) => dr < 0); // Player 1 can only move up (decreasing row)
+    }
 
     for (const [dr, dc] of dirs) {
       const newRow = piece.row + dr;
@@ -244,14 +251,16 @@ export class Game {
     const piece = this.getPieceAt(move.from.row, move.from.col);
     if (!piece) return false;
 
+    // CAPTURE OPPONENT PIECE BEFORE MOVING
+    const targetPiece = this.getPieceAt(move.to.row, move.to.col);
+    if (targetPiece && targetPiece.player !== piece.player) {
+      this.pieces.delete(targetPiece.id);
+      console.log('Captured piece:', targetPiece.id);
+    }
+
+    // THEN move the piece
     piece.row = move.to.row;
     piece.col = move.to.col;
-
-    // Find and capture opponent piece if present
-    const targetPiece = this.getPieceAt(move.to.row, move.to.col);
-    if (targetPiece && targetPiece.id !== piece.id && targetPiece.player !== piece.player) {
-      this.pieces.delete(targetPiece.id);
-    }
 
     this.checkWin();
     if (!this.gameOver) this.currentPlayer = 1 - this.currentPlayer;
