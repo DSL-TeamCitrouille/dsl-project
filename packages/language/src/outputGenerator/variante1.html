@@ -1,50 +1,9 @@
-/// <reference lib="dom" />
-
-/**
- * Bundled HTML Generator with Bot Support
- * Updated to match game.ts changes (path capture logic, sideways moves)
- */
-
-import type { Damier, MoveRule } from 'dam-dam-language';
-
-export function generateBundledHTML(model: Damier): string {
-  const size = model.board.size;
-  const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
-  const direction = moveRule?.direction || 'any';
-  const theme = model.ui?.theme;
-
-  const lightColor = theme?.lightSquares || '#f0d9b5';
-  const darkColor = theme?.darkSquares || '#b58863';
-
-  // Generate board HTML
-  let boardHTML = '';
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      const isDark = (r + c) % 2 === 1;
-      const color = isDark ? darkColor : lightColor;
-      boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
-    }
-  }
-
-  // Serialize game config
-  const gameConfig = {
-    boardSize: size,
-    direction,
-    pieces: model.pieces.piece.map((p: any) => ({
-      name: p.name,
-      color: p.color,
-      quantity: p.quantity,
-    })),
-  };
-
-  const configJson = JSON.stringify(gameConfig);
-
-  return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${model.name} - With Bot</title>
+    <title>DamDamClassic - With Bot</title>
     <style>
         * { 
             margin: 0; 
@@ -88,7 +47,7 @@ export function generateBundledHTML(model: Damier): string {
 
         .board {
             display: inline-grid;
-            grid-template-columns: repeat(${size}, 50px);
+            grid-template-columns: repeat(8, 50px);
             gap: 0;
             border: 3px solid #333;
             margin-bottom: 20px;
@@ -246,7 +205,7 @@ export function generateBundledHTML(model: Damier): string {
 </head>
 <body>
     <div class="container">
-        <h1>🎮 ${model.name}</h1>
+        <h1>🎮 DamDamClassic</h1>
         
         <div class="mode-selector">
             <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
@@ -255,7 +214,7 @@ export function generateBundledHTML(model: Damier): string {
         </div>
         
         <div class="status">Loading...</div>
-        <div class="board">${boardHTML}</div>
+        <div class="board"><div class="square" data-row="0" data-col="0" style="background-color: beige;"></div><div class="square" data-row="0" data-col="1" style="background-color: brown;"></div><div class="square" data-row="0" data-col="2" style="background-color: beige;"></div><div class="square" data-row="0" data-col="3" style="background-color: brown;"></div><div class="square" data-row="0" data-col="4" style="background-color: beige;"></div><div class="square" data-row="0" data-col="5" style="background-color: brown;"></div><div class="square" data-row="0" data-col="6" style="background-color: beige;"></div><div class="square" data-row="0" data-col="7" style="background-color: brown;"></div><div class="square" data-row="1" data-col="0" style="background-color: brown;"></div><div class="square" data-row="1" data-col="1" style="background-color: beige;"></div><div class="square" data-row="1" data-col="2" style="background-color: brown;"></div><div class="square" data-row="1" data-col="3" style="background-color: beige;"></div><div class="square" data-row="1" data-col="4" style="background-color: brown;"></div><div class="square" data-row="1" data-col="5" style="background-color: beige;"></div><div class="square" data-row="1" data-col="6" style="background-color: brown;"></div><div class="square" data-row="1" data-col="7" style="background-color: beige;"></div><div class="square" data-row="2" data-col="0" style="background-color: beige;"></div><div class="square" data-row="2" data-col="1" style="background-color: brown;"></div><div class="square" data-row="2" data-col="2" style="background-color: beige;"></div><div class="square" data-row="2" data-col="3" style="background-color: brown;"></div><div class="square" data-row="2" data-col="4" style="background-color: beige;"></div><div class="square" data-row="2" data-col="5" style="background-color: brown;"></div><div class="square" data-row="2" data-col="6" style="background-color: beige;"></div><div class="square" data-row="2" data-col="7" style="background-color: brown;"></div><div class="square" data-row="3" data-col="0" style="background-color: brown;"></div><div class="square" data-row="3" data-col="1" style="background-color: beige;"></div><div class="square" data-row="3" data-col="2" style="background-color: brown;"></div><div class="square" data-row="3" data-col="3" style="background-color: beige;"></div><div class="square" data-row="3" data-col="4" style="background-color: brown;"></div><div class="square" data-row="3" data-col="5" style="background-color: beige;"></div><div class="square" data-row="3" data-col="6" style="background-color: brown;"></div><div class="square" data-row="3" data-col="7" style="background-color: beige;"></div><div class="square" data-row="4" data-col="0" style="background-color: beige;"></div><div class="square" data-row="4" data-col="1" style="background-color: brown;"></div><div class="square" data-row="4" data-col="2" style="background-color: beige;"></div><div class="square" data-row="4" data-col="3" style="background-color: brown;"></div><div class="square" data-row="4" data-col="4" style="background-color: beige;"></div><div class="square" data-row="4" data-col="5" style="background-color: brown;"></div><div class="square" data-row="4" data-col="6" style="background-color: beige;"></div><div class="square" data-row="4" data-col="7" style="background-color: brown;"></div><div class="square" data-row="5" data-col="0" style="background-color: brown;"></div><div class="square" data-row="5" data-col="1" style="background-color: beige;"></div><div class="square" data-row="5" data-col="2" style="background-color: brown;"></div><div class="square" data-row="5" data-col="3" style="background-color: beige;"></div><div class="square" data-row="5" data-col="4" style="background-color: brown;"></div><div class="square" data-row="5" data-col="5" style="background-color: beige;"></div><div class="square" data-row="5" data-col="6" style="background-color: brown;"></div><div class="square" data-row="5" data-col="7" style="background-color: beige;"></div><div class="square" data-row="6" data-col="0" style="background-color: beige;"></div><div class="square" data-row="6" data-col="1" style="background-color: brown;"></div><div class="square" data-row="6" data-col="2" style="background-color: beige;"></div><div class="square" data-row="6" data-col="3" style="background-color: brown;"></div><div class="square" data-row="6" data-col="4" style="background-color: beige;"></div><div class="square" data-row="6" data-col="5" style="background-color: brown;"></div><div class="square" data-row="6" data-col="6" style="background-color: beige;"></div><div class="square" data-row="6" data-col="7" style="background-color: brown;"></div><div class="square" data-row="7" data-col="0" style="background-color: brown;"></div><div class="square" data-row="7" data-col="1" style="background-color: beige;"></div><div class="square" data-row="7" data-col="2" style="background-color: brown;"></div><div class="square" data-row="7" data-col="3" style="background-color: beige;"></div><div class="square" data-row="7" data-col="4" style="background-color: brown;"></div><div class="square" data-row="7" data-col="5" style="background-color: beige;"></div><div class="square" data-row="7" data-col="6" style="background-color: brown;"></div><div class="square" data-row="7" data-col="7" style="background-color: beige;"></div></div>
         
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
@@ -285,7 +244,7 @@ export function generateBundledHTML(model: Damier): string {
                     
                     for (const pos of positions) {
                         const piece = {
-                            id: \`p\${this.nextId++}\`,
+                            id: `p${this.nextId++}`,
                             name: cfg.name,
                             player: playerId,
                             color: cfg.color,
@@ -589,7 +548,7 @@ export function generateBundledHTML(model: Damier): string {
                 const legalMoves = this.game.getLegalMoves();
 
                 if (legalMoves.length === 0) {
-                    console.log(\`Bot (Player \${this.playerId}) has no legal moves\`);
+                    console.log(`Bot (Player ${this.playerId}) has no legal moves`);
                     return null;
                 }
 
@@ -599,7 +558,7 @@ export function generateBundledHTML(model: Damier): string {
                 const success = this.game.executeMove(selectedMove);
 
                 if (success) {
-                    console.log(\`Bot (Player \${this.playerId}) played:\`, selectedMove);
+                    console.log(`Bot (Player ${this.playerId}) played:`, selectedMove);
                     return selectedMove;
                 }
 
@@ -811,7 +770,7 @@ export function generateBundledHTML(model: Damier): string {
                     const piece = this.getPieceAt(row, col);
                     if (piece) {
                         const el = document.createElement('div');
-                        el.className = \`piece \${piece.color}\`;
+                        el.className = `piece ${piece.color}`;
                         el.textContent = piece.name[0].toUpperCase();
                         el.title = piece.name;
                         square.appendChild(el);
@@ -828,17 +787,17 @@ export function generateBundledHTML(model: Damier): string {
                 if (status) {
                     if (this.game.gameOver) {
                         const winner = this.game.winner !== null ? this.game.winner + 1 : 'unknown';
-                        const winnerName = this.mode === 'bvb' ? \`Bot \${winner}\` : 
+                        const winnerName = this.mode === 'bvb' ? `Bot ${winner}` : 
                                          (this.mode === 'pvb' && this.game.winner === 1) ? 'Bot' : 
-                                         \`Player \${winner}\`;
-                        status.textContent = \`🎉 \${winnerName} wins!\`;
+                                         `Player ${winner}`;
+                        status.textContent = `🎉 ${winnerName} wins!`;
                     } else if (this.isProcessing) {
                         status.textContent = '🤖 Bot is thinking...';
                     } else {
-                        const currentName = this.mode === 'bvb' ? \`Bot \${this.game.currentPlayer + 1}\` :
+                        const currentName = this.mode === 'bvb' ? `Bot ${this.game.currentPlayer + 1}` :
                                           (this.mode === 'pvb' && this.game.currentPlayer === 1) ? 'Bot' :
-                                          \`Player \${this.game.currentPlayer + 1}\`;
-                        status.textContent = \`\${currentName}'s turn\`;
+                                          `Player ${this.game.currentPlayer + 1}`;
+                        status.textContent = `${currentName}'s turn`;
                     }
                 }
 
@@ -850,10 +809,9 @@ export function generateBundledHTML(model: Damier): string {
         }
 
         // ===== INITIALIZE GAME =====
-        const config = ${configJson};
+        const config = {"boardSize":8,"direction":"diagonal","pieces":[{"name":"white","color":"white","quantity":12},{"name":"black","color":"black","quantity":12}]};
         const game = new Game(config.boardSize, config.direction, config.pieces);
         const ui = new UI(game);
     </script>
 </body>
-</html>`;
-}
+</html>
