@@ -268,48 +268,147 @@
                 const moves = [];
                 this.pieces.forEach((piece) => {
                     if (piece.player === this.currentPlayer) {
-                        moves.push(...this.getMovesForPiece(piece));
+                        const pieceMoves = this.getMovesForPiece(piece);
+                        if (pieceMoves.length > 0) {
+                            pieceMoves.forEach(m => {
+                                console.log('  Legal move:', piece.id, 'from', m.from, 'to', m.to, 'captures:', m.capturedIds ? m.capturedIds.length : 0);
+                            });
+                        }
+                        moves.push(...pieceMoves);
                     }
                 });
+                console.log('TOTAL LEGAL MOVES:', moves.length);
                 return moves;
             }
 
             getMovesForPiece(piece) {
                 const moves = [];
-                const dirs = this.direction === 'diagonal'
+                
+                // First check for capture moves (jumps)
+                const jumpMoves = this.getJumpMoves(piece, new Set());
+                
+                if (jumpMoves.length > 0) {
+                    console.log('Found', jumpMoves.length, 'jump moves');
+                    return jumpMoves; // Return all jumps (including chains)
+                }
+                
+                console.log('No jumps available, showing normal moves');
+                
+                // Otherwise allow normal moves
+                let dirs = this.direction === 'diagonal'
                     ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
                     : this.direction === 'orthogonal'
                         ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
                         : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
-                // Only check adjacent squares (one move only)
+                // Filter based on direction type
+                if (this.direction === 'diagonal') {
+                    // Diagonal: only forward (no backward)
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr]) => dr > 0);
+                    } else {
+                        dirs = dirs.filter(([dr]) => dr < 0);
+                    }
+                } else if (this.direction === 'orthogonal') {
+                    // Orthogonal: allow forward and sideways, but not backward
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
+                    } else {
+                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    }
+                }
+                // else: all-directions mode, no filtering needed
+
                 for (const [dr, dc] of dirs) {
                     const newRow = piece.row + dr;
                     const newCol = piece.col + dc;
 
-                    // Check if within bounds
                     if (newRow < 0 || newRow >= this.boardSize || newCol < 0 || newCol >= this.boardSize) {
                         continue;
                     }
 
                     const targetPiece = this.getPieceAt(newRow, newCol);
-
-                    // Empty square - can move
                     if (!targetPiece) {
                         moves.push({ 
                             from: { row: piece.row, col: piece.col }, 
                             to: { row: newRow, col: newCol } 
                         });
-                    } 
-                    // Opponent piece - can capture
-                    else if (targetPiece.player !== piece.player) {
-                        moves.push({
-                            from: { row: piece.row, col: piece.col },
-                            to: { row: newRow, col: newCol },
-                            capturedId: targetPiece.id,
-                        });
                     }
-                    // Own piece - blocked, skip
+                }
+
+                console.log('Returning', moves.length, 'normal moves');
+                return moves;
+            }
+
+            getJumpMoves(piece, capturedIds, originalFrom = null) {
+                // originalFrom keeps track of the ACTUAL piece starting position for chain jumps
+                if (originalFrom === null) {
+                    originalFrom = { row: piece.row, col: piece.col };
+                }
+                
+                const moves = [];
+                let dirs = this.direction === 'diagonal'
+                    ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+                    : this.direction === 'orthogonal'
+                        ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
+                        : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+
+                // Filter based on direction type
+                if (this.direction === 'diagonal') {
+                    // Diagonal: only forward jumps
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr]) => dr > 0);
+                    } else {
+                        dirs = dirs.filter(([dr]) => dr < 0);
+                    }
+                } else if (this.direction === 'orthogonal') {
+                    // Orthogonal: allow forward jumps and sideways jumps
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
+                    } else {
+                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    }
+                }
+                // else: all-directions mode, no filtering needed
+
+                for (const [dr, dc] of dirs) {
+                    const targetRow = piece.row + dr;
+                    const targetCol = piece.col + dc;
+                    const landRow = piece.row + dr * 2;
+                    const landCol = piece.col + dc * 2;
+
+                    if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
+                        continue;
+                    }
+
+                    const targetPiece = this.getPieceAt(targetRow, targetCol);
+                    
+                    if (targetPiece && targetPiece.player !== piece.player && !capturedIds.has(targetPiece.id)) {
+                        const landingPiece = this.getPieceAt(landRow, landCol);
+                        
+                        if (!landingPiece) {
+                            const newCapturedIds = new Set(capturedIds);
+                            newCapturedIds.add(targetPiece.id);
+                            
+                            // IMPORTANT: Use originalFrom, not piece.row/col!
+                            const jumpMove = {
+                                from: { row: originalFrom.row, col: originalFrom.col },
+                                to: { row: landRow, col: landCol },
+                                capturedIds: Array.from(newCapturedIds)
+                            };
+                            
+                            moves.push(jumpMove);
+                            
+                            // Check for chain jumps from the new position
+                            // Pass originalFrom through so chain jumps use it
+                            const tempPiece = { ...piece, row: landRow, col: landCol };
+                            const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
+                            
+                            if (chainMoves.length > 0) {
+                                moves.push(...chainMoves);
+                            }
+                        }
+                    }
                 }
 
                 return moves;
@@ -333,24 +432,69 @@
                 );
                 
                 if (!isLegal) {
-                    console.log('Illegal move attempt');
+                    console.log('Illegal move:', move);
                     return false;
                 }
 
                 const piece = this.getPieceAt(move.from.row, move.from.col);
-                if (!piece) return false;
+                if (!piece) {
+                    console.log('No piece at from position:', move.from);
+                    return false;
+                }
 
+                // Check distance to determine if it's a jump
+                const rowDist = Math.abs(move.to.row - move.from.row);
+                const colDist = Math.abs(move.to.col - move.from.col);
+                console.log('Move distance:', rowDist, colDist, 'from', move.from, 'to', move.to);
+
+                if (rowDist > 1 || colDist > 1) {
+                    // IT'S A JUMP - remove all pieces on the path
+                    console.log('JUMP DETECTED');
+                    
+                    // Calculate step direction
+                    const rowStep = move.to.row > move.from.row ? 1 : 
+                                   move.to.row < move.from.row ? -1 : 0;
+                    const colStep = move.to.col > move.from.col ? 1 : 
+                                   move.to.col < move.from.col ? -1 : 0;
+                    
+                    console.log('Step direction:', rowStep, colStep);
+                    
+                    // Walk each square on the path
+                    let row = move.from.row + rowStep;
+                    let col = move.from.col + colStep;
+                    
+                    while (row !== move.to.row || col !== move.to.col) {
+                        console.log('Checking path position:', row, col);
+                        const pathPiece = this.getPieceAt(row, col);
+                        
+                        if (pathPiece) {
+                            console.log('  Found piece:', pathPiece.id, 'player:', pathPiece.player);
+                            if (pathPiece.player !== piece.player) {
+                                this.pieces.delete(pathPiece.id);
+                                console.log('  DELETED opponent piece');
+                            } else {
+                                console.log('  Own piece, kept');
+                            }
+                        } else {
+                            console.log('  Empty square');
+                        }
+                        
+                        // Move to next square
+                        if (row !== move.to.row) row += rowStep;
+                        if (col !== move.to.col) col += colStep;
+                    }
+                }
+
+                // Move the piece
+                console.log('Moving piece to destination');
                 piece.row = move.to.row;
                 piece.col = move.to.col;
 
-                // Find and capture opponent piece if present
-                const targetPiece = this.getPieceAt(move.to.row, move.to.col);
-                if (targetPiece && targetPiece.id !== piece.id && targetPiece.player !== piece.player) {
-                    this.pieces.delete(targetPiece.id);
-                }
-
                 this.checkWin();
-                if (!this.gameOver) this.currentPlayer = 1 - this.currentPlayer;
+                if (!this.gameOver) {
+                    this.currentPlayer = 1 - this.currentPlayer;
+                    console.log('Turn switched to player:', this.currentPlayer);
+                }
                 return true;
             }
 
@@ -409,26 +553,68 @@
 
                 const rowStr = square.getAttribute('data-row');
                 const colStr = square.getAttribute('data-col');
-                
                 if (!rowStr || !colStr) return;
-                
+
                 const row = parseInt(rowStr, 10);
                 const col = parseInt(colStr, 10);
+                const clickedPiece = this.getPieceAt(row, col);
 
                 if (!this.selected) {
-                    const piece = this.getPieceAt(row, col);
-                    if (piece && piece.player === this.game.currentPlayer) {
-                        this.selected = piece;
+                    // Initial selection
+                    if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                        this.selected = clickedPiece;
+                        console.log('Selected piece:', clickedPiece.id, 'at', row, col);
                         this.render();
                     }
                 } else {
-                    const move = { 
-                        from: { row: this.selected.row, col: this.selected.col }, 
-                        to: { row, col } 
+                    // If clicking on another piece of same player => change selection
+                    if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                        this.selected = clickedPiece;
+                        console.log('Changed selection to:', clickedPiece.id);
+                        this.render();
+                        return;
+                    }
+
+                    // Try to move
+                    console.log('Attempting move from', this.selected.row, this.selected.col, 'to', row, col);
+                    
+                    const move = {
+                        from: { row: this.selected.row, col: this.selected.col },
+                        to: { row, col }
                     };
-                    if (this.game.executeMove(move)) {
+
+                    // Find the legal move that matches this destination
+                    const legalMoves = this.game.getLegalMoves();
+                    console.log('Legal moves available:', legalMoves.length);
+                    
+                    const matchingMove = legalMoves.find(m => 
+                        m.from.row === move.from.row &&
+                        m.from.col === move.from.col &&
+                        m.to.row === move.to.row &&
+                        m.to.col === move.to.col
+                    );
+
+                    if (matchingMove) {
+                        console.log('Found matching move! From', matchingMove.from, 'to', matchingMove.to);
+                        console.log('Captures:', matchingMove.capturedIds);
+                    } else {
+                        console.log('No matching move. Looking for from', move.from, 'to', move.to);
+                        console.log('Available moves from this piece:');
+                        legalMoves.forEach(m => {
+                            if (m.from.row === move.from.row && m.from.col === move.from.col) {
+                                console.log('  Can go to', m.to);
+                            }
+                        });
+                    }
+
+                    // Use the legal move (which has capturedIds if it's a jump)
+                    const moveToExecute = matchingMove || move;
+
+                    if (this.game.executeMove(moveToExecute)) {
                         this.selected = null;
                         this.render();
+                    } else {
+                        console.log('Move execution failed');
                     }
                 }
             }

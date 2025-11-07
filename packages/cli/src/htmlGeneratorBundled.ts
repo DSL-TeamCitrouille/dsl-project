@@ -343,12 +343,23 @@ export function generateBundledHTML(model: Damier): string {
                         ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
                         : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
-                // Only forward movement (no backward)
-                if (piece.player === 0) {
-                    dirs = dirs.filter(([dr]) => dr > 0);
-                } else {
-                    dirs = dirs.filter(([dr]) => dr < 0);
+                // Filter based on direction type
+                if (this.direction === 'diagonal') {
+                    // Diagonal: only forward (no backward)
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr]) => dr > 0);
+                    } else {
+                        dirs = dirs.filter(([dr]) => dr < 0);
+                    }
+                } else if (this.direction === 'orthogonal') {
+                    // Orthogonal: allow forward and sideways, but not backward
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
+                    } else {
+                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    }
                 }
+                // else: all-directions mode, no filtering needed
 
                 for (const [dr, dc] of dirs) {
                     const newRow = piece.row + dr;
@@ -384,12 +395,23 @@ export function generateBundledHTML(model: Damier): string {
                         ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
                         : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
-                // Only forward jumps
-                if (piece.player === 0) {
-                    dirs = dirs.filter(([dr]) => dr > 0);
-                } else {
-                    dirs = dirs.filter(([dr]) => dr < 0);
+                // Filter based on direction type
+                if (this.direction === 'diagonal') {
+                    // Diagonal: only forward jumps
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr]) => dr > 0);
+                    } else {
+                        dirs = dirs.filter(([dr]) => dr < 0);
+                    }
+                } else if (this.direction === 'orthogonal') {
+                    // Orthogonal: allow forward jumps and sideways jumps
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
+                    } else {
+                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    }
                 }
+                // else: all-directions mode, no filtering needed
 
                 for (const [dr, dc] of dirs) {
                     const targetRow = piece.row + dr;
