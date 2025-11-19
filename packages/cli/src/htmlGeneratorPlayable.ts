@@ -114,7 +114,7 @@ export function generateHTML(model: Damier): string {
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 1200px;
             width: 100%;
         }
 
@@ -161,6 +161,11 @@ export function generateHTML(model: Damier): string {
 
         .square.selected {
             box-shadow: inset 0 0 10px rgba(255, 200, 0, 0.8);
+            background-color: rgba(255, 200, 0, 0.2) !important;
+        }
+
+        .square.legalmoves {
+            box-shadow: inset 0 0 10px rgba(218, 76, 253, 0.8);
             background-color: rgba(255, 200, 0, 0.2) !important;
         }
 
@@ -424,6 +429,22 @@ export function generateHTML(model: Damier): string {
             cursor: not-allowed;
             transform: none;
         }
+
+        .toggle-hints-btn {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            }
+
+        .toggle-hints-btn:hover {
+            background-color: rgba(218, 76, 253, 0.4);
+        }
+
+        .toggle-hints-btn.active {
+            background-color: #da4cfd;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -435,7 +456,7 @@ export function generateHTML(model: Damier): string {
             <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
             <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
         </div>
-        
+        <button class="toggle-hints-btn">💡 Aide</button>
         <div class="status">Loading...</div>
         <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 20px;">
             <div class="board">${boardHTML}</div>

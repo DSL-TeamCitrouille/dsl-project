@@ -16,7 +16,7 @@ const packageContent = await fs.readFile(packagePath, 'utf-8');
 export const generateAction = async (source: string, destination: string): Promise<void> => {
     const services = createDamDamServices(NodeFileSystem).DamDam;
     const model = await extractAstNode<Damier>(source, services);
-    const generatedFilePath = generateOutput(model, source, destination);
+    const generatedFilePath = await generateOutput(model, source, destination);
     console.log(chalk.green(`Code generated succesfully: ${generatedFilePath}`));
 };
 
