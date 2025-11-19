@@ -12,6 +12,7 @@ export function generateBundledHTML(model: Damier): string {
     const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
     const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
     const direction = moveRule?.direction || 'any';
+  const dice = model.dice;
     
     // Map firstPlayer to player index
     let firstPlayerIndex = 0;
@@ -38,8 +39,28 @@ export function generateBundledHTML(model: Damier): string {
             const isDark = (r + c) % 2 === 1;
             const color = isDark ? darkColor : lightColor;
             boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
+    
         }
-    }
+  }
+  let diceHTML = dice ? generateDiceHTML(dice.faces):'';
+    if (dice) {
+    diceHTML = `
+        <div style="margin-left: 40px; min-width: 200px;">
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="color: #1e3c72; margin: 0 0 15px 0; text-align: center;">🎲 Dice</h3>
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div class="dice" data-faces="${dice.faces}" style="width: 40px; height: 40px; background: white; border: 3px solid #333; border-radius: 12px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.1s;">
+                        🎲
+                    </div>
+                </div>
+                <div class="dice-result"></div>
+                <button class="throw-button" style="width: 100%; padding: 12px; font-size: 14px; border: none; border-radius: 6px; background: #FF9800; color: white; cursor: pointer; font-weight: bold; transition: all 0.2s;">
+                    Throw Dice
+                </button>
+            </div>
+        </div>
+    `;
+      }
 
     // Serialize game config
     const gameConfig = {
@@ -50,8 +71,23 @@ export function generateBundledHTML(model: Damier): string {
             name: p.name,
             color: p.color,
             quantity: p.quantity,
+      dice: p.dice || null,
         })),
     };
+
+  function generateDiceHTML(faces: number): string {
+  return `
+    <div class="dice-container">
+        <h3 style="color: #1e3c72; margin: 0;">🎲 Dice</h3>
+        <div class="dice-display">
+            <div class="dice" data-faces="${faces}">
+            </div>
+        </div>
+        <div class="dice-result"></div>
+        <button class="throw-button">Throw Dice</button>
+    </div>
+  `;
+}
 
     const configJson = JSON.stringify(gameConfig);
 
@@ -84,7 +120,7 @@ export function generateBundledHTML(model: Damier): string {
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 1200px;
             width: 100%;
         }
 
@@ -367,39 +403,73 @@ export function generateBundledHTML(model: Damier): string {
                 font-size: 12px;
             }
         }
+
+        .dice.rolling {
+            animation: diceRoll 0.6s ease-in-out;
+        }
+
+        @keyframes diceRoll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg) scale(1.1); }
+        }
+
+        .throw-button:hover {
+            background: #F57C00 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .throw-button:active {
+            transform: translateY(0);
+        }
+
+        .throw-button:disabled {
+            background: #ccc !important;
+            cursor: not-allowed;
+            transform: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 ${model.name}</h1>
-        
-        <div class="mode-selector">
-            <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
-            <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
-            <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
-        </div>
-        
-        <div class="status">Loading...</div>
-        <div class="board">${boardHTML}</div>
-        
-        <div class="controls">
-            <button class="reset-btn">↻ Reset</button>
-            <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
-            <button class="forfait-btn">🏳️ Forfait</button>
-        </div>
+    <div class="board-wrapper">
+        <div class="container">
+            <h1>🎮 ${model.name}</h1>
 
-        <!-- Forfait Confirmation Modal -->
-        <div class="modal" id="forfaitModal">
-            <div class="modal-content">
-                <h2>Forfait Confirmation</h2>
-                <p>Are you sure you want to forfait? You will lose the game.</p>
-                <div class="modal-buttons">
-                    <button class="confirm-btn" id="confirmForfait">Yes, Forfait</button>
-                    <button class="cancel-btn" id="cancelForfait">No, Continue</button>
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
+                <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
+                <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
+            </div>
+
+            <div class="status">Loading...</div>
+            <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 20px;">
+                <div class="board">${boardHTML}</div>
+                <div class="dice-container">${diceHTML}</div>
+            </div>
+
+            <div class="controls">
+                <button class="reset-btn">↻ Reset</button>
+                <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
+                <button class="forfait-btn">🏳️ Forfait</button>
+            </div>
+            <!-- Forfait Confirmation Modal -->
+            <div class="modal" id="forfaitModal">
+                <div class="modal-content">
+                    <h2>Forfait Confirmation</h2>
+                    <p>Are you sure you want to forfait? You will lose the game.</p>
+                    <div class="modal-buttons">
+                        <button class="confirm-btn" id="confirmForfait">Yes, Forfait</button>
+                        <button class="cancel-btn" id="cancelForfait">No, Continue</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</body>
+
+
 
     <script>
         // ===== GAME ENGINE (Embedded) =====
@@ -1151,6 +1221,43 @@ export function generateBundledHTML(model: Damier): string {
         const config = ${configJson};
         const game = new Game(config.boardSize, config.direction, config.pieces, config.firstPlayer);
         const ui = new UI(game);
+
+        let isRolling = false;
+
+        function throwDice() {
+            const diceElement = document.querySelector('.dice');
+            const resultElement = document.querySelector('.dice-result');
+            const button = document.querySelector('.throw-button');
+            
+            if (!diceElement || !resultElement || !button) return;
+            if (isRolling) return;
+            
+            isRolling = true;
+            button.disabled = true;
+            resultElement.textContent = '';
+            diceElement.textContent = '🎲';
+
+            // Add rolling animation
+            diceElement.classList.add('rolling');
+
+            // Simulate dice roll
+            setTimeout(() => {
+                const faces = parseInt(diceElement.dataset.faces) || 6;
+                const result = Math.floor(Math.random() * faces) + 1;
+                
+                diceElement.classList.remove('rolling');
+                diceElement.textContent = result.toString();
+                
+                isRolling = false;
+                button.disabled = false;
+            }, 600);
+        }
+
+        // Attach event listener
+        const throwButton = document.querySelector('.throw-button');
+        if (throwButton) {
+            throwButton.addEventListener('click', throwDice);
+        }
     </script>
 </body>
 </html>`;
