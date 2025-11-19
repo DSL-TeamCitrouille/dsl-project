@@ -8,6 +8,8 @@ function createDiceThrower(
   return function throwDice() {
     if (isRolling) return;
 
+    
+
     const faces = parseInt(diceEl.dataset.faces || "6", 10);
 
     isRolling = true;

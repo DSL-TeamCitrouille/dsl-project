@@ -78,8 +78,8 @@ export function generateHTML(model: Damier): string {
             name: p.name,
             color: p.color,
             quantity: p.quantity,
-      dice: p.dice || null,
         })),
+        dice: dice ? { faces: dice.faces } : null,
     };
 
   const configJson = JSON.stringify(gameConfig);
@@ -458,7 +458,7 @@ export function generateHTML(model: Damier): string {
         </div>
         <button class="toggle-hints-btn">💡 Aide</button>
         <div class="status">Loading...</div>
-        <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 20px;">
+        <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px;">
             <div class="board">${boardHTML}</div>
             <div class="dice-container">${diceHTML}</div>
         </div>

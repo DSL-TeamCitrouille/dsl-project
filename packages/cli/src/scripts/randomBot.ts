@@ -52,6 +52,15 @@ export class Bot {
    * @returns Promise that resolves with the move that was made
    */
   async makeMoveWithDelay(delayMs: number = 500): Promise<Move | null> {
+    if (this.game.diceConfig && this.game.mustRollDice) {
+      const result = this.game.rollDice();
+      if (!result) return null;
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+    
+    if (this.game.diceConfig && this.game.movesRemaining <= 0) {
+      return null;
+    }
     await new Promise(resolve => setTimeout(resolve, delayMs));
     return this.makeMove();
   }

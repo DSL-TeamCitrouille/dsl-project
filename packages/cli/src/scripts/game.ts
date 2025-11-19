@@ -31,8 +31,12 @@ export class Game {
   pieces_config: any[];
   isCaptureManutory: boolean;
   nextId: number = 0;
+  diceConfig: { faces: number } | null = null;
+  diceResult: number | null = null;
+  movesRemaining: number;
+  mustRollDice: boolean;
 
-  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0,  isCaptureManutory: boolean = false) {
+  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0,  isCaptureManutory: boolean = false, diceConfig: { faces: number } | null = null) {
       this.boardSize = boardSize;
       this.pieces = new Map();
       this.firstPlayer = firstPlayer;
@@ -43,6 +47,10 @@ export class Game {
       this.pieces_config = pieces_config;
       this.isCaptureManutory = isCaptureManutory;
       this.nextId = 0;
+      this.diceConfig = diceConfig;
+      this.diceResult = null;
+      this.movesRemaining = 0;
+      this.mustRollDice = diceConfig !== null;
       this.initBoard();
   }
 
@@ -353,13 +361,23 @@ export class Game {
   }
 
     getPieceAt(row: number, col: number): Piece | null {
-        for (const piece of this.pieces.values()) {
-            if (piece.row === row && piece.col === col) return piece;
-        }
-        return null;
+      for (const piece of this.pieces.values()) {
+        if (piece.row === row && piece.col === col) return piece;
+      }
+      return null;
     }
 
     executeMove(move: Move): boolean {
+      if (this.diceConfig && this.mustRollDice) {
+        console.log("Must roll dice before moving!");
+        return false;
+      }
+
+      if (this.diceConfig && this.movesRemaining <= 0) {
+        console.log("No moves remaining! Roll the dice again.");
+        return false;
+      }
+
       // VALIDATE MOVE FIRST
       const legalMoves = this.getLegalMoves();
       const isLegal = legalMoves.some(m => 
@@ -401,16 +419,59 @@ export class Game {
           }
       }
 
-      this.checkWin();
-      if (!this.gameOver) {
-          if (this.pieces_config.length === 1) {
-              this.currentPlayer = 0; // toujours le joueur unique
-          } else {
+      // Decrement moves remaining if using dice
+      if (this.diceConfig) {
+        this.movesRemaining--;
+        
+        // If no moves left, switch to next player
+        if (this.movesRemaining <= 0) {
+          this.checkWin();
+          if (!this.gameOver) {
+            if (this.pieces_config.length === 1) {
+              this.currentPlayer = 0;
+            } else {
               this.currentPlayer = 1 - this.currentPlayer;
+            }
+            this.mustRollDice = true;
+            this.diceResult = null;
           }
+        }
+      } else {
+        // Normal game without dice
+        this.checkWin();
+        if (!this.gameOver) {
+            if (this.pieces_config.length === 1) {
+                this.currentPlayer = 0;
+            } else {
+                this.currentPlayer = 1 - this.currentPlayer;
+            }
+        }
       }
+      
       return true;
   }
+
+  rollDice(): number | null {
+    if (!this.diceConfig || typeof this.diceConfig.faces !== "number") {
+        console.error("Invalid dice configuration");
+        return null;
+    }
+
+    if (!this.mustRollDice) {
+        console.log("Already rolled dice for this turn!");
+        return null;
+    }
+
+    const result: number = Math.floor(Math.random() * this.diceConfig.faces) + 1;
+
+    this.diceResult = result;        // doit être de type number | null
+    this.movesRemaining = result;    // doit être de type number | null
+    this.mustRollDice = false;
+
+    console.log(`Dice rolled: ${result}. You have ${result} moves.`);
+    return result;
+}
+
 
     checkWin(): void {
         if (this.pieces_config.length === 1) {
@@ -466,5 +527,8 @@ export class Game {
         this.winner = null;
         this.nextId = 0;
         this.initBoard();
+        this.diceResult = null;
+        this.movesRemaining = 0;
+        this.mustRollDice = this.diceConfig !== null;
     }
 }

@@ -131,6 +131,17 @@ export class UI {
         // In pvb mode, disable clicks when it's bot's turn
         if (this.mode === 'pvb' && this.game.currentPlayer === 1) return;
 
+        if (this.game.diceConfig && this.game.mustRollDice) {
+            this.updateStatus('⚠️ You must roll the dice first!');
+            return;
+        }
+
+        // NOUVEAU : If no moves remaining, prevent moves
+        if (this.game.diceConfig && this.game.movesRemaining <= 0) {
+            this.updateStatus('⚠️ No moves remaining! Roll the dice again.');
+            return;
+        }
+
         const target = e.target as HTMLElement;
         const square = target?.closest?.('.square') as HTMLElement;
         if (!square) return;
@@ -184,6 +195,16 @@ export class UI {
         }
     }
 
+    updateStatus(message : string): void {
+        const status = document.querySelector('.status');
+        if (status) {
+            status.textContent = message;
+            setTimeout(() => {
+                this.render(); // Restore normal status
+            }, 2000);
+        }
+    }
+
     private async triggerBotMove(): Promise<void> {
         if (this.isProcessing || this.game.gameOver) return;
 
@@ -198,7 +219,7 @@ export class UI {
         this.render();
     }
 
-    private async checkBotTurn(): Promise<void> {
+    public async checkBotTurn(): Promise<void> {
         if (this.game.gameOver || this.isProcessing) return;
 
         if (this.mode === 'bvb') {
@@ -289,6 +310,8 @@ export class UI {
 
         const status = document.querySelector('.status') as HTMLElement;
         const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
+        const diceResult = document.querySelector('.dice-result') as HTMLElement;
+        const throwButton = document.querySelector('.throw-button') as HTMLButtonElement;
 
         if (status) {
             if (this.game.gameOver) {
@@ -303,10 +326,41 @@ export class UI {
                 const currentName = this.mode === 'bvb' ? `Bot ${this.game.currentPlayer + 1}` :
                     (this.mode === 'pvb' && this.game.currentPlayer === 1) ? 'Bot' :
                         `Player ${this.game.currentPlayer + 1}`;
-                status.textContent = `${currentName}'s turn`;
-            }
-        }
+                if (this.game.diceConfig) {
+                            if (this.game.mustRollDice) {
+                                status.textContent = `${currentName}'s turn - 🎲 Roll the dice!`;
+                            } else {
+                                status.textContent = `${currentName}'s turn - ${this.game.movesRemaining} move(s) left`;
+                            }
+                        } else {
+                            status.textContent = `${currentName}'s turn`;
+                        }
+                        
+                    }
+                }
+                
+                if (diceResult && this.game.diceConfig) {
+                    if (this.game.diceResult !== null && !this.game.mustRollDice) {
+                        diceResult.innerHTML = `
+                            <div style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-weight: bold; color: #333;">
+                                Result: ${this.game.diceResult}<br>
+                                <span style="font-size: 12px; color: #666;">Moves left: ${this.game.movesRemaining}</span>
+                            </div>
+                        `;
+                    } else {
+                        diceResult.innerHTML = '';
+                    }
+                }
 
+                if (throwButton && this.game.diceConfig) {
+                    const shouldDisable = this.isProcessing || 
+                                        this.game.gameOver || 
+                                        !this.game.mustRollDice ||
+                                        (this.mode === 'pvb' && this.game.currentPlayer === 1) ||
+                                        this.mode === 'bvb';
+                    throwButton.disabled = shouldDisable;
+                }
+        
         if (botBtn) {
             botBtn.disabled = this.isProcessing || this.game.gameOver ||
                 this.mode !== 'pvb' || this.game.currentPlayer !== 1;
