@@ -62,6 +62,9 @@ export function generateBundledHTML(model: Damier): string {
     `;
     }
 
+    // Extract capture rule for mandatory capture
+    const captureRule = model.rules.rule.find((r: any): r is any => 'mandatory' in r);
+    const isCaptureManutory = captureRule?.mandatory ?? false;
     // Serialize game config
     const gameConfig = {
         boardSize: size,
@@ -73,6 +76,7 @@ export function generateBundledHTML(model: Damier): string {
             quantity: p.quantity,
             dice: p.dice || null,
         })),
+        isCaptureManutory,
     };
 
     function generateDiceHTML(faces: number): string {
@@ -495,7 +499,7 @@ export function generateBundledHTML(model: Damier): string {
     <script>
         // ===== GAME ENGINE (Embedded) =====
         class Game {
-            constructor(boardSize, direction, pieces_config, firstPlayer = 0) {
+            constructor(boardSize, direction, pieces_config, firstPlayer = 0, isCaptureManutory = false) {
                 this.boardSize = boardSize;
                 this.pieces = new Map();
                 this.firstPlayer = firstPlayer;
@@ -504,6 +508,7 @@ export function generateBundledHTML(model: Damier): string {
                 this.winner = null;
                 this.direction = direction;
                 this.pieces_config = pieces_config;
+                this.isCaptureManutory = isCaptureManutory;
                 this.nextId = 0;
                 this.initBoard();
             }
@@ -612,8 +617,15 @@ export function generateBundledHTML(model: Damier): string {
                 // First check for capture moves (jumps)
                 const jumpMoves = this.getJumpMoves(piece, new Set());
                 
+                                // If capture is mandatory and this piece can capture, return ONLY capture moves
+                if (this.isCaptureManutory && jumpMoves.length > 0) {
+                    return jumpMoves; // Must capture if possible
+                }
+                
+                // If capture is NOT mandatory, return captures along with regular moves
+                // This gives the player freedom to choose
                 if (jumpMoves.length > 0) {
-                    return jumpMoves; // Return all jumps (including chains)
+                    moves.push(...jumpMoves); // Add all jumps
                 }
                 
                 // Otherwise allow normal moves
@@ -1267,7 +1279,7 @@ export function generateBundledHTML(model: Damier): string {
 
         // ===== INITIALIZE GAME =====
         const config = ${configJson};
-        const game = new Game(config.boardSize, config.direction, config.pieces, config.firstPlayer);
+        const game = new Game(config.boardSize, config.direction, config.pieces, config.firstPlayer, config.isCaptureManutory);
         const ui = new UI(game);
 
         let isRolling = false;

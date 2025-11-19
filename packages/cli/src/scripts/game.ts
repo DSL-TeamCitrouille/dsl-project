@@ -29,9 +29,10 @@ export class Game {
   winner: number | null = null;
   direction: string;
   pieces_config: any[];
+  isCaptureManutory: boolean;
   nextId: number = 0;
 
-  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0) {
+  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0,  isCaptureManutory: boolean = false) {
       this.boardSize = boardSize;
       this.pieces = new Map();
       this.firstPlayer = firstPlayer;
@@ -40,6 +41,7 @@ export class Game {
       this.winner = null;
       this.direction = direction;
       this.pieces_config = pieces_config;
+      this.isCaptureManutory = isCaptureManutory;
       this.nextId = 0;
       this.initBoard();
   }
@@ -149,8 +151,15 @@ export class Game {
     // First check for capture moves (jumps)
     const jumpMoves = this.getJumpMoves(piece, new Set());
     
+     // If capture is mandatory and this piece can capture, return ONLY capture moves
+    if (this.isCaptureManutory && jumpMoves.length > 0) {
+        return jumpMoves; // Must capture if possible
+    }
+    
+    // If capture is NOT mandatory, return captures along with regular moves
+    // This gives the player freedom to choose
     if (jumpMoves.length > 0) {
-        return jumpMoves; // Return all jumps (including chains)
+        moves.push(...jumpMoves); // Add all jumps
     }
     
     // Otherwise allow normal moves
