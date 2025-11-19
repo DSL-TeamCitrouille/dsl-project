@@ -1,263 +1,315 @@
-import { Game, Move, Piece } from "./game.js";
+import { Game, Piece } from "./game.js";
 import { Bot } from "./randomBot.js";
 
+type GameMode = 'pvp' | 'pvb' | 'bvb';
 
-export type Mode = 'pvp' | 'pvb' | 'bvb';
+interface Position {
+    row: number;
+    col: number;
+}
 
 export class UI {
-  game: Game;
-  selected: Piece | null = null;
-  mode: Mode = 'pvp';
-  bot1: Bot;
-  bot0: Bot;
-  isProcessing: boolean = false;
-  stopBotLoop: boolean = false;
+    private game: Game;
+    private selected: Piece | null = null;
+    private mode: GameMode = 'pvp';
+    private bot1: Bot;
+    private bot0: Bot;
+    private isProcessing: boolean = false;
+    private stopBotLoop: boolean = false;
+    private showLegalMoves: boolean = true;
 
-  // Boutons typés pour éviter les redeclarations
-  private botBtn: HTMLButtonElement | null = null;
-  private resetBtn: HTMLButtonElement | null = null;
-  private forfaitBtn: HTMLButtonElement | null = null;
-  private confirmForfait: HTMLButtonElement | null = null;
-  private cancelForfait: HTMLButtonElement | null = null;
-
-  constructor(game: Game) {
-    this.game = game;
-    this.bot1 = new Bot(game, 1);
-    this.bot0 = new Bot(game, 0);
-
-    this.botBtn = document.querySelector<HTMLButtonElement>('.bot-btn');
-    this.resetBtn = document.querySelector<HTMLButtonElement>('.reset-btn');
-    this.forfaitBtn = document.querySelector<HTMLButtonElement>('.forfait-btn');
-    this.confirmForfait = document.getElementById('confirmForfait') as HTMLButtonElement | null;
-    this.cancelForfait = document.getElementById('cancelForfait') as HTMLButtonElement | null;
-
-    this.setupEvents();
-    this.render();
-  }
-
-  setupEvents() {
-    const squares = document.querySelectorAll<HTMLElement>('.square');
-    squares.forEach((square) => {
-      square.addEventListener('click', (e) => this.handleClick(e));
-    });
-
-    this.resetBtn?.addEventListener('click', () => {
-      this.game.reset();
-      this.selected = null;
-      this.render();
-      this.checkBotTurn();
-    });
-
-    this.botBtn?.addEventListener('click', async () => {
-      await this.triggerBotMove();
-    });
-
-    const forfaitModal = document.getElementById('forfaitModal');
-
-    this.forfaitBtn?.addEventListener('click', () => {
-      if (!this.game.gameOver && forfaitModal) {
-        forfaitModal.classList.add('active');
-      }
-    });
-
-    this.confirmForfait?.addEventListener('click', () => {
-      this.stopBotLoop = true;
-      this.game.forceEndGame();
-      this.selected = null;
-      forfaitModal?.classList.remove('active');
-      this.render();
-    });
-
-    this.cancelForfait?.addEventListener('click', () => {
-      forfaitModal?.classList.remove('active');
-    });
-
-    const modeBtns = document.querySelectorAll<HTMLElement>('.mode-btn');
-    modeBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const newMode = btn.dataset.mode as Mode;
-        if (newMode) this.setMode(newMode);
-      });
-    });
-  }
-
-  setMode(newMode: Mode) {
-    this.stopBotLoop = true;
-    this.mode = newMode;
-    this.game.reset();
-    this.selected = null;
-
-    const modeBtns = document.querySelectorAll<HTMLElement>('.mode-btn');
-    modeBtns.forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.mode === newMode);
-    });
-
-    if (this.botBtn) this.botBtn.style.display = newMode === 'pvb' ? 'inline-block' : 'none';
-
-    this.render();
-
-    setTimeout(() => {
-      this.stopBotLoop = false;
-      this.checkBotTurn();
-    }, 100);
-  }
-
-  async handleClick(e: Event) {
-    if (this.isProcessing || this.game.gameOver) return;
-    if (this.mode === 'bvb') return;
-    if (this.mode === 'pvb' && this.game.currentPlayer === 1) return;
-
-    const target = e.target as HTMLElement;
-    const square = target.closest<HTMLElement>('.square');
-    if (!square) return;
-
-    const row = parseInt(square.dataset.row || '', 10);
-    const col = parseInt(square.dataset.col || '', 10);
-    if (isNaN(row) || isNaN(col)) return;
-
-    const clickedPiece = this.getPieceAt(row, col);
-
-    if (!this.selected) {
-      if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
-        this.selected = clickedPiece;
+    constructor(game: Game) {
+        this.game = game;
+        this.bot1 = new Bot(game, 1);
+        this.bot0 = new Bot(game, 0);
+        this.setupEvents();
         this.render();
-      }
-    } else {
-      if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
-        this.selected = clickedPiece;
-        this.render();
-        return;
-      }
-
-      const move: Partial<Move> = {
-        from: { row: this.selected.row, col: this.selected.col },
-        to: { row, col },
-      };
-
-      const legalMoves = this.game.getLegalMoves();
-      const matchingMove = legalMoves.find(
-        (m) =>
-          m.from.row === move.from?.row &&
-          m.from.col === move.from?.col &&
-          m.to.row === move.to?.row &&
-          m.to.col === move.to?.col
-      );
-
-      const moveToExecute = matchingMove || { ...move, capturedIds: [] } as Move;
-
-      if (this.game.executeMove(moveToExecute)) {
-        this.selected = null;
-        this.render();
-        await this.checkBotTurn();
-      }
-    }
-  }
-
-  async triggerBotMove() {
-    if (this.isProcessing || this.game.gameOver) return;
-
-    this.isProcessing = true;
-    this.render();
-
-    if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
-      await this.bot1.makeMoveWithDelay(500);
     }
 
-    this.isProcessing = false;
-    this.render();
-  }
+    private setupEvents(): void {
+        const squares = document.querySelectorAll('.square');
+        squares.forEach((square) => {
+            square.addEventListener('click', (e) => this.handleClick(e as MouseEvent));
+        });
 
-  async checkBotTurn() {
-    if (this.game.gameOver || this.isProcessing) return;
-
-    if (this.mode === 'bvb') {
-      this.isProcessing = true;
-      this.stopBotLoop = false;
-
-      while (!this.game.gameOver && !this.stopBotLoop && this.mode === 'bvb') {
-        this.render();
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        if (this.stopBotLoop || this.mode !== 'bvb') break;
-
-        if (this.game.currentPlayer === 0) {
-          await this.bot0.makeMoveWithDelay(100);
-        } else {
-          await this.bot1.makeMoveWithDelay(100);
+        const resetBtn = document.querySelector('.reset-btn') as HTMLButtonElement;
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.game.reset();
+                this.selected = null;
+                this.render();
+                this.checkBotTurn();
+            });
         }
-      }
 
-      this.isProcessing = false;
-      this.render();
-    } else if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
-      this.isProcessing = true;
-      this.render();
-      await this.bot1.makeMoveWithDelay(500);
-      this.isProcessing = false;
-      this.render();
-    }
-  }
+        const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
+        if (botBtn) {
+            botBtn.addEventListener('click', async () => {
+                await this.triggerBotMove();
+            });
+        }
 
-  getPieceAt(row: number, col: number): Piece | null {
-    for (const piece of this.game.pieces.values()) {
-      if (piece.row === row && piece.col === col) return piece;
-    }
-    return null;
-  }
+        const toggleHintsBtn = document.querySelector('.toggle-hints-btn') as HTMLButtonElement;
+        if (toggleHintsBtn) {
+            toggleHintsBtn.classList.add('active');
+            toggleHintsBtn.addEventListener('click', () => {
+                this.showLegalMoves = !this.showLegalMoves;
+                toggleHintsBtn.classList.toggle('active');
+                toggleHintsBtn.textContent = this.showLegalMoves ? '💡 Aide' : '💡 Aide (désactivée)';
+                this.render();
+            });
+        }
 
-  render() {
-    const squares = document.querySelectorAll<HTMLElement>('.square');
+        const forfaitBtn = document.querySelector('.forfait-btn') as HTMLButtonElement;
+        const forfaitModal = document.getElementById('forfaitModal') as HTMLElement;
+        const confirmForfait = document.getElementById('confirmForfait') as HTMLButtonElement;
+        const cancelForfait = document.getElementById('cancelForfait') as HTMLButtonElement;
 
-    squares.forEach((square) => {
-      const row = parseInt(square.dataset.row || '', 10);
-      const col = parseInt(square.dataset.col || '', 10);
-      if (isNaN(row) || isNaN(col)) return;
+        if (forfaitBtn) {
+            forfaitBtn.addEventListener('click', () => {
+                if (!this.game.gameOver) {
+                    forfaitModal?.classList.add('active');
+                }
+            });
+        }
 
-      square.innerHTML = '';
-      square.classList.remove('selected');
+        if (confirmForfait) {
+            confirmForfait.addEventListener('click', () => {
+                this.stopBotLoop = true;
+                this.game.forceEndGame();
+                this.selected = null;
+                forfaitModal?.classList.remove('active');
+                this.render();
+            });
+        }
 
-      const piece = this.getPieceAt(row, col);
-      if (piece) {
-        const el = document.createElement('div');
-        el.className = `piece ${piece.color}`;
-        if (piece.isQueen) el.classList.add('queen');
-        el.title = piece.isQueen ? `${piece.name} (Queen)` : piece.name;
-        square.appendChild(el);
-      }
+        if (cancelForfait) {
+            cancelForfait.addEventListener('click', () => {
+                forfaitModal?.classList.remove('active');
+            });
+        }
 
-      if (this.selected?.row === row && this.selected?.col === col) {
-        square.classList.add('selected');
-      }
-    });
-
-    const status = document.querySelector<HTMLElement>('.status');
-
-    if (status) {
-      if (this.game.gameOver) {
-        const winner = this.game.winner !== null ? this.game.winner + 1 : 'unknown';
-        const winnerName =
-          this.mode === 'bvb'
-            ? `Bot ${winner}`
-            : this.mode === 'pvb' && this.game.winner === 1
-            ? 'Bot'
-            : `Player ${winner}`;
-        status.textContent = `🎉 ${winnerName} wins!`;
-      } else if (this.isProcessing) {
-        status.textContent = '🤖 Bot is thinking...';
-      } else {
-        const currentName =
-          this.mode === 'bvb'
-            ? `Bot ${this.game.currentPlayer + 1}`
-            : this.mode === 'pvb' && this.game.currentPlayer === 1
-            ? 'Bot'
-            : `Player ${this.game.currentPlayer + 1}`;
-        status.textContent = `${currentName}'s turn`;
-      }
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const newMode = (btn as HTMLElement).dataset.mode as GameMode;
+                this.setMode(newMode);
+            });
+        });
     }
 
-    if (this.botBtn) {
-      this.botBtn.disabled =
-        this.isProcessing || this.game.gameOver || this.mode !== 'pvb' || this.game.currentPlayer !== 1;
+    private setMode(newMode: GameMode): void {
+        this.stopBotLoop = true;
+        this.mode = newMode;
+        this.game.reset();
+        this.selected = null;
+
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        modeBtns.forEach(btn => {
+            btn.classList.toggle('active', (btn as HTMLElement).dataset.mode === newMode);
+        });
+
+        const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
+        if (botBtn) {
+            botBtn.style.display = newMode === 'pvb' ? 'inline-block' : 'none';
+        }
+
+        this.render();
+
+        setTimeout(() => {
+            this.stopBotLoop = false;
+            this.checkBotTurn();
+        }, 100);
     }
-  }
+
+    private async handleClick(e: MouseEvent): Promise<void> {
+        if (this.isProcessing || this.game.gameOver) return;
+
+        // Disable clicks in bot vs bot mode
+        if (this.mode === 'bvb') return;
+
+        // In pvb mode, disable clicks when it's bot's turn
+        if (this.mode === 'pvb' && this.game.currentPlayer === 1) return;
+
+        const target = e.target as HTMLElement;
+        const square = target?.closest?.('.square') as HTMLElement;
+        if (!square) return;
+
+        const rowStr = square.getAttribute('data-row');
+        const colStr = square.getAttribute('data-col');
+
+        if (!rowStr || !colStr) return;
+
+        const row = parseInt(rowStr, 10);
+        const col = parseInt(colStr, 10);
+        const clickedPiece = this.getPieceAt(row, col);
+
+        if (!this.selected) {
+            // Initial selection
+            if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                this.selected = clickedPiece;
+                this.render();
+            }
+        } else {
+            // If clicking on another piece of same player => change selection
+            if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                this.selected = clickedPiece;
+                this.render();
+                return;
+            }
+
+            // Try to move
+            const move = {
+                from: { row: this.selected.row, col: this.selected.col },
+                to: { row, col }
+            };
+
+            // Find the legal move that matches this destination
+            const legalMoves = this.game.getLegalMoves();
+            const matchingMove = legalMoves.find(m =>
+                m.from.row === move.from.row &&
+                m.from.col === move.from.col &&
+                m.to.row === move.to.row &&
+                m.to.col === move.to.col
+            );
+
+            // Use the legal move (which has capturedIds if it's a jump)
+            const moveToExecute = matchingMove || move;
+
+            if (this.game.executeMove(moveToExecute)) {
+                this.selected = null;
+                this.render();
+                await this.checkBotTurn();
+            }
+        }
+    }
+
+    private async triggerBotMove(): Promise<void> {
+        if (this.isProcessing || this.game.gameOver) return;
+
+        this.isProcessing = true;
+        this.render();
+
+        if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
+            await this.bot1.makeMoveWithDelay(500);
+        }
+
+        this.isProcessing = false;
+        this.render();
+    }
+
+    private async checkBotTurn(): Promise<void> {
+        if (this.game.gameOver || this.isProcessing) return;
+
+        if (this.mode === 'bvb') {
+            // Bot vs Bot mode - both bots play
+            this.isProcessing = true;
+            this.stopBotLoop = false;
+
+            while (!this.game.gameOver && !this.stopBotLoop && this.mode === 'bvb') {
+                this.render();
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                if (this.stopBotLoop || this.mode !== 'bvb') break;
+
+                if (this.game.currentPlayer === 0) {
+                    await this.bot0.makeMoveWithDelay(100);
+                } else {
+                    await this.bot1.makeMoveWithDelay(100);
+                }
+
+                if (this.game.gameOver || this.stopBotLoop || this.mode !== 'bvb') break;
+            }
+
+            this.isProcessing = false;
+            this.render();
+        } else if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
+            // Player vs Bot mode - bot plays as player 1
+            this.isProcessing = true;
+            this.render();
+            await this.bot1.makeMoveWithDelay(500);
+            this.isProcessing = false;
+            this.render();
+        }
+    }
+
+    private getPieceAt(row: number, col: number): Piece | null {
+        for (const piece of this.game.pieces.values()) {
+            if (piece.row === row && piece.col === col) return piece;
+        }
+        return null;
+    }
+
+    public render(): void {
+        let legalDestinations: Position[] = [];
+        if (this.selected && this.showLegalMoves) {
+            const allLegalMoves = this.game.getLegalMoves();
+            legalDestinations = allLegalMoves
+                .filter(m =>
+                    m.from.row === this.selected!.row &&
+                    m.from.col === this.selected!.col
+                )
+                .map(m => ({ row: m.to.row, col: m.to.col }));
+        }
+
+        const squares = document.querySelectorAll('.square');
+
+        squares.forEach((sq) => {
+            const square = sq as HTMLElement;
+            const rowStr = square.getAttribute('data-row');
+            const colStr = square.getAttribute('data-col');
+
+            if (!rowStr || !colStr) return;
+
+            const row = parseInt(rowStr, 10);
+            const col = parseInt(colStr, 10);
+
+            square.innerHTML = '';
+            square.classList.remove('selected', 'legalmoves');
+
+            const piece = this.getPieceAt(row, col);
+            if (piece) {
+                const el = document.createElement('div');
+                el.className = `piece ${piece.color}`;
+                if (piece.isQueen) {
+                    el.classList.add('queen');
+                }
+                el.title = piece.isQueen ? piece.name + ' (Queen)' : piece.name;
+                square.appendChild(el);
+            }
+
+            if (this.selected && this.selected.row === row && this.selected.col === col) {
+                square.classList.add('selected');
+            }
+
+            if (this.showLegalMoves && legalDestinations.some(dest => dest.row === row && dest.col === col)) {
+                square.classList.add('legalmoves');
+            }
+        });
+
+        const status = document.querySelector('.status') as HTMLElement;
+        const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
+
+        if (status) {
+            if (this.game.gameOver) {
+                const winner = this.game.winner !== null ? this.game.winner + 1 : 'unknown';
+                const winnerName = this.mode === 'bvb' ? `Bot ${winner}` :
+                    (this.mode === 'pvb' && this.game.winner === 1) ? 'Bot' :
+                        `Player ${winner}`;
+                status.textContent = `🎉 ${winnerName} wins!`;
+            } else if (this.isProcessing) {
+                status.textContent = '🤖 Bot is thinking...';
+            } else {
+                const currentName = this.mode === 'bvb' ? `Bot ${this.game.currentPlayer + 1}` :
+                    (this.mode === 'pvb' && this.game.currentPlayer === 1) ? 'Bot' :
+                        `Player ${this.game.currentPlayer + 1}`;
+                status.textContent = `${currentName}'s turn`;
+            }
+        }
+
+        if (botBtn) {
+            botBtn.disabled = this.isProcessing || this.game.gameOver ||
+                this.mode !== 'pvb' || this.game.currentPlayer !== 1;
+        }
+    }
 }

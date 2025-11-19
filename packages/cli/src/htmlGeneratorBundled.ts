@@ -12,15 +12,15 @@ export function generateBundledHTML(model: Damier): string {
     const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
     const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
     const direction = moveRule?.direction || 'any';
-  const dice = model.dice;
-    
+    const dice = model.dice;
+
     // Map firstPlayer to player index
     let firstPlayerIndex = 0;
     if (playerRule?.firstPlayer) {
         const firstPlayerName = playerRule.firstPlayer;
         // Find the index of the piece with matching color/name
-        const pieceIndex = model.pieces.piece.findIndex((p: any) => 
-            p.name?.toLowerCase() === firstPlayerName?.toLowerCase() || 
+        const pieceIndex = model.pieces.piece.findIndex((p: any) =>
+            p.name?.toLowerCase() === firstPlayerName?.toLowerCase() ||
             p.color?.toLowerCase() === firstPlayerName?.toLowerCase()
         );
         firstPlayerIndex = pieceIndex >= 0 ? pieceIndex : 0;
@@ -39,12 +39,12 @@ export function generateBundledHTML(model: Damier): string {
             const isDark = (r + c) % 2 === 1;
             const color = isDark ? darkColor : lightColor;
             boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
-    
+
         }
-  }
-  let diceHTML = dice ? generateDiceHTML(dice.faces):'';
+    }
+    let diceHTML = dice ? generateDiceHTML(dice.faces) : '';
     if (dice) {
-    diceHTML = `
+        diceHTML = `
         <div style="margin-left: 40px; min-width: 200px;">
             <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <h3 style="color: #1e3c72; margin: 0 0 15px 0; text-align: center;">🎲 Dice</h3>
@@ -60,7 +60,7 @@ export function generateBundledHTML(model: Damier): string {
             </div>
         </div>
     `;
-      }
+    }
 
     // Serialize game config
     const gameConfig = {
@@ -71,12 +71,12 @@ export function generateBundledHTML(model: Damier): string {
             name: p.name,
             color: p.color,
             quantity: p.quantity,
-      dice: p.dice || null,
+            dice: p.dice || null,
         })),
     };
 
-  function generateDiceHTML(faces: number): string {
-  return `
+    function generateDiceHTML(faces: number): string {
+        return `
     <div class="dice-container">
         <h3 style="color: #1e3c72; margin: 0;">🎲 Dice</h3>
         <div class="dice-display">
@@ -87,7 +87,7 @@ export function generateBundledHTML(model: Damier): string {
         <button class="throw-button">Throw Dice</button>
     </div>
   `;
-}
+    }
 
     const configJson = JSON.stringify(gameConfig);
 
@@ -167,6 +167,11 @@ export function generateBundledHTML(model: Damier): string {
 
         .square.selected {
             box-shadow: inset 0 0 10px rgba(255, 200, 0, 0.8);
+            background-color: rgba(255, 200, 0, 0.2) !important;
+        }
+
+        .square.legalmoves {
+            box-shadow: inset 0 0 10px rgba(218, 76, 253, 0.8);
             background-color: rgba(255, 200, 0, 0.2) !important;
         }
 
@@ -430,6 +435,22 @@ export function generateBundledHTML(model: Damier): string {
             cursor: not-allowed;
             transform: none;
         }
+        
+        .toggle-hints-btn {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            }
+
+        .toggle-hints-btn:hover {
+            background-color: rgba(218, 76, 253, 0.4);
+        }
+
+        .toggle-hints-btn.active {
+            background-color: #da4cfd;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -442,7 +463,7 @@ export function generateBundledHTML(model: Damier): string {
                 <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
                 <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
             </div>
-
+            <button class="toggle-hints-btn">💡 Aide</button>
             <div class="status">Loading...</div>
             <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 20px;">
                 <div class="board">${boardHTML}</div>
@@ -950,7 +971,7 @@ export function generateBundledHTML(model: Damier): string {
                 this.bot0 = new Bot(game, 0);
                 this.isProcessing = false;
                 this.stopBotLoop = false;
-                
+                this.showLegalMoves = true; 
                 this.setupEvents();
                 this.render();
             }
@@ -978,6 +999,17 @@ export function generateBundledHTML(model: Damier): string {
                     });
                 }
                 
+                const toggleHintsBtn = document.querySelector('.toggle-hints-btn');
+                if (toggleHintsBtn) {
+                    toggleHintsBtn.classList.add('active'); // Actif par défaut
+                    toggleHintsBtn.addEventListener('click', () => {
+                        this.showLegalMoves = !this.showLegalMoves;
+                        toggleHintsBtn.classList.toggle('active');
+                        toggleHintsBtn.textContent = this.showLegalMoves ? '💡 Aide' : '💡 Aide (désactivée)';
+                        this.render();
+                    });
+                }
+
                 const forfaitBtn = document.querySelector('.forfait-btn');
                 const forfaitModal = document.getElementById('forfaitModal');
                 const confirmForfait = document.getElementById('confirmForfait');
@@ -1159,8 +1191,20 @@ export function generateBundledHTML(model: Damier): string {
             }
 
             render() {
-                const squares = document.querySelectorAll('.square');
                 
+                let legalDestinations = [];
+                if (this.selected && this.showLegalMoves) {
+                    const allLegalMoves = this.game.getLegalMoves();
+                    legalDestinations = allLegalMoves
+                        .filter(m => 
+                            m.from.row === this.selected.row && 
+                            m.from.col === this.selected.col
+                        )
+                        .map(m => ({ row: m.to.row, col: m.to.col }));
+                }
+
+                const squares = document.querySelectorAll('.square');
+
                 squares.forEach((sq) => {
                     const square = sq;
                     const rowStr = square.getAttribute('data-row');
@@ -1172,7 +1216,7 @@ export function generateBundledHTML(model: Damier): string {
                     const col = parseInt(colStr, 10);
 
                     square.innerHTML = '';
-                    square.classList.remove('selected');
+                    square.classList.remove('selected', 'legalmoves');
 
                     const piece = this.getPieceAt(row, col);
                     if (piece) {
@@ -1187,6 +1231,10 @@ export function generateBundledHTML(model: Damier): string {
 
                     if (this.selected && this.selected.row === row && this.selected.col === col) {
                         square.classList.add('selected');
+                    }
+                    
+                    if (this.showLegalMoves && legalDestinations.some(dest => dest.row === row && dest.col === col)) {
+                        square.classList.add('legalmoves');
                     }
                 });
 
