@@ -1,0 +1,48 @@
+game MyDamDam{
+    board{
+        size 10
+    }
+
+    pieces {
+        piece red { color red quantity 20 }
+        piece blue { color blue quantity 20 }
+    }
+
+    dice { faces 3 }
+
+    rules {
+        movement {
+            alternating red and blue
+            firstPlayer blue
+            direction orthogonal
+            canMoveBackward true
+        }
+        capture {
+            mandatory false
+            message "Une capture illumine brièvement le plateau."
+        }
+        action {
+            type both
+        }
+    }
+
+    objective {
+        winByForfeit { allowed true }
+        winByCapture { captureAll opponent }
+    } 
+    
+    ui {
+        theme {
+            lightSquares: "pink"
+            darkSquares: "lightblue"
+            highlight: "rosybrown"
+        }
+        layout { showCaptured false }
+    }
+
+  settings {
+    animationSpeed: 3
+    showLegalMoves: true
+    aiDifficulty: 3
+  }
+}
