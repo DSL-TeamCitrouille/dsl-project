@@ -10,7 +10,22 @@ import type { Damier, MoveRule } from 'dam-dam-language';
 export function generateBundledHTML(model: Damier): string {
     const size = model.board.size;
     const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
+    const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
     const direction = moveRule?.direction || 'any';
+    
+    // Map firstPlayer to player index
+    let firstPlayerIndex = 0;
+    if (playerRule?.firstPlayer) {
+        const firstPlayerName = playerRule.firstPlayer;
+        // Find the index of the piece with matching color/name
+        const pieceIndex = model.pieces.piece.findIndex((p: any) => 
+            p.name?.toLowerCase() === firstPlayerName?.toLowerCase() || 
+            p.color?.toLowerCase() === firstPlayerName?.toLowerCase()
+        );
+        firstPlayerIndex = pieceIndex >= 0 ? pieceIndex : 0;
+    }
+    const firstPlayer = firstPlayerIndex;
+
     const theme = model.ui?.theme;
 
     const lightColor = theme?.lightSquares || '#f0d9b5';
@@ -30,6 +45,7 @@ export function generateBundledHTML(model: Damier): string {
     const gameConfig = {
         boardSize: size,
         direction,
+        firstPlayer,
         pieces: model.pieces.piece.map((p: any) => ({
             name: p.name,
             color: p.color,
@@ -388,10 +404,11 @@ export function generateBundledHTML(model: Damier): string {
     <script>
         // ===== GAME ENGINE (Embedded) =====
         class Game {
-            constructor(boardSize, direction, pieces_config) {
+            constructor(boardSize, direction, pieces_config, firstPlayer = 0) {
                 this.boardSize = boardSize;
                 this.pieces = new Map();
-                this.currentPlayer = 0;
+                this.firstPlayer = firstPlayer;
+                this.currentPlayer = firstPlayer;
                 this.gameOver = false;
                 this.winner = null;
                 this.direction = direction;
@@ -807,7 +824,7 @@ export function generateBundledHTML(model: Damier): string {
 
             reset() {
                 this.pieces.clear();
-                this.currentPlayer = 0;
+                this.currentPlayer = this.firstPlayer;
                 this.gameOver = false;
                 this.winner = null;
                 this.nextId = 0;
@@ -1132,7 +1149,7 @@ export function generateBundledHTML(model: Damier): string {
 
         // ===== INITIALIZE GAME =====
         const config = ${configJson};
-        const game = new Game(config.boardSize, config.direction, config.pieces);
+        const game = new Game(config.boardSize, config.direction, config.pieces, config.firstPlayer);
         const ui = new UI(game);
     </script>
 </body>
