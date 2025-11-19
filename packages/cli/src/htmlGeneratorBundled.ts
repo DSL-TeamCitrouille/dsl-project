@@ -8,38 +8,38 @@
 import type { Damier, MoveRule } from 'dam-dam-language';
 
 export function generateBundledHTML(model: Damier): string {
-  const size = model.board.size;
-  const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
-  const direction = moveRule?.direction || 'any';
-  const theme = model.ui?.theme;
+    const size = model.board.size;
+    const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
+    const direction = moveRule?.direction || 'any';
+    const theme = model.ui?.theme;
 
-  const lightColor = theme?.lightSquares || '#f0d9b5';
-  const darkColor = theme?.darkSquares || '#b58863';
+    const lightColor = theme?.lightSquares || '#f0d9b5';
+    const darkColor = theme?.darkSquares || '#b58863';
 
-  // Generate board HTML
-  let boardHTML = '';
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      const isDark = (r + c) % 2 === 1;
-      const color = isDark ? darkColor : lightColor;
-      boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
+    // Generate board HTML
+    let boardHTML = '';
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            const isDark = (r + c) % 2 === 1;
+            const color = isDark ? darkColor : lightColor;
+            boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
+        }
     }
-  }
 
-  // Serialize game config
-  const gameConfig = {
-    boardSize: size,
-    direction,
-    pieces: model.pieces.piece.map((p: any) => ({
-      name: p.name,
-      color: p.color,
-      quantity: p.quantity,
-    })),
-  };
+    // Serialize game config
+    const gameConfig = {
+        boardSize: size,
+        direction,
+        pieces: model.pieces.piece.map((p: any) => ({
+            name: p.name,
+            color: p.color,
+            quantity: p.quantity,
+        })),
+    };
 
-  const configJson = JSON.stringify(gameConfig);
+    const configJson = JSON.stringify(gameConfig);
 
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -465,12 +465,31 @@ export function generateBundledHTML(model: Damier): string {
                             }
                         }
                     }
+                                        }
+                if (this.pieces_config.length === 1) {
+                    let placed = 0;
+                    for (let r = 0; r < size && placed < quantity; r++) {
+                        for (let c = 0; c < size && placed < quantity; c++) {
+                            pos.push({ row: r, col: c });
+                            placed++;
+                        }
+                    }
+                    return pos;
                 }
                 return pos;
             }
 
             getLegalMoves() {
-                const moves = [];
+                        if (this.pieces_config.length === 1) {
+                    const moves = [];
+                    this.pieces.forEach((piece) => {
+                        moves.push(...this.getMovesForPiece(piece));
+                    });
+                    console.log("MOVES SOLO ", moves)
+                    return moves;
+                }
+
+            const moves = [];
                 this.pieces.forEach((piece) => {
                     if (piece.player === this.currentPlayer) {
                         moves.push(...this.getMovesForPiece(piece));
@@ -497,7 +516,7 @@ export function generateBundledHTML(model: Damier): string {
                         : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
                 // Filter based on direction type and piece type
-                if (this.direction === 'diagonal') {
+                if (this.direction === 'diagonal' && this.pieces_config.length !== 1) {
                     // Diagonal: only forward for normal pieces, all diagonal for queens
                     if (!piece.isQueen) {
                         if (piece.player === 0) {
@@ -506,7 +525,7 @@ export function generateBundledHTML(model: Damier): string {
                             dirs = dirs.filter(([dr]) => dr < 0);
                         }
                     }
-                } else if (this.direction === 'orthogonal') {
+                } else if (this.direction === 'orthogonal' && this.pieces_config.length !== 1) {
                     // Orthogonal: allow forward and sideways for normal pieces, all for queens
                     if (!piece.isQueen) {
                         if (piece.player === 0) {
@@ -517,6 +536,9 @@ export function generateBundledHTML(model: Damier): string {
                     }
                 }
                 // else: all-directions mode, no filtering needed
+                if (this.pieces_config.length === 1) {
+                    dirs = [];
+                }
 
                 for (const [dr, dc] of dirs) {
                     // Queens can move multiple squares, regular pieces only move 1 square
@@ -570,7 +592,7 @@ export function generateBundledHTML(model: Damier): string {
                     }
                 } else if (this.direction === 'orthogonal') {
                     // Orthogonal: allow forward jumps for normal pieces, all for queens
-                    if (!piece.isQueen) {
+                    if (!piece.isQueen && this.pieces_config.length !== 1) {
                         if (piece.player === 0) {
                             dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);
                         } else {
@@ -600,7 +622,7 @@ export function generateBundledHTML(model: Damier): string {
 
                         const targetPiece = this.getPieceAt(targetRow, targetCol);
                         
-                        if (targetPiece && targetPiece.player !== piece.player && !capturedIds.has(targetPiece.id)) {
+                        if (targetPiece && (targetPiece.player !== piece.player  || this.pieces_config.length === 1 ) && !capturedIds.has(targetPiece.id)) {
                             // Found an enemy piece
                             if (!foundEnemy) {
                                 // First enemy found - this is the one we can potentially capture
@@ -713,21 +735,47 @@ export function generateBundledHTML(model: Damier): string {
 
                 // CHECK FOR QUEEN PROMOTION
                 // Player 0 reaches bottom (last row), Player 1 reaches top (first row)
-                const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
-                                       (piece.player === 1 && piece.row === 0);
-                
-                if (isPromotionRow && !piece.isQueen) {
-                    piece.isQueen = true;
+                if (this.pieces_config.length !== 1){
+                    const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
+                                        (piece.player === 1 && piece.row === 0);
+                    
+                    if (isPromotionRow && !piece.isQueen) {
+                        piece.isQueen = true;
+                    }
                 }
-
                 this.checkWin();
                 if (!this.gameOver) {
-                    this.currentPlayer = 1 - this.currentPlayer;
+                    if (this.pieces_config.length === 1) {
+                        this.currentPlayer = 0 // toujours le joueur unique
+                    }
+                    else{
+                        this.currentPlayer = 1 - this.currentPlayer;
+                    }  
                 }
                 return true;
             }
 
             checkWin() {
+
+                if (this.pieces_config.length === 1) {
+
+                    const pieces = Array.from(this.pieces.values()).filter(p => p.player === 0);
+                    
+                    // Condition Solitaire : plus de pièces
+                    if (pieces.length === 1) {
+                        this.gameOver = true;
+                        this.winner = 0;
+                        return;
+                    }
+
+                    // Condition : plus de mouvements possibles
+                    if (this.getLegalMoves(0).length === 0 && pieces.length !== 1) {
+                        this.gameOver = true;
+                        this.winner = null;
+                        return;
+                    }
+                }
+                else{
                 const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
                 const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
 
@@ -737,6 +785,7 @@ export function generateBundledHTML(model: Damier): string {
                 } else if (p0Pieces.length === 0) {
                     this.gameOver = true;
                     this.winner = 1;
+                }
                 }
             }
 
