@@ -200,6 +200,13 @@ export function generateBundledHTML(model: Damier): string {
         .reset-btn:hover { 
             background: #45a049;
         }
+        
+        .end-btn {
+            background: #FF5722;
+        }
+        .end-btn:hover {
+            background: #E64A19;
+        }
 
         .bot-btn {
             background: #9C27B0;
@@ -260,6 +267,7 @@ export function generateBundledHTML(model: Damier): string {
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
             <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
+            <button class="end-btn">🏁 End Game</button>
         </div>
     </div>
 
@@ -542,6 +550,22 @@ export function generateBundledHTML(model: Damier): string {
                 }
             }
 
+            forceEndGame() {
+                const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
+                const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
+
+                if (p0Pieces.length > p1Pieces.length) {
+                    this.winner = 0;
+                } else if (p1Pieces.length > p0Pieces.length) {
+                    this.winner = 1;
+                } else {
+                    // En cas d'égalité, c'est le joueur courant qui perd
+                    this.winner = 1 - this.currentPlayer;
+                }
+                
+                this.gameOver = true;
+            }
+
             reset() {
                 this.pieces.clear();
                 this.currentPlayer = 0;
@@ -627,6 +651,18 @@ export function generateBundledHTML(model: Damier): string {
                         await this.triggerBotMove();
                     });
                 }
+                
+                const endBtn = document.querySelector('.end-btn');
+                    if (endBtn) {
+                        endBtn.addEventListener('click', () => {
+                            if (!this.game.gameOver) {
+                                this.stopBotLoop = true;
+                                this.game.forceEndGame();
+                                this.selected = null;
+                                this.render();
+                            }
+                        });
+                    }
 
                 const modeBtns = document.querySelectorAll('.mode-btn');
                 modeBtns.forEach(btn => {
