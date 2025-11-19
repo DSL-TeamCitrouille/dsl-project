@@ -74,8 +74,8 @@ export function generateBundledHTML(model: Damier): string {
             name: p.name,
             color: p.color,
             quantity: p.quantity,
-            dice: p.dice || null,
         })),
+        dice: dice ? { faces: dice.faces } : null,
         isCaptureManutory,
     };
 
@@ -499,7 +499,7 @@ export function generateBundledHTML(model: Damier): string {
     <script>
         // ===== GAME ENGINE (Embedded) =====
         class Game {
-            constructor(boardSize, direction, pieces_config, firstPlayer = 0, isCaptureManutory = false) {
+            constructor(boardSize, direction, pieces_config, firstPlayer = 0, diceConfig = null, isCaptureManutory = false) {
                 this.boardSize = boardSize;
                 this.pieces = new Map();
                 this.firstPlayer = firstPlayer;
@@ -510,6 +510,10 @@ export function generateBundledHTML(model: Damier): string {
                 this.pieces_config = pieces_config;
                 this.isCaptureManutory = isCaptureManutory;
                 this.nextId = 0;
+                this.diceConfig = diceConfig;
+                this.diceResult = null;
+                this.movesRemaining = 0;
+                this.mustRollDice = diceConfig !== null;
                 this.initBoard();
             }
 
@@ -823,6 +827,16 @@ export function generateBundledHTML(model: Damier): string {
             }
 
             executeMove(move) {
+                if (this.diceConfig && this.mustRollDice) {
+                    console.log("Must roll dice before moving!");
+                    return false;
+                }
+
+                if (this.diceConfig && this.movesRemaining <= 0) {
+                    console.log("No moves remaining! Roll the dice again.");
+                    return false;
+                }
+
                 // VALIDATE MOVE FIRST
                 const legalMoves = this.getLegalMoves();
                 const isLegal = legalMoves.some(m => 
@@ -863,16 +877,53 @@ export function generateBundledHTML(model: Damier): string {
                         piece.isQueen = true;
                     }
                 }
-                this.checkWin();
-                if (!this.gameOver) {
-                    if (this.pieces_config.length === 1) {
-                        this.currentPlayer = 0 // toujours le joueur unique
+
+                // Decrement moves remaining if using dice
+                if (this.diceConfig) {
+                    this.movesRemaining--;
+                    
+                    // If no moves left, switch to next player
+                    if (this.movesRemaining <= 0) {
+                        this.checkWin();
+                        if (!this.gameOver) {
+                            if (this.pieces_config.length === 1) {
+                                this.currentPlayer = 0;
+                            } else {
+                                this.currentPlayer = 1 - this.currentPlayer;
+                            }
+                            this.mustRollDice = true;
+                            this.diceResult = null;
+                        }
                     }
-                    else{
-                        this.currentPlayer = 1 - this.currentPlayer;
-                    }  
+                } else {
+                    // Normal game without dice
+                    this.checkWin();
+                    if (!this.gameOver) {
+                        if (this.pieces_config.length === 1) {
+                            this.currentPlayer = 0;
+                        } else {
+                            this.currentPlayer = 1 - this.currentPlayer;
+                        }
+                    }
                 }
+                
                 return true;
+            }
+
+            rollDice() {
+                if (!this.diceConfig) return null;
+                if (!this.mustRollDice) {
+                    console.log("Already rolled dice for this turn!");
+                    return null;
+                }
+
+                const result = Math.floor(Math.random() * this.diceConfig.faces) + 1;
+                this.diceResult = result;
+                this.movesRemaining = result;
+                this.mustRollDice = false;
+                
+                console.log('Dice rolled: ' + result + '. You have ' + result + ' moves.');
+                return result;
             }
 
             checkWin() {
@@ -931,6 +982,9 @@ export function generateBundledHTML(model: Damier): string {
                 this.gameOver = false;
                 this.winner = null;
                 this.nextId = 0;
+                this.diceResult = null;
+                this.movesRemaining = 0;
+                this.mustRollDice = this.diceConfig !== null;
                 this.initBoard();
             }
         }
@@ -968,6 +1022,15 @@ export function generateBundledHTML(model: Damier): string {
             }
 
             async makeMoveWithDelay(delayMs = 500) {
+                if (this.game.diceConfig && this.game.mustRollDice) {
+                    const result = this.game.rollDice();
+                    if (!result) return null;
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }
+                
+                if (this.game.diceConfig && this.game.movesRemaining <= 0) {
+                    return null;
+                }
                 await new Promise(resolve => setTimeout(resolve, delayMs));
                 return this.makeMove();
             }
@@ -1093,6 +1156,16 @@ export function generateBundledHTML(model: Damier): string {
                 // In pvb mode, disable clicks when it's bot's turn
                 if (this.mode === 'pvb' && this.game.currentPlayer === 1) return;
 
+                if (this.game.diceConfig && this.game.mustRollDice) {
+                    this.updateStatus('⚠️ You must roll the dice first!');
+                    return;
+                }
+
+                // NOUVEAU : If no moves remaining, prevent moves
+                if (this.game.diceConfig && this.game.movesRemaining <= 0) {
+                    this.updateStatus('⚠️ No moves remaining! Roll the dice again.');
+                    return;
+                }
                 const target = e.target;
                 const square = target?.closest?.('.square');
                 if (!square) return;
@@ -1143,6 +1216,17 @@ export function generateBundledHTML(model: Damier): string {
                         this.render();
                         await this.checkBotTurn();
                     }
+                }
+            }
+
+            updateStatus(message) {
+                const status = document.querySelector('.status');
+                if (status) {
+                    const originalMessage = status.textContent;
+                    status.textContent = message;
+                    setTimeout(() => {
+                        this.render(); // Restore normal status
+                    }, 2000);
                 }
             }
 
@@ -1252,6 +1336,8 @@ export function generateBundledHTML(model: Damier): string {
 
                 const status = document.querySelector('.status');
                 const botBtn = document.querySelector('.bot-btn');
+                const diceResult = document.querySelector('.dice-result');
+                const throwButton = document.querySelector('.throw-button');
                 
                 if (status) {
                     if (this.game.gameOver) {
@@ -1266,8 +1352,39 @@ export function generateBundledHTML(model: Damier): string {
                         const currentName = this.mode === 'bvb' ? \`Bot \${this.game.currentPlayer + 1}\` :
                                           (this.mode === 'pvb' && this.game.currentPlayer === 1) ? 'Bot' :
                                           \`Player \${this.game.currentPlayer + 1}\`;
-                        status.textContent = \`\${currentName}'s turn\`;
+                        if (this.game.diceConfig) {
+                            if (this.game.mustRollDice) {
+                                status.textContent = \`\${currentName}\'s turn - 🎲 Roll the dice!\`;
+                            } else {
+                                status.textContent = \`\${currentName}\'s turn - \${this.game.movesRemaining} move(s) left\`;
+                            }
+                        } else {
+                            status.textContent = \`\${currentName}\'s turn\`;
+                        }
+                        
                     }
+                }
+                
+                if (diceResult && this.game.diceConfig) {
+                    if (this.game.diceResult !== null && !this.game.mustRollDice) {
+                        diceResult.innerHTML = \`\
+                            <div style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-weight: bold; color: #333;">
+                                Result: \${this.game.diceResult}<br>
+                                <span style="font-size: 12px; color: #666;">Moves left: \${this.game.movesRemaining}</span>
+                            </div>
+                        \`;
+                    } else {
+                        diceResult.innerHTML = '';
+                    }
+                }
+
+                if (throwButton && this.game.diceConfig) {
+                    const shouldDisable = this.isProcessing || 
+                                        this.game.gameOver || 
+                                        !this.game.mustRollDice ||
+                                        (this.mode === 'pvb' && this.game.currentPlayer === 1) ||
+                                        this.mode === 'bvb';
+                    throwButton.disabled = shouldDisable;
                 }
 
                 if (botBtn) {
@@ -1279,7 +1396,8 @@ export function generateBundledHTML(model: Damier): string {
 
         // ===== INITIALIZE GAME =====
         const config = ${configJson};
-        const game = new Game(config.boardSize, config.direction, config.pieces, config.firstPlayer, config.isCaptureManutory);
+        const diceConfig = config.dice || null;
+        const game = new Game(config.boardSize, config.direction, config.pieces, config.firstPlayer, diceConfig, config.isCaptureManutory);
         const ui = new UI(game);
 
         let isRolling = false;
@@ -1292,6 +1410,12 @@ export function generateBundledHTML(model: Damier): string {
             if (!diceElement || !resultElement || !button) return;
             if (isRolling) return;
             
+            // Check if it's allowed to roll
+            if (!game.mustRollDice || game.gameOver) {
+                console.log("Cannot roll dice right now");
+                return;
+            }
+            
             isRolling = true;
             button.disabled = true;
             resultElement.textContent = '';
@@ -1302,14 +1426,27 @@ export function generateBundledHTML(model: Damier): string {
 
             // Simulate dice roll
             setTimeout(() => {
-                const faces = parseInt(diceElement.dataset.faces) || 6;
-                const result = Math.floor(Math.random() * faces) + 1;
+                const result = game.rollDice();
                 
                 diceElement.classList.remove('rolling');
                 diceElement.textContent = result.toString();
                 
+                resultElement.innerHTML = \`\
+                    <div style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-weight: bold; color: #333;">
+                        Result: \${result}<br>
+                        <span style="font-size: 12px; color: #666;">You have \${result} move(s)</span>
+                    </div>
+                \`;
+                
                 isRolling = false;
-                button.disabled = false;
+                ui.render();
+                
+                // If bot's turn, trigger bot moves after dice roll
+                if (ui.mode === 'pvb' && game.currentPlayer === 1) {
+                    ui.checkBotTurn();
+                } else if (ui.mode === 'bvb') {
+                    ui.checkBotTurn();
+                }
             }, 600);
         }
 
