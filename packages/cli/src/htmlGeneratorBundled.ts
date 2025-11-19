@@ -927,7 +927,6 @@ export function generateBundledHTML(model: Damier): string {
                         if (piece.isQueen) {
                             el.classList.add('queen');
                         }
-                        el.textContent = piece.name[0].toUpperCase();
                         el.title = piece.isQueen ? piece.name + ' (Queen)' : piece.name;
                         square.appendChild(el);
                     }
