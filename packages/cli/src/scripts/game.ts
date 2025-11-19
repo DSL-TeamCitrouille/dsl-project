@@ -17,12 +17,13 @@ export interface Piece {
   color: string;
   row: number;
   col: number;
-  isQueen : boolean
+  isQueen: boolean;
 }
 
 export class Game {
   boardSize: number;
   pieces: Map<string, Piece> = new Map();
+  firstPlayer: number = 0;
   currentPlayer: number = 0;
   gameOver: boolean = false;
   winner: number | null = null;
@@ -30,10 +31,11 @@ export class Game {
   pieces_config: any[];
   nextId: number = 0;
 
-  constructor(boardSize: number, direction: string, pieces_config: any[]) {
+  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0) {
       this.boardSize = boardSize;
       this.pieces = new Map();
-      this.currentPlayer = 0;
+      this.firstPlayer = firstPlayer;
+      this.currentPlayer = firstPlayer;
       this.gameOver = false;
       this.winner = null;
       this.direction = direction;
@@ -89,29 +91,49 @@ export class Game {
             }
           }
         }
-    } else {
-      let placed = 0;
-      if (isSecond) {
-        for (let r = size - 2; r >= 0 && placed < quantity; r--) {
-          for (let c = 0; c < size && placed < quantity; c++) {
-            pos.push({ row: r, col: c });
-            placed++;
-          }
-        }
       } else {
-        for (let r = 1; r < size && placed < quantity; r++) {
-          for (let c = 0; c < size && placed < quantity; c++) {
-            pos.push({ row: r, col: c });
-            placed++;
+        let placed = 0;
+        if (isSecond) {
+          for (let r = size - 2; r >= 0 && placed < quantity; r--) {
+            for (let c = 0; c < size && placed < quantity; c++) {
+              pos.push({ row: r, col: c });
+              placed++;
+            }
+          }
+        } else {
+          for (let r = 1; r < size && placed < quantity; r++) {
+            for (let c = 0; c < size && placed < quantity; c++) {
+              pos.push({ row: r, col: c });
+              placed++;
+            }
           }
         }
-      }
       }
     }
+
+    if (this.pieces_config.length === 1) {
+      let placed = 0;
+      for (let r = 0; r < size && placed < quantity; r++) {
+        for (let c = 0; c < size && placed < quantity; c++) {
+          pos.push({ row: r, col: c });
+          placed++;
+        }
+      }
+      return pos;
+    }
+
     return pos;
   }
 
   getLegalMoves(): Move[] {
+    if (this.pieces_config.length === 1) {
+      const moves: Move[] = [];
+      this.pieces.forEach((piece) => {
+        moves.push(...this.getMovesForPiece(piece));
+      });
+      return moves;
+    }
+
     const moves: Move[] = [];
     this.pieces.forEach((piece) => {
       if (piece.player === this.currentPlayer) {
@@ -139,7 +161,7 @@ export class Game {
             : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
     // Filter based on direction type and piece type
-    if (this.direction === 'diagonal') {
+    if (this.direction === 'diagonal' && this.pieces_config.length !== 1) {
         // Diagonal: only forward for normal pieces, all diagonal for queens
         if (!piece.isQueen) {
             if (piece.player === 0) {
@@ -148,7 +170,7 @@ export class Game {
                 dirs = dirs.filter(([dr]) => dr < 0);
             }
         }
-    } else if (this.direction === 'orthogonal') {
+    } else if (this.direction === 'orthogonal' && this.pieces_config.length !== 1) {
         // Orthogonal: allow forward and sideways for normal pieces, all for queens
         if (!piece.isQueen) {
             if (piece.player === 0) {
@@ -159,6 +181,10 @@ export class Game {
         }
     }
     // else: all-directions mode, no filtering needed
+    
+    if (this.pieces_config.length === 1) {
+        dirs = [];
+    }
 
     for (const [dr, dc] of dirs) {
         // Queens can move multiple squares, regular pieces only move 1 square
@@ -183,16 +209,17 @@ export class Game {
             }
         }
     }
+
     return moves;
   }
 
-  getJumpMoves(piece: Piece, capturedIds: Set<string>, originalFrom : Position | null = null) {
+  getJumpMoves(piece: Piece, capturedIds: Set<string>, originalFrom: Position | null = null): Move[] {
     // originalFrom keeps track of the ACTUAL piece starting position for chain jumps
     if (originalFrom === null) {
         originalFrom = { row: piece.row, col: piece.col };
     }
       
-    const moves = [];
+    const moves: Move[] = [];
     let dirs = this.direction === 'diagonal'
       ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
       : this.direction === 'orthogonal'
@@ -211,7 +238,7 @@ export class Game {
         }
     } else if (this.direction === 'orthogonal') {
         // Orthogonal: allow forward jumps for normal pieces, all for queens
-        if (!piece.isQueen) {
+        if (!piece.isQueen && this.pieces_config.length !== 1) {
             if (piece.player === 0) {
                 dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);
             } else {
@@ -241,7 +268,7 @@ export class Game {
 
               const targetPiece = this.getPieceAt(targetRow, targetCol);
               
-              if (targetPiece && targetPiece.player !== piece.player && !capturedIds.has(targetPiece.id)) {
+              if (targetPiece && (targetPiece.player !== piece.player || this.pieces_config.length === 1) && !capturedIds.has(targetPiece.id)) {
                   // Found an enemy piece
                   if (!foundEnemy) {
                       // First enemy found - this is the one we can potentially capture
@@ -256,7 +283,7 @@ export class Game {
                           newCapturedIds.add(targetPiece.id);
                           
                           // IMPORTANT: Use originalFrom, not piece.row/col!
-                          const jumpMove = {
+                          const jumpMove: Move = {
                               from: { row: originalFrom.row, col: originalFrom.col },
                               to: { row: landRow, col: landCol },
                               capturedIds: Array.from(newCapturedIds)
@@ -266,8 +293,7 @@ export class Game {
                           
                           // Check for chain jumps from the new position
                           const tempPiece = { ...piece, row: landRow, col: landCol };
-                          const chainMoves : Move[] 
-                          = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
+                          const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
                           
                           if (chainMoves.length > 0) {
                               moves.push(...chainMoves);
@@ -277,31 +303,32 @@ export class Game {
                       // Another enemy found - but we already found one earlier
                       // For queens: check if there's a gap between first enemy and this one
                       if (enemyPos) {
-                      const distBetweenEnemies = distance - Math.abs(enemyPos.row - piece.row) - 1;
-                      
-                      if (distBetweenEnemies > 0) {
-                          // There's a gap - this enemy can be captured
-                          const landingPiece = this.getPieceAt(landRow, landCol);
+                          const distBetweenEnemies = distance - Math.abs(enemyPos.row - piece.row) - 1;
                           
-                          if (!landingPiece) {
-                              const newCapturedIds = new Set(capturedIds);
-                              newCapturedIds.add(targetPiece.id);
+                          if (distBetweenEnemies > 0) {
+                              // There's a gap - this enemy can be captured
+                              const landingPiece = this.getPieceAt(landRow, landCol);
                               
-                              const jumpMove = {
-                                  from: { row: originalFrom.row, col: originalFrom.col },
-                                  to: { row: landRow, col: landCol },
-                                  capturedIds: Array.from(newCapturedIds)
-                              };
-                              
-                              moves.push(jumpMove);
-                              
-                              const tempPiece = { ...piece, row: landRow, col: landCol };
-                              const chainMoves : Move[] = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
-                              
-                              if (chainMoves.length > 0) {
-                                  moves.push(...chainMoves);
+                              if (!landingPiece) {
+                                  const newCapturedIds = new Set(capturedIds);
+                                  newCapturedIds.add(targetPiece.id);
+                                  
+                                  const jumpMove: Move = {
+                                      from: { row: originalFrom.row, col: originalFrom.col },
+                                      to: { row: landRow, col: landCol },
+                                      capturedIds: Array.from(newCapturedIds)
+                                  };
+                                  
+                                  moves.push(jumpMove);
+                                  
+                                  const tempPiece = { ...piece, row: landRow, col: landCol };
+                                  const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
+                                  
+                                  if (chainMoves.length > 0) {
+                                      moves.push(...chainMoves);
+                                  }
                               }
-                          }}
+                          }
                       }
                       // If no gap, skip this enemy and continue
                   }
@@ -316,14 +343,14 @@ export class Game {
       return moves;
   }
 
-    getPieceAt(row: number, col: number) {
+    getPieceAt(row: number, col: number): Piece | null {
         for (const piece of this.pieces.values()) {
             if (piece.row === row && piece.col === col) return piece;
         }
         return null;
     }
 
-    executeMove(move : Move) {
+    executeMove(move: Move): boolean {
       // VALIDATE MOVE FIRST
       const legalMoves = this.getLegalMoves();
       const isLegal = legalMoves.some(m => 
@@ -342,6 +369,7 @@ export class Game {
           return false;
       }
 
+      // SIMPLE FIX: If the move has capturedIds, remove those pieces
       // The move generation already calculated exactly which pieces to capture
       if (move.capturedIds && move.capturedIds.length > 0) {
           for (const capturedId of move.capturedIds) {
@@ -355,34 +383,58 @@ export class Game {
 
       // CHECK FOR QUEEN PROMOTION
       // Player 0 reaches bottom (last row), Player 1 reaches top (first row)
-      const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
-                              (piece.player === 1 && piece.row === 0);
-      
-      if (isPromotionRow && !piece.isQueen) {
-          piece.isQueen = true;
+      if (this.pieces_config.length !== 1) {
+          const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
+                                  (piece.player === 1 && piece.row === 0);
+          
+          if (isPromotionRow && !piece.isQueen) {
+              piece.isQueen = true;
+          }
       }
 
       this.checkWin();
       if (!this.gameOver) {
-          this.currentPlayer = 1 - this.currentPlayer;
+          if (this.pieces_config.length === 1) {
+              this.currentPlayer = 0; // toujours le joueur unique
+          } else {
+              this.currentPlayer = 1 - this.currentPlayer;
+          }
       }
       return true;
   }
 
-    checkWin() {
-        const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
-        const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
+    checkWin(): void {
+        if (this.pieces_config.length === 1) {
+            const pieces = Array.from(this.pieces.values()).filter(p => p.player === 0);
+            
+            // Condition Solitaire : plus de pièces
+            if (pieces.length === 1) {
+                this.gameOver = true;
+                this.winner = 0;
+                return;
+            }
 
-        if (p1Pieces.length === 0) {
-            this.gameOver = true;
-            this.winner = 0;
-        } else if (p0Pieces.length === 0) {
-            this.gameOver = true;
-            this.winner = 1;
+            // Condition : plus de mouvements possibles
+            if (this.getLegalMoves().length === 0 && pieces.length !== 1) {
+                this.gameOver = true;
+                this.winner = null;
+                return;
+            }
+        } else {
+            const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
+            const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
+
+            if (p1Pieces.length === 0) {
+                this.gameOver = true;
+                this.winner = 0;
+            } else if (p0Pieces.length === 0) {
+                this.gameOver = true;
+                this.winner = 1;
+            }
         }
     }
 
-    forceEndGame() {
+    forceEndGame(): void {
         const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
         const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
 
@@ -398,9 +450,9 @@ export class Game {
         this.gameOver = true;
     }
 
-    reset() {
+    reset(): void {
         this.pieces.clear();
-        this.currentPlayer = 0;
+        this.currentPlayer = this.firstPlayer;
         this.gameOver = false;
         this.winner = null;
         this.nextId = 0;
