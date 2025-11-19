@@ -159,6 +159,19 @@ export function generateBundledHTML(model: Damier): string {
             color: #333;
         }
 
+        .piece.queen::after {
+            content: '👑';
+            position: absolute;
+            font-size: 16px;
+            top: -2px;
+            right: 0px;
+        }
+
+        .piece.queen {
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
         .controls {
             display: flex;
             gap: 10px;
@@ -299,6 +312,7 @@ export function generateBundledHTML(model: Damier): string {
                             color: cfg.color,
                             row: pos.row,
                             col: pos.col,
+                            isQueen: false, // Add queen status
                         };
                         this.pieces.set(piece.id, piece);
                     }
@@ -381,38 +395,49 @@ export function generateBundledHTML(model: Damier): string {
                         ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
                         : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
-                // Filter based on direction type
+                // Filter based on direction type and piece type
                 if (this.direction === 'diagonal') {
-                    // Diagonal: only forward (no backward)
-                    if (piece.player === 0) {
-                        dirs = dirs.filter(([dr]) => dr > 0);
-                    } else {
-                        dirs = dirs.filter(([dr]) => dr < 0);
+                    // Diagonal: only forward for normal pieces, all diagonal for queens
+                    if (!piece.isQueen) {
+                        if (piece.player === 0) {
+                            dirs = dirs.filter(([dr]) => dr > 0);
+                        } else {
+                            dirs = dirs.filter(([dr]) => dr < 0);
+                        }
                     }
                 } else if (this.direction === 'orthogonal') {
-                    // Orthogonal: allow forward and sideways, but not backward
-                    if (piece.player === 0) {
-                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
-                    } else {
-                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    // Orthogonal: allow forward and sideways for normal pieces, all for queens
+                    if (!piece.isQueen) {
+                        if (piece.player === 0) {
+                            dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);
+                        } else {
+                            dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);
+                        }
                     }
                 }
                 // else: all-directions mode, no filtering needed
 
                 for (const [dr, dc] of dirs) {
-                    const newRow = piece.row + dr;
-                    const newCol = piece.col + dc;
+                    // Queens can move multiple squares, regular pieces only move 1 square
+                    const maxDistance = piece.isQueen ? this.boardSize : 1;
+                    
+                    for (let distance = 1; distance <= maxDistance; distance++) {
+                        const newRow = piece.row + dr * distance;
+                        const newCol = piece.col + dc * distance;
 
-                    if (newRow < 0 || newRow >= this.boardSize || newCol < 0 || newCol >= this.boardSize) {
-                        continue;
-                    }
+                        if (newRow < 0 || newRow >= this.boardSize || newCol < 0 || newCol >= this.boardSize) {
+                            break; // Out of bounds, stop searching in this direction
+                        }
 
-                    const targetPiece = this.getPieceAt(newRow, newCol);
-                    if (!targetPiece) {
-                        moves.push({ 
-                            from: { row: piece.row, col: piece.col }, 
-                            to: { row: newRow, col: newCol } 
-                        });
+                        const targetPiece = this.getPieceAt(newRow, newCol);
+                        if (!targetPiece) {
+                            moves.push({ 
+                                from: { row: piece.row, col: piece.col }, 
+                                to: { row: newRow, col: newCol } 
+                            });
+                        } else {
+                            break; // Hit a piece, can't continue in this direction (without capturing)
+                        }
                     }
                 }
 
@@ -432,60 +457,115 @@ export function generateBundledHTML(model: Damier): string {
                         ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
                         : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
-                // Filter based on direction type
+                // Filter based on direction type and piece type
                 if (this.direction === 'diagonal') {
-                    // Diagonal: only forward jumps
-                    if (piece.player === 0) {
-                        dirs = dirs.filter(([dr]) => dr > 0);
-                    } else {
-                        dirs = dirs.filter(([dr]) => dr < 0);
+                    // Diagonal: only forward for normal pieces, all diagonal for queens
+                    if (!piece.isQueen) {
+                        if (piece.player === 0) {
+                            dirs = dirs.filter(([dr]) => dr > 0);
+                        } else {
+                            dirs = dirs.filter(([dr]) => dr < 0);
+                        }
                     }
                 } else if (this.direction === 'orthogonal') {
-                    // Orthogonal: allow forward jumps and sideways jumps
-                    if (piece.player === 0) {
-                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
-                    } else {
-                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    // Orthogonal: allow forward jumps for normal pieces, all for queens
+                    if (!piece.isQueen) {
+                        if (piece.player === 0) {
+                            dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);
+                        } else {
+                            dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);
+                        }
                     }
                 }
                 // else: all-directions mode, no filtering needed
 
                 for (const [dr, dc] of dirs) {
-                    const targetRow = piece.row + dr;
-                    const targetCol = piece.col + dc;
-                    const landRow = piece.row + dr * 2;
-                    const landCol = piece.col + dc * 2;
-
-                    if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
-                        continue;
-                    }
-
-                    const targetPiece = this.getPieceAt(targetRow, targetCol);
+                    // For queens, check multiple jumps in the same direction
+                    // For normal pieces, only check one square away
+                    const maxDistance = piece.isQueen ? this.boardSize : 1;
                     
-                    if (targetPiece && targetPiece.player !== piece.player && !capturedIds.has(targetPiece.id)) {
-                        const landingPiece = this.getPieceAt(landRow, landCol);
-                        
-                        if (!landingPiece) {
-                            const newCapturedIds = new Set(capturedIds);
-                            newCapturedIds.add(targetPiece.id);
-                            
-                            // IMPORTANT: Use originalFrom, not piece.row/col!
-                            const jumpMove = {
-                                from: { row: originalFrom.row, col: originalFrom.col },
-                                to: { row: landRow, col: landCol },
-                                capturedIds: Array.from(newCapturedIds)
-                            };
-                            
-                            moves.push(jumpMove);
-                            
-                            // Check for chain jumps from the new position
-                            const tempPiece = { ...piece, row: landRow, col: landCol };
-                            const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
-                            
-                            if (chainMoves.length > 0) {
-                                moves.push(...chainMoves);
-                            }
+                    let foundEnemy = false;
+                    let enemyPos = null;
+                    
+                    for (let distance = 1; distance <= maxDistance; distance++) {
+                        const targetRow = piece.row + dr * distance;
+                        const targetCol = piece.col + dc * distance;
+                        const landRow = piece.row + dr * (distance + 1);
+                        const landCol = piece.col + dc * (distance + 1);
+
+                        if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
+                            break; // Out of bounds
                         }
+
+                        const targetPiece = this.getPieceAt(targetRow, targetCol);
+                        
+                        if (targetPiece && targetPiece.player !== piece.player && !capturedIds.has(targetPiece.id)) {
+                            // Found an enemy piece
+                            if (!foundEnemy) {
+                                // First enemy found - this is the one we can potentially capture
+                                foundEnemy = true;
+                                enemyPos = { row: targetRow, col: targetCol };
+                                
+                                // Check if landing square is free
+                                const landingPiece = this.getPieceAt(landRow, landCol);
+                                
+                                if (!landingPiece) {
+                                    const newCapturedIds = new Set(capturedIds);
+                                    newCapturedIds.add(targetPiece.id);
+                                    
+                                    // IMPORTANT: Use originalFrom, not piece.row/col!
+                                    const jumpMove = {
+                                        from: { row: originalFrom.row, col: originalFrom.col },
+                                        to: { row: landRow, col: landCol },
+                                        capturedIds: Array.from(newCapturedIds)
+                                    };
+                                    
+                                    moves.push(jumpMove);
+                                    
+                                    // Check for chain jumps from the new position
+                                    const tempPiece = { ...piece, row: landRow, col: landCol };
+                                    const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
+                                    
+                                    if (chainMoves.length > 0) {
+                                        moves.push(...chainMoves);
+                                    }
+                                }
+                            } else {
+                                // Another enemy found - but we already found one earlier
+                                // For queens: check if there's a gap between first enemy and this one
+                                const distBetweenEnemies = distance - Math.abs(enemyPos.row - piece.row) - 1;
+                                
+                                if (distBetweenEnemies > 0) {
+                                    // There's a gap - this enemy can be captured
+                                    const landingPiece = this.getPieceAt(landRow, landCol);
+                                    
+                                    if (!landingPiece) {
+                                        const newCapturedIds = new Set(capturedIds);
+                                        newCapturedIds.add(targetPiece.id);
+                                        
+                                        const jumpMove = {
+                                            from: { row: originalFrom.row, col: originalFrom.col },
+                                            to: { row: landRow, col: landCol },
+                                            capturedIds: Array.from(newCapturedIds)
+                                        };
+                                        
+                                        moves.push(jumpMove);
+                                        
+                                        const tempPiece = { ...piece, row: landRow, col: landCol };
+                                        const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
+                                        
+                                        if (chainMoves.length > 0) {
+                                            moves.push(...chainMoves);
+                                        }
+                                    }
+                                }
+                                // If no gap, skip this enemy and continue
+                            }
+                        } else if (targetPiece && targetPiece.player === piece.player) {
+                            // Hit own piece, stop searching this direction
+                            break;
+                        }
+                        // If empty square, continue searching
                     }
                 }
 
@@ -529,6 +609,15 @@ export function generateBundledHTML(model: Damier): string {
                 // Move the piece
                 piece.row = move.to.row;
                 piece.col = move.to.col;
+
+                // CHECK FOR QUEEN PROMOTION
+                // Player 0 reaches bottom (last row), Player 1 reaches top (first row)
+                const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
+                                       (piece.player === 1 && piece.row === 0);
+                
+                if (isPromotionRow && !piece.isQueen) {
+                    piece.isQueen = true;
+                }
 
                 this.checkWin();
                 if (!this.gameOver) {
@@ -835,8 +924,11 @@ export function generateBundledHTML(model: Damier): string {
                     if (piece) {
                         const el = document.createElement('div');
                         el.className = \`piece \${piece.color}\`;
+                        if (piece.isQueen) {
+                            el.classList.add('queen');
+                        }
                         el.textContent = piece.name[0].toUpperCase();
-                        el.title = piece.name;
+                        el.title = piece.isQueen ? piece.name + ' (Queen)' : piece.name;
                         square.appendChild(el);
                     }
 
