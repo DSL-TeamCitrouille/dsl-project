@@ -2,7 +2,7 @@
 
 /**
  * Bundled HTML Generator with Bot Support
- * Updated to match game.ts changes (path capture logic, sideways moves)
+ * FIXED: Use capturedIds from move generation instead of path walking
  */
 
 import type { Damier, MoveRule } from 'dam-dam-language';
@@ -510,33 +510,11 @@ export function generateBundledHTML(model: Damier): string {
                     return false;
                 }
 
-                // Check distance to determine if it's a jump
-                const rowDist = Math.abs(move.to.row - move.from.row);
-                const colDist = Math.abs(move.to.col - move.from.col);
-
-                if (rowDist > 1 || colDist > 1) {
-                    // IT'S A JUMP - remove all pieces on the path
-                    
-                    // Calculate step direction
-                    const rowStep = move.to.row > move.from.row ? 1 : 
-                                   move.to.row < move.from.row ? -1 : 0;
-                    const colStep = move.to.col > move.from.col ? 1 : 
-                                   move.to.col < move.from.col ? -1 : 0;
-                    
-                    // Walk each square on the path
-                    let row = move.from.row + rowStep;
-                    let col = move.from.col + colStep;
-                    
-                    while (row !== move.to.row || col !== move.to.col) {
-                        const pathPiece = this.getPieceAt(row, col);
-                        
-                        if (pathPiece && pathPiece.player !== piece.player) {
-                            this.pieces.delete(pathPiece.id);
-                        }
-                        
-                        // Move to next square
-                        if (row !== move.to.row) row += rowStep;
-                        if (col !== move.to.col) col += colStep;
+                // SIMPLE FIX: If the move has capturedIds, remove those pieces
+                // The move generation already calculated exactly which pieces to capture
+                if (move.capturedIds && move.capturedIds.length > 0) {
+                    for (const capturedId of move.capturedIds) {
+                        this.pieces.delete(capturedId);
                     }
                 }
 
