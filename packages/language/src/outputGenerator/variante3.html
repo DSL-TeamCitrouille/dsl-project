@@ -3,98 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DamDamLimited - Board</title>
+    <title>DamDamLimited - With Bot</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
-        .game-container {
+        .container {
+            text-align: center;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 900px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
             width: 100%;
         }
 
-        .game-header {
-            text-align: center;
-            margin-bottom: 30px;
+        h1 { 
+            margin-bottom: 10px; 
+            color: #333; 
+            font-size: 28px;
         }
 
-        .game-header h1 {
-            color: #1e3c72;
-            font-size: 2.2em;
-            margin-bottom: 8px;
-        }
-
-        .game-header p {
+        .status {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
             color: #666;
-            font-size: 1em;
-        }
-
-        .board-wrapper {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .board-container {
-            flex: 0 0 auto;
+            min-height: 24px;
         }
 
         .board {
             display: inline-grid;
-            grid-template-columns: repeat(8, 1fr);
+            grid-template-columns: repeat(8, 50px);
             gap: 0;
-            border: 4px solid #333;
-            border-radius: 8px;
+            border: 3px solid #333;
+            margin-bottom: 20px;
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .square {
             width: 50px;
             height: 50px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            cursor: pointer;
             transition: all 0.2s ease;
             user-select: none;
         }
 
-        .square.light {
-            background-color: gray;
+        .square:hover { 
+            filter: brightness(0.95);
         }
 
-        .square.dark {
-            background-color: blue;
-        }
-
-        .square:hover {
-            background-color: red !important;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .square.playable {
-            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+        .square.selected {
+            box-shadow: inset 0 0 10px rgba(255, 200, 0, 0.8);
+            background-color: rgba(255, 200, 0, 0.2) !important;
         }
 
         .piece {
@@ -106,120 +86,741 @@
             justify-content: center;
             font-weight: bold;
             color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            font-size: 1.1em;
-            transition: transform 0.2s;
+            font-size: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
         }
 
         .square:hover .piece {
             transform: scale(1.1);
         }
 
-        .piece.white {
+        .piece.white { 
             background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            color: #333; 
+            border: 2px solid #333; 
+        }
+        .piece.black { 
+            background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
+        }
+        .piece.red { 
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+        .piece.blue { 
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a5c2 100%);
+        }
+        .piece.green { 
+            background: linear-gradient(135deg, #95de64 0%, #69db7c 100%);
+            color: #333;
+        }
+        .piece.yellow { 
+            background: linear-gradient(135deg, #ffd93d 0%, #ffec99 100%);
             color: #333;
         }
 
-        .piece.black {
-            background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        button:hover { 
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn { 
+            background: #4CAF50;
+        }
+        .reset-btn:hover { 
+            background: #45a049;
+        }
+
+        .bot-btn {
+            background: #9C27B0;
+        }
+        .bot-btn:hover {
+            background: #7B1FA2;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            background: #eee;
+            color: #333;
+        }
+
+        .mode-btn.active {
+            background: #2196F3;
             color: white;
         }
 
-        @media (max-width: 768px) {
-            .game-container {
+        @media (max-width: 600px) {
+            .container {
                 padding: 20px;
             }
-
-            .board-wrapper {
-                gap: 20px;
-                flex-direction: column;
-                align-items: center;
+            .board {
+                margin-bottom: 15px;
             }
-
-            .sidebar {
-                min-width: auto;
-                width: 100%;
-                flex-direction: row;
-                flex-wrap: wrap;
+            .controls {
+                gap: 8px;
             }
-
-            .info-card {
-                flex: 1;
-                min-width: 150px;
-            }
-
-            .square {
-                width: 40px;
-                height: 40px;
-            }
-
-            .piece {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9em;
-            }
-
-            .game-header h1 {
-                font-size: 1.6em;
+            button {
+                padding: 8px 16px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="game-header">
-            <h1>🎮 DamDamLimited</h1>
+    <div class="container">
+        <h1>🎮 DamDamLimited</h1>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
+            <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
+            <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
         </div>
-
-        <div class="board-wrapper">
-            <div class="board-container">
-                <div class="board">
-                    <div class="square light" id="square-0-0"></div><div class="square dark playable" id="square-0-1"></div><div class="square light" id="square-0-2"></div><div class="square dark playable" id="square-0-3"></div><div class="square light" id="square-0-4"></div><div class="square dark playable" id="square-0-5"></div><div class="square light" id="square-0-6"></div><div class="square dark playable" id="square-0-7"></div><div class="square dark playable" id="square-1-0"><div class="piece white" title="white"></div></div><div class="square light" id="square-1-1"><div class="piece white" title="white"></div></div><div class="square dark playable" id="square-1-2"><div class="piece white" title="white"></div></div><div class="square light" id="square-1-3"><div class="piece white" title="white"></div></div><div class="square dark playable" id="square-1-4"><div class="piece white" title="white"></div></div><div class="square light" id="square-1-5"><div class="piece white" title="white"></div></div><div class="square dark playable" id="square-1-6"><div class="piece white" title="white"></div></div><div class="square light" id="square-1-7"><div class="piece white" title="white"></div></div><div class="square light" id="square-2-0"></div><div class="square dark playable" id="square-2-1"></div><div class="square light" id="square-2-2"></div><div class="square dark playable" id="square-2-3"></div><div class="square light" id="square-2-4"></div><div class="square dark playable" id="square-2-5"></div><div class="square light" id="square-2-6"></div><div class="square dark playable" id="square-2-7"></div><div class="square dark playable" id="square-3-0"></div><div class="square light" id="square-3-1"></div><div class="square dark playable" id="square-3-2"></div><div class="square light" id="square-3-3"></div><div class="square dark playable" id="square-3-4"></div><div class="square light" id="square-3-5"></div><div class="square dark playable" id="square-3-6"></div><div class="square light" id="square-3-7"></div><div class="square light" id="square-4-0"></div><div class="square dark playable" id="square-4-1"></div><div class="square light" id="square-4-2"></div><div class="square dark playable" id="square-4-3"></div><div class="square light" id="square-4-4"></div><div class="square dark playable" id="square-4-5"></div><div class="square light" id="square-4-6"></div><div class="square dark playable" id="square-4-7"></div><div class="square dark playable" id="square-5-0"></div><div class="square light" id="square-5-1"></div><div class="square dark playable" id="square-5-2"></div><div class="square light" id="square-5-3"></div><div class="square dark playable" id="square-5-4"></div><div class="square light" id="square-5-5"></div><div class="square dark playable" id="square-5-6"></div><div class="square light" id="square-5-7"></div><div class="square light" id="square-6-0"><div class="piece black" title="black"></div></div><div class="square dark playable" id="square-6-1"><div class="piece black" title="black"></div></div><div class="square light" id="square-6-2"><div class="piece black" title="black"></div></div><div class="square dark playable" id="square-6-3"><div class="piece black" title="black"></div></div><div class="square light" id="square-6-4"><div class="piece black" title="black"></div></div><div class="square dark playable" id="square-6-5"><div class="piece black" title="black"></div></div><div class="square light" id="square-6-6"><div class="piece black" title="black"></div></div><div class="square dark playable" id="square-6-7"><div class="piece black" title="black"></div></div><div class="square dark playable" id="square-7-0"></div><div class="square light" id="square-7-1"></div><div class="square dark playable" id="square-7-2"></div><div class="square light" id="square-7-3"></div><div class="square dark playable" id="square-7-4"></div><div class="square light" id="square-7-5"></div><div class="square dark playable" id="square-7-6"></div><div class="square light" id="square-7-7"></div>
-                </div>
-            </div>
-            
+        
+        <div class="status">Loading...</div>
+        <div class="board"><div class="square" data-row="0" data-col="0" style="background-color: gray;"></div><div class="square" data-row="0" data-col="1" style="background-color: blue;"></div><div class="square" data-row="0" data-col="2" style="background-color: gray;"></div><div class="square" data-row="0" data-col="3" style="background-color: blue;"></div><div class="square" data-row="0" data-col="4" style="background-color: gray;"></div><div class="square" data-row="0" data-col="5" style="background-color: blue;"></div><div class="square" data-row="0" data-col="6" style="background-color: gray;"></div><div class="square" data-row="0" data-col="7" style="background-color: blue;"></div><div class="square" data-row="1" data-col="0" style="background-color: blue;"></div><div class="square" data-row="1" data-col="1" style="background-color: gray;"></div><div class="square" data-row="1" data-col="2" style="background-color: blue;"></div><div class="square" data-row="1" data-col="3" style="background-color: gray;"></div><div class="square" data-row="1" data-col="4" style="background-color: blue;"></div><div class="square" data-row="1" data-col="5" style="background-color: gray;"></div><div class="square" data-row="1" data-col="6" style="background-color: blue;"></div><div class="square" data-row="1" data-col="7" style="background-color: gray;"></div><div class="square" data-row="2" data-col="0" style="background-color: gray;"></div><div class="square" data-row="2" data-col="1" style="background-color: blue;"></div><div class="square" data-row="2" data-col="2" style="background-color: gray;"></div><div class="square" data-row="2" data-col="3" style="background-color: blue;"></div><div class="square" data-row="2" data-col="4" style="background-color: gray;"></div><div class="square" data-row="2" data-col="5" style="background-color: blue;"></div><div class="square" data-row="2" data-col="6" style="background-color: gray;"></div><div class="square" data-row="2" data-col="7" style="background-color: blue;"></div><div class="square" data-row="3" data-col="0" style="background-color: blue;"></div><div class="square" data-row="3" data-col="1" style="background-color: gray;"></div><div class="square" data-row="3" data-col="2" style="background-color: blue;"></div><div class="square" data-row="3" data-col="3" style="background-color: gray;"></div><div class="square" data-row="3" data-col="4" style="background-color: blue;"></div><div class="square" data-row="3" data-col="5" style="background-color: gray;"></div><div class="square" data-row="3" data-col="6" style="background-color: blue;"></div><div class="square" data-row="3" data-col="7" style="background-color: gray;"></div><div class="square" data-row="4" data-col="0" style="background-color: gray;"></div><div class="square" data-row="4" data-col="1" style="background-color: blue;"></div><div class="square" data-row="4" data-col="2" style="background-color: gray;"></div><div class="square" data-row="4" data-col="3" style="background-color: blue;"></div><div class="square" data-row="4" data-col="4" style="background-color: gray;"></div><div class="square" data-row="4" data-col="5" style="background-color: blue;"></div><div class="square" data-row="4" data-col="6" style="background-color: gray;"></div><div class="square" data-row="4" data-col="7" style="background-color: blue;"></div><div class="square" data-row="5" data-col="0" style="background-color: blue;"></div><div class="square" data-row="5" data-col="1" style="background-color: gray;"></div><div class="square" data-row="5" data-col="2" style="background-color: blue;"></div><div class="square" data-row="5" data-col="3" style="background-color: gray;"></div><div class="square" data-row="5" data-col="4" style="background-color: blue;"></div><div class="square" data-row="5" data-col="5" style="background-color: gray;"></div><div class="square" data-row="5" data-col="6" style="background-color: blue;"></div><div class="square" data-row="5" data-col="7" style="background-color: gray;"></div><div class="square" data-row="6" data-col="0" style="background-color: gray;"></div><div class="square" data-row="6" data-col="1" style="background-color: blue;"></div><div class="square" data-row="6" data-col="2" style="background-color: gray;"></div><div class="square" data-row="6" data-col="3" style="background-color: blue;"></div><div class="square" data-row="6" data-col="4" style="background-color: gray;"></div><div class="square" data-row="6" data-col="5" style="background-color: blue;"></div><div class="square" data-row="6" data-col="6" style="background-color: gray;"></div><div class="square" data-row="6" data-col="7" style="background-color: blue;"></div><div class="square" data-row="7" data-col="0" style="background-color: blue;"></div><div class="square" data-row="7" data-col="1" style="background-color: gray;"></div><div class="square" data-row="7" data-col="2" style="background-color: blue;"></div><div class="square" data-row="7" data-col="3" style="background-color: gray;"></div><div class="square" data-row="7" data-col="4" style="background-color: blue;"></div><div class="square" data-row="7" data-col="5" style="background-color: gray;"></div><div class="square" data-row="7" data-col="6" style="background-color: blue;"></div><div class="square" data-row="7" data-col="7" style="background-color: gray;"></div></div>
+        
+        <div class="controls">
+            <button class="reset-btn">↻ Reset</button>
+            <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
         </div>
     </div>
 
     <script>
-        let isRolling = false;
+        // ===== GAME ENGINE (Embedded) =====
+        class Game {
+            constructor(boardSize, direction, pieces_config) {
+                this.boardSize = boardSize;
+                this.pieces = new Map();
+                this.currentPlayer = 0;
+                this.gameOver = false;
+                this.winner = null;
+                this.direction = direction;
+                this.pieces_config = pieces_config;
+                this.nextId = 0;
+                this.initBoard();
+            }
 
-        function throwDice() {
-            const diceElement = document.querySelector('.dice');
-            const resultElement = document.querySelector('.dice-result');
-            const button = document.querySelector('.throw-button');
-            
-            if (isRolling) return;
-            
-            isRolling = true;
-            button.disabled = true;
-            resultElement.textContent = '';
+            initBoard() {
+                for (let playerId = 0; playerId < this.pieces_config.length; playerId++) {
+                    const cfg = this.pieces_config[playerId];
+                    const positions = this.getStartPositions(playerId, cfg.quantity);
+                    
+                    for (const pos of positions) {
+                        const piece = {
+                            id: `p${this.nextId++}`,
+                            name: cfg.name,
+                            player: playerId,
+                            color: cfg.color,
+                            row: pos.row,
+                            col: pos.col,
+                        };
+                        this.pieces.set(piece.id, piece);
+                    }
+                }
+            }
 
-            // Add rolling animation
-            diceElement.classList.add('rolling');
+            getStartPositions(playerId, quantity) {
+                const pos = [];
+                const size = this.boardSize;
 
-            // Simulate dice roll
-            setTimeout(() => {
-                const faces = parseInt(diceElement.dataset.faces) || 6;
-                const result = Math.floor(Math.random() * faces) + 1;
+                if (this.pieces_config.length === 2) {
+                    const isSecond = playerId === 1;
+                    if (this.direction === 'diagonal') {
+                        let placed = 0;
+                        if (isSecond) {
+                            for (let r = size - 1; r >= 0 && placed < quantity; r--) {
+                                for (let c = size - 1; c >= 0 && placed < quantity; c--) {
+                                    if ((r + c) % 2 === 1) {
+                                        pos.push({ row: r, col: c });
+                                        placed++;
+                                    }
+                                }
+                            }
+                        } else {
+                            for (let r = 0; r < size && placed < quantity; r++) {
+                                for (let c = 0; c < size && placed < quantity; c++) {
+                                    if ((r + c) % 2 === 1) {
+                                        pos.push({ row: r, col: c });
+                                        placed++;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        let placed = 0;
+                        if (isSecond) {
+                            for (let r = size - 2; r >= 0 && placed < quantity; r--) {
+                                for (let c = 0; c < size && placed < quantity; c++) {
+                                    pos.push({ row: r, col: c });
+                                    placed++;
+                                }
+                            }
+                        } else {
+                            for (let r = 1; r < size && placed < quantity; r++) {
+                                for (let c = 0; c < size && placed < quantity; c++) {
+                                    pos.push({ row: r, col: c });
+                                    placed++;
+                                }
+                            }
+                        }
+                    }
+                }
+                return pos;
+            }
+
+            getLegalMoves() {
+                const moves = [];
+                this.pieces.forEach((piece) => {
+                    if (piece.player === this.currentPlayer) {
+                        moves.push(...this.getMovesForPiece(piece));
+                    }
+                });
+                return moves;
+            }
+
+            getMovesForPiece(piece) {
+                const moves = [];
                 
-                diceElement.classList.remove('rolling');
-                resultElement.textContent = '🎲 ' + result;
+                // First check for capture moves (jumps)
+                const jumpMoves = this.getJumpMoves(piece, new Set());
                 
-                isRolling = false;
-                button.disabled = false;
-            }, 600);
+                if (jumpMoves.length > 0) {
+                    return jumpMoves; // Return all jumps (including chains)
+                }
+                
+                // Otherwise allow normal moves
+                let dirs = this.direction === 'diagonal'
+                    ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+                    : this.direction === 'orthogonal'
+                        ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
+                        : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+
+                // Filter based on direction type
+                if (this.direction === 'diagonal') {
+                    // Diagonal: only forward (no backward)
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr]) => dr > 0);
+                    } else {
+                        dirs = dirs.filter(([dr]) => dr < 0);
+                    }
+                } else if (this.direction === 'orthogonal') {
+                    // Orthogonal: allow forward and sideways, but not backward
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
+                    } else {
+                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    }
+                }
+                // else: all-directions mode, no filtering needed
+
+                for (const [dr, dc] of dirs) {
+                    const newRow = piece.row + dr;
+                    const newCol = piece.col + dc;
+
+                    if (newRow < 0 || newRow >= this.boardSize || newCol < 0 || newCol >= this.boardSize) {
+                        continue;
+                    }
+
+                    const targetPiece = this.getPieceAt(newRow, newCol);
+                    if (!targetPiece) {
+                        moves.push({ 
+                            from: { row: piece.row, col: piece.col }, 
+                            to: { row: newRow, col: newCol } 
+                        });
+                    }
+                }
+
+                return moves;
+            }
+
+            getJumpMoves(piece, capturedIds, originalFrom = null) {
+                // originalFrom keeps track of the ACTUAL piece starting position for chain jumps
+                if (originalFrom === null) {
+                    originalFrom = { row: piece.row, col: piece.col };
+                }
+                
+                const moves = [];
+                let dirs = this.direction === 'diagonal'
+                    ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+                    : this.direction === 'orthogonal'
+                        ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
+                        : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+
+                // Filter based on direction type
+                if (this.direction === 'diagonal') {
+                    // Diagonal: only forward jumps
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr]) => dr > 0);
+                    } else {
+                        dirs = dirs.filter(([dr]) => dr < 0);
+                    }
+                } else if (this.direction === 'orthogonal') {
+                    // Orthogonal: allow forward jumps and sideways jumps
+                    if (piece.player === 0) {
+                        dirs = dirs.filter(([dr, dc]) => dr > 0 || dc !== 0);  // Forward or sideways
+                    } else {
+                        dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);  // Forward or sideways
+                    }
+                }
+                // else: all-directions mode, no filtering needed
+
+                for (const [dr, dc] of dirs) {
+                    const targetRow = piece.row + dr;
+                    const targetCol = piece.col + dc;
+                    const landRow = piece.row + dr * 2;
+                    const landCol = piece.col + dc * 2;
+
+                    if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
+                        continue;
+                    }
+
+                    const targetPiece = this.getPieceAt(targetRow, targetCol);
+                    
+                    if (targetPiece && targetPiece.player !== piece.player && !capturedIds.has(targetPiece.id)) {
+                        const landingPiece = this.getPieceAt(landRow, landCol);
+                        
+                        if (!landingPiece) {
+                            const newCapturedIds = new Set(capturedIds);
+                            newCapturedIds.add(targetPiece.id);
+                            
+                            // IMPORTANT: Use originalFrom, not piece.row/col!
+                            const jumpMove = {
+                                from: { row: originalFrom.row, col: originalFrom.col },
+                                to: { row: landRow, col: landCol },
+                                capturedIds: Array.from(newCapturedIds)
+                            };
+                            
+                            moves.push(jumpMove);
+                            
+                            // Check for chain jumps from the new position
+                            const tempPiece = { ...piece, row: landRow, col: landCol };
+                            const chainMoves = this.getJumpMoves(tempPiece, newCapturedIds, originalFrom);
+                            
+                            if (chainMoves.length > 0) {
+                                moves.push(...chainMoves);
+                            }
+                        }
+                    }
+                }
+
+                return moves;
+            }
+
+            getPieceAt(row, col) {
+                for (const piece of this.pieces.values()) {
+                    if (piece.row === row && piece.col === col) return piece;
+                }
+                return null;
+            }
+
+            executeMove(move) {
+                // VALIDATE MOVE FIRST
+                const legalMoves = this.getLegalMoves();
+                const isLegal = legalMoves.some(m => 
+                    m.from.row === move.from.row &&
+                    m.from.col === move.from.col &&
+                    m.to.row === move.to.row &&
+                    m.to.col === move.to.col
+                );
+                
+                if (!isLegal) {
+                    return false;
+                }
+
+                const piece = this.getPieceAt(move.from.row, move.from.col);
+                if (!piece) {
+                    return false;
+                }
+
+                // Check distance to determine if it's a jump
+                const rowDist = Math.abs(move.to.row - move.from.row);
+                const colDist = Math.abs(move.to.col - move.from.col);
+
+                if (rowDist > 1 || colDist > 1) {
+                    // IT'S A JUMP - remove all pieces on the path
+                    
+                    // Calculate step direction
+                    const rowStep = move.to.row > move.from.row ? 1 : 
+                                   move.to.row < move.from.row ? -1 : 0;
+                    const colStep = move.to.col > move.from.col ? 1 : 
+                                   move.to.col < move.from.col ? -1 : 0;
+                    
+                    // Walk each square on the path
+                    let row = move.from.row + rowStep;
+                    let col = move.from.col + colStep;
+                    
+                    while (row !== move.to.row || col !== move.to.col) {
+                        const pathPiece = this.getPieceAt(row, col);
+                        
+                        if (pathPiece && pathPiece.player !== piece.player) {
+                            this.pieces.delete(pathPiece.id);
+                        }
+                        
+                        // Move to next square
+                        if (row !== move.to.row) row += rowStep;
+                        if (col !== move.to.col) col += colStep;
+                    }
+                }
+
+                // Move the piece
+                piece.row = move.to.row;
+                piece.col = move.to.col;
+
+                this.checkWin();
+                if (!this.gameOver) {
+                    this.currentPlayer = 1 - this.currentPlayer;
+                }
+                return true;
+            }
+
+            checkWin() {
+                const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
+                const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
+
+                if (p1Pieces.length === 0) {
+                    this.gameOver = true;
+                    this.winner = 0;
+                } else if (p0Pieces.length === 0) {
+                    this.gameOver = true;
+                    this.winner = 1;
+                }
+            }
+
+            reset() {
+                this.pieces.clear();
+                this.currentPlayer = 0;
+                this.gameOver = false;
+                this.winner = null;
+                this.nextId = 0;
+                this.initBoard();
+            }
         }
 
-        // Make throw button clickable
-        document.addEventListener('DOMContentLoaded', function() {
-            const button = document.querySelector('.throw-button');
-            if (button) {
-                button.addEventListener('click', throwDice);
+        // ===== BOT PLAYER =====
+        class Bot {
+            constructor(game, playerId) {
+                this.game = game;
+                this.playerId = playerId;
             }
-        });
-    </script>
 
+            makeMove() {
+                if (this.game.currentPlayer !== this.playerId || this.game.gameOver) {
+                    return null;
+                }
+
+                const legalMoves = this.game.getLegalMoves();
+
+                if (legalMoves.length === 0) {
+                    console.log(`Bot (Player ${this.playerId}) has no legal moves`);
+                    return null;
+                }
+
+                const randomIndex = Math.floor(Math.random() * legalMoves.length);
+                const selectedMove = legalMoves[randomIndex];
+
+                const success = this.game.executeMove(selectedMove);
+
+                if (success) {
+                    console.log(`Bot (Player ${this.playerId}) played:`, selectedMove);
+                    return selectedMove;
+                }
+
+                return null;
+            }
+
+            async makeMoveWithDelay(delayMs = 500) {
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+                return this.makeMove();
+            }
+        }
+
+        // ===== UI CONTROLLER =====
+        class UI {
+            constructor(game) {
+                this.game = game;
+                this.selected = null;
+                this.mode = 'pvp'; // pvp, pvb, bvb
+                this.bot1 = new Bot(game, 1);
+                this.bot0 = new Bot(game, 0);
+                this.isProcessing = false;
+                this.stopBotLoop = false;
+                
+                this.setupEvents();
+                this.render();
+            }
+
+            setupEvents() {
+                const squares = document.querySelectorAll('.square');
+                squares.forEach((square) => {
+                    square.addEventListener('click', (e) => this.handleClick(e));
+                });
+
+                const resetBtn = document.querySelector('.reset-btn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => {
+                        this.game.reset();
+                        this.selected = null;
+                        this.render();
+                        this.checkBotTurn();
+                    });
+                }
+
+                const botBtn = document.querySelector('.bot-btn');
+                if (botBtn) {
+                    botBtn.addEventListener('click', async () => {
+                        await this.triggerBotMove();
+                    });
+                }
+
+                const modeBtns = document.querySelectorAll('.mode-btn');
+                modeBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const newMode = btn.dataset.mode;
+                        this.setMode(newMode);
+                    });
+                });
+            }
+
+            setMode(newMode) {
+                this.stopBotLoop = true;
+                this.mode = newMode;
+                this.game.reset();
+                this.selected = null;
+                
+                const modeBtns = document.querySelectorAll('.mode-btn');
+                modeBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === newMode);
+                });
+
+                const botBtn = document.querySelector('.bot-btn');
+                if (botBtn) {
+                    botBtn.style.display = newMode === 'pvb' ? 'inline-block' : 'none';
+                }
+
+                this.render();
+
+                setTimeout(() => {
+                    this.stopBotLoop = false;
+                    this.checkBotTurn();
+                }, 100);
+            }
+
+            async handleClick(e) {
+                if (this.isProcessing || this.game.gameOver) return;
+
+                // Disable clicks in bot vs bot mode
+                if (this.mode === 'bvb') return;
+
+                // In pvb mode, disable clicks when it's bot's turn
+                if (this.mode === 'pvb' && this.game.currentPlayer === 1) return;
+
+                const target = e.target;
+                const square = target?.closest?.('.square');
+                if (!square) return;
+
+                const rowStr = square.getAttribute('data-row');
+                const colStr = square.getAttribute('data-col');
+                
+                if (!rowStr || !colStr) return;
+                
+                const row = parseInt(rowStr, 10);
+                const col = parseInt(colStr, 10);
+                const clickedPiece = this.getPieceAt(row, col);
+
+                if (!this.selected) {
+                    // Initial selection
+                    if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                        this.selected = clickedPiece;
+                        this.render();
+                    }
+                } else {
+                    // If clicking on another piece of same player => change selection
+                    if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                        this.selected = clickedPiece;
+                        this.render();
+                        return;
+                    }
+
+                    // Try to move
+                    const move = {
+                        from: { row: this.selected.row, col: this.selected.col },
+                        to: { row, col }
+                    };
+
+                    // Find the legal move that matches this destination
+                    const legalMoves = this.game.getLegalMoves();
+                    const matchingMove = legalMoves.find(m => 
+                        m.from.row === move.from.row &&
+                        m.from.col === move.from.col &&
+                        m.to.row === move.to.row &&
+                        m.to.col === move.to.col
+                    );
+
+                    // Use the legal move (which has capturedIds if it's a jump)
+                    const moveToExecute = matchingMove || move;
+
+                    if (this.game.executeMove(moveToExecute)) {
+                        this.selected = null;
+                        this.render();
+                        await this.checkBotTurn();
+                    }
+                }
+            }
+
+            async triggerBotMove() {
+                if (this.isProcessing || this.game.gameOver) return;
+                
+                this.isProcessing = true;
+                this.render();
+
+                if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
+                    await this.bot1.makeMoveWithDelay(500);
+                }
+
+                this.isProcessing = false;
+                this.render();
+            }
+
+            async checkBotTurn() {
+                if (this.game.gameOver || this.isProcessing) return;
+
+                if (this.mode === 'bvb') {
+                    // Bot vs Bot mode - both bots play
+                    this.isProcessing = true;
+                    this.stopBotLoop = false;
+                    
+                    while (!this.game.gameOver && !this.stopBotLoop && this.mode === 'bvb') {
+                        this.render();
+                        await new Promise(resolve => setTimeout(resolve, 800));
+                        
+                        if (this.stopBotLoop || this.mode !== 'bvb') break;
+                        
+                        if (this.game.currentPlayer === 0) {
+                            await this.bot0.makeMoveWithDelay(100);
+                        } else {
+                            await this.bot1.makeMoveWithDelay(100);
+                        }
+                        
+                        if (this.game.gameOver || this.stopBotLoop || this.mode !== 'bvb') break;
+                    }
+                    
+                    this.isProcessing = false;
+                    this.render();
+                } else if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
+                    // Player vs Bot mode - bot plays as player 1
+                    this.isProcessing = true;
+                    this.render();
+                    await this.bot1.makeMoveWithDelay(500);
+                    this.isProcessing = false;
+                    this.render();
+                }
+            }
+
+            getPieceAt(row, col) {
+                for (const piece of this.game.pieces.values()) {
+                    if (piece.row === row && piece.col === col) return piece;
+                }
+                return null;
+            }
+
+            render() {
+                const squares = document.querySelectorAll('.square');
+                
+                squares.forEach((sq) => {
+                    const square = sq;
+                    const rowStr = square.getAttribute('data-row');
+                    const colStr = square.getAttribute('data-col');
+                    
+                    if (!rowStr || !colStr) return;
+                    
+                    const row = parseInt(rowStr, 10);
+                    const col = parseInt(colStr, 10);
+
+                    square.innerHTML = '';
+                    square.classList.remove('selected');
+
+                    const piece = this.getPieceAt(row, col);
+                    if (piece) {
+                        const el = document.createElement('div');
+                        el.className = `piece ${piece.color}`;
+                        el.textContent = piece.name[0].toUpperCase();
+                        el.title = piece.name;
+                        square.appendChild(el);
+                    }
+
+                    if (this.selected && this.selected.row === row && this.selected.col === col) {
+                        square.classList.add('selected');
+                    }
+                });
+
+                const status = document.querySelector('.status');
+                const botBtn = document.querySelector('.bot-btn');
+                
+                if (status) {
+                    if (this.game.gameOver) {
+                        const winner = this.game.winner !== null ? this.game.winner + 1 : 'unknown';
+                        const winnerName = this.mode === 'bvb' ? `Bot ${winner}` : 
+                                         (this.mode === 'pvb' && this.game.winner === 1) ? 'Bot' : 
+                                         `Player ${winner}`;
+                        status.textContent = `🎉 ${winnerName} wins!`;
+                    } else if (this.isProcessing) {
+                        status.textContent = '🤖 Bot is thinking...';
+                    } else {
+                        const currentName = this.mode === 'bvb' ? `Bot ${this.game.currentPlayer + 1}` :
+                                          (this.mode === 'pvb' && this.game.currentPlayer === 1) ? 'Bot' :
+                                          `Player ${this.game.currentPlayer + 1}`;
+                        status.textContent = `${currentName}'s turn`;
+                    }
+                }
+
+                if (botBtn) {
+                    botBtn.disabled = this.isProcessing || this.game.gameOver || 
+                                     this.mode !== 'pvb' || this.game.currentPlayer !== 1;
+                }
+            }
+        }
+
+        // ===== INITIALIZE GAME =====
+        const config = {"boardSize":8,"direction":"orthogonal","pieces":[{"name":"white","color":"white","quantity":8},{"name":"black","color":"black","quantity":8}]};
+        const game = new Game(config.boardSize, config.direction, config.pieces);
+        const ui = new UI(game);
+    </script>
 </body>
 </html>

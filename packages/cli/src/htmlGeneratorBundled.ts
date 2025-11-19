@@ -599,6 +599,7 @@ export function generateBundledHTML(model: Damier): string {
                 this.bot1 = new Bot(game, 1);
                 this.bot0 = new Bot(game, 0);
                 this.isProcessing = false;
+                this.stopBotLoop = false;
                 
                 this.setupEvents();
                 this.render();
@@ -637,6 +638,7 @@ export function generateBundledHTML(model: Damier): string {
             }
 
             setMode(newMode) {
+                this.stopBotLoop = true;
                 this.mode = newMode;
                 this.game.reset();
                 this.selected = null;
@@ -652,7 +654,11 @@ export function generateBundledHTML(model: Damier): string {
                 }
 
                 this.render();
-                this.checkBotTurn();
+
+                setTimeout(() => {
+                    this.stopBotLoop = false;
+                    this.checkBotTurn();
+                }, 100);
             }
 
             async handleClick(e) {
@@ -737,10 +743,13 @@ export function generateBundledHTML(model: Damier): string {
                 if (this.mode === 'bvb') {
                     // Bot vs Bot mode - both bots play
                     this.isProcessing = true;
+                    this.stopBotLoop = false;
                     
-                    while (!this.game.gameOver) {
+                    while (!this.game.gameOver && !this.stopBotLoop && this.mode === 'bvb') {
                         this.render();
                         await new Promise(resolve => setTimeout(resolve, 800));
+                        
+                        if (this.stopBotLoop || this.mode !== 'bvb') break;
                         
                         if (this.game.currentPlayer === 0) {
                             await this.bot0.makeMoveWithDelay(100);
@@ -748,7 +757,7 @@ export function generateBundledHTML(model: Damier): string {
                             await this.bot1.makeMoveWithDelay(100);
                         }
                         
-                        if (this.game.gameOver) break;
+                        if (this.game.gameOver || this.stopBotLoop || this.mode !== 'bvb') break;
                     }
                     
                     this.isProcessing = false;
