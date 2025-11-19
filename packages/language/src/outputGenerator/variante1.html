@@ -173,10 +173,10 @@
             background: #45a049;
         }
         
-        .end-btn {
+        .forfait-btn {
             background: #FF5722;
         }
-        .end-btn:hover {
+        .forfait-btn:hover {
             background: #E64A19;
         }
 
@@ -185,6 +185,95 @@
         }
         .bot-btn:hover {
             background: #7B1FA2;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 22px;
+        }
+
+        .modal-content p {
+            margin-bottom: 25px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 10px 25px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-btn {
+            background: #FF5722;
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background: #E64A19;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .cancel-btn {
+            background: #757575;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #616161;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .mode-selector {
@@ -239,7 +328,19 @@
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
             <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
-            <button class="end-btn">🏁 End Game</button>
+            <button class="forfait-btn">🏳️ Forfait</button>
+        </div>
+
+        <!-- Forfait Confirmation Modal -->
+        <div class="modal" id="forfaitModal">
+            <div class="modal-content">
+                <h2>Forfait Confirmation</h2>
+                <p>Are you sure you want to forfait? You will lose the game.</p>
+                <div class="modal-buttons">
+                    <button class="confirm-btn" id="confirmForfait">Yes, Forfait</button>
+                    <button class="cancel-btn" id="cancelForfait">No, Continue</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -700,17 +801,34 @@
                     });
                 }
                 
-                const endBtn = document.querySelector('.end-btn');
-                    if (endBtn) {
-                        endBtn.addEventListener('click', () => {
-                            if (!this.game.gameOver) {
-                                this.stopBotLoop = true;
-                                this.game.forceEndGame();
-                                this.selected = null;
-                                this.render();
-                            }
-                        });
-                    }
+                const forfaitBtn = document.querySelector('.forfait-btn');
+                const forfaitModal = document.getElementById('forfaitModal');
+                const confirmForfait = document.getElementById('confirmForfait');
+                const cancelForfait = document.getElementById('cancelForfait');
+
+                if (forfaitBtn) {
+                    forfaitBtn.addEventListener('click', () => {
+                        if (!this.game.gameOver) {
+                            forfaitModal.classList.add('active');
+                        }
+                    });
+                }
+
+                if (confirmForfait) {
+                    confirmForfait.addEventListener('click', () => {
+                        this.stopBotLoop = true;
+                        this.game.forceEndGame();
+                        this.selected = null;
+                        forfaitModal.classList.remove('active');
+                        this.render();
+                    });
+                }
+
+                if (cancelForfait) {
+                    cancelForfait.addEventListener('click', () => {
+                        forfaitModal.classList.remove('active');
+                    });
+                }
 
                 const modeBtns = document.querySelectorAll('.mode-btn');
                 modeBtns.forEach(btn => {
@@ -886,7 +1004,6 @@
                         if (piece.isQueen) {
                             el.classList.add('queen');
                         }
-                        el.textContent = piece.name[0].toUpperCase();
                         el.title = piece.isQueen ? piece.name + ' (Queen)' : piece.name;
                         square.appendChild(el);
                     }
