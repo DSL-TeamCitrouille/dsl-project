@@ -1,79 +1,82 @@
 // packages/cli/src/htmlGenerator.ts
-import type { Damier, MoveRule } from "dam-dam-language";
+import type { CaptureRule, Damier, MoveRule } from "dam-dam-language";
 
 export function generateHTML(model: Damier): string {
-  const size = model.board.size;
-  const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
-  const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
-  const direction = moveRule?.direction || 'any';
-  const theme = model.ui?.theme;
-  const dice = model.dice;
+    const size = model.board.size;
+    const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
+    const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
+    const mandatoryRule = model.rules.rule.find((r: any): r is CaptureRule => 'mandatory' in r);
+    const mandatoryCapture = mandatoryRule?.mandatory || false;
+    const direction = moveRule?.direction || 'any';
+    const theme = model.ui?.theme;
+    const dice = model.dice;
 
-  let firstPlayerIndex = 0;
-    if (playerRule?.firstPlayer) {
-        const firstPlayerName = playerRule.firstPlayer;
-        // Find the index of the piece with matching color/name
-        const pieceIndex = model.pieces.piece.findIndex((p: any) => 
-            p.name?.toLowerCase() === firstPlayerName?.toLowerCase() || 
-            p.color?.toLowerCase() === firstPlayerName?.toLowerCase()
-        );
-        firstPlayerIndex = pieceIndex >= 0 ? pieceIndex : 0;
-    }
-    const firstPlayer = firstPlayerIndex;
-
-
-  const lightColor = theme?.lightSquares || '#f0d9b5';
-  const darkColor = theme?.darkSquares || '#b58863';
-
-  let boardHTML = '';
-    for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-            const isDark = (r + c) % 2 === 1;
-            const color = isDark ? darkColor : lightColor;
-            boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
-    
+    let firstPlayerIndex = 0;
+        if (playerRule?.firstPlayer) {
+            const firstPlayerName = playerRule.firstPlayer;
+            // Find the index of the piece with matching color/name
+            const pieceIndex = model.pieces.piece.findIndex((p: any) => 
+                p.name?.toLowerCase() === firstPlayerName?.toLowerCase() || 
+                p.color?.toLowerCase() === firstPlayerName?.toLowerCase()
+            );
+            firstPlayerIndex = pieceIndex >= 0 ? pieceIndex : 0;
         }
-  }
+        const firstPlayer = firstPlayerIndex;
 
-  let diceHTML = dice ? generateDiceHTML(dice.faces):'';
-    if (dice) {
-    diceHTML = `
-        <div style="margin-left: 40px; min-width: 200px;">
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h3 style="color: #1e3c72; margin: 0 0 15px 0; text-align: center;">🎲 Dice</h3>
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <div class="dice" data-faces="${dice.faces}" style="width: 40px; height: 40px; background: white; border: 3px solid #333; border-radius: 12px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.1s;">
-                        🎲
+
+    const lightColor = theme?.lightSquares || '#f0d9b5';
+    const darkColor = theme?.darkSquares || '#b58863';
+
+    let boardHTML = '';
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                const isDark = (r + c) % 2 === 1;
+                const color = isDark ? darkColor : lightColor;
+                boardHTML += `<div class="square" data-row="${r}" data-col="${c}" style="background-color: ${color};"></div>`;
+        
+            }
+    }
+
+    let diceHTML = dice ? generateDiceHTML(dice.faces):'';
+        if (dice) {
+        diceHTML = `
+            <div style="margin-left: 40px; min-width: 200px;">
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h3 style="color: #1e3c72; margin: 0 0 15px 0; text-align: center;">🎲 Dice</h3>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div class="dice" data-faces="${dice.faces}" style="width: 40px; height: 40px; background: white; border: 3px solid #333; border-radius: 12px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.1s;">
+                            🎲
+                        </div>
                     </div>
+                    <div class="dice-result"></div>
+                    <button class="throw-button" style="width: 100%; padding: 12px; font-size: 14px; border: none; border-radius: 6px; background: #FF9800; color: white; cursor: pointer; font-weight: bold; transition: all 0.2s;">
+                        Throw Dice
+                    </button>
                 </div>
-                <div class="dice-result"></div>
-                <button class="throw-button" style="width: 100%; padding: 12px; font-size: 14px; border: none; border-radius: 6px; background: #FF9800; color: white; cursor: pointer; font-weight: bold; transition: all 0.2s;">
-                    Throw Dice
-                </button>
             </div>
+        `;
+        }
+
+        function generateDiceHTML(faces: number): string {
+    return `
+        <div class="dice-container">
+            <h3 style="color: #1e3c72; margin: 0;">🎲 Dice</h3>
+            <div class="dice-display">
+                <div class="dice" data-faces="${faces}">
+                </div>
+            </div>
+            <div class="dice-result"></div>
+            <button class="throw-button">Throw Dice</button>
         </div>
     `;
-      }
-
-    function generateDiceHTML(faces: number): string {
-  return `
-    <div class="dice-container">
-        <h3 style="color: #1e3c72; margin: 0;">🎲 Dice</h3>
-        <div class="dice-display">
-            <div class="dice" data-faces="${faces}">
-            </div>
-        </div>
-        <div class="dice-result"></div>
-        <button class="throw-button">Throw Dice</button>
-    </div>
-  `;
-}
+    }
 
   // Serialize game config
     const gameConfig = {
         boardSize: size,
         direction,
         firstPlayer,
+        mandatoryCapture,
         pieces: model.pieces.piece.map((p: any) => ({
             name: p.name,
             color: p.color,
@@ -431,18 +434,23 @@ export function generateHTML(model: Damier): string {
         }
 
         .toggle-hints-btn {
-            display: flex;
+            display: center;
             gap: 10px;
             justify-content: center;
             margin-bottom: 15px;
             }
 
         .toggle-hints-btn:hover {
-            background-color: rgba(218, 76, 253, 0.4);
+            background-color: #1976D2;
         }
 
         .toggle-hints-btn.active {
-            background-color: #da4cfd;
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .toggle-hints-btn {
+            background-color: #eee;
             color: white;
         }
     </style>

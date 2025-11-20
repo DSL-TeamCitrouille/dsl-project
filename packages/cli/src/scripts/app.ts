@@ -13,7 +13,7 @@ if (!cfg) {
   console.error("Missing window.__GAME_CONFIG");
 } else {
   const diceConfig = cfg.dice || null;
-  const game = new Game(cfg.boardSize, cfg.direction, cfg.pieces, cfg.firstPlayer, cfg.isCaptureManutory, diceConfig);
+  const game = new Game(cfg.boardSize, cfg.direction, cfg.pieces, cfg.firstPlayer, cfg.mandatoryCapture, diceConfig);
   const ui = new UI(game);
 
   // Setup dice functionality

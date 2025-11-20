@@ -139,34 +139,60 @@ export class Game {
     if (this.pieces_config.length === 1) {
       const moves: Move[] = [];
       this.pieces.forEach((piece) => {
-        moves.push(...this.getMovesForPiece(piece));
+        moves.push(...this.getMovesForPiece(piece, false));
       });
       return moves;
     }
 
     const moves: Move[] = [];
-    this.pieces.forEach((piece) => {
-      if (piece.player === this.currentPlayer) {
-        moves.push(...this.getMovesForPiece(piece));
-      }
-    });
+    
+    // If mandatory capture is enabled, check if ANY piece can capture
+    if (this.isCaptureManutory) {
+      let hasAnyCaptures = false;
+      
+      // First pass: check if any piece can capture
+      this.pieces.forEach((piece) => {
+        if (piece.player === this.currentPlayer) {
+          const jumpMoves = this.getJumpMoves(piece, new Set());
+          if (jumpMoves.length > 0) {
+            hasAnyCaptures = true;
+          }
+        }
+      });
+      
+      // Second pass: if captures exist, only return capture moves; otherwise return all moves
+      this.pieces.forEach((piece) => {
+        if (piece.player === this.currentPlayer) {
+          if (hasAnyCaptures) {
+            // Only add capture moves if any captures are available
+            const jumpMoves = this.getJumpMoves(piece, new Set());
+            moves.push(...jumpMoves);
+          } else {
+            // No captures available, add all moves (regular non-capture moves)
+            moves.push(...this.getMovesForPiece(piece, true));
+          }
+        }
+      });
+    } else {
+      // No mandatory capture rule, proceed normally
+      this.pieces.forEach((piece) => {
+        if (piece.player === this.currentPlayer) {
+          moves.push(...this.getMovesForPiece(piece, false));
+        }
+      });
+    }
+    
     return moves;
   }
 
-  getMovesForPiece(piece: Piece) {
+  getMovesForPiece(piece: Piece, skipJumps: boolean = false) {
     const moves = [];
     
     // First check for capture moves (jumps)
     const jumpMoves = this.getJumpMoves(piece, new Set());
     
-     // If capture is mandatory and this piece can capture, return ONLY capture moves
-    if (this.isCaptureManutory && jumpMoves.length > 0) {
-        return jumpMoves; // Must capture if possible
-    }
-    
-    // If capture is NOT mandatory, return captures along with regular moves
-    // This gives the player freedom to choose
-    if (jumpMoves.length > 0) {
+    // If we should skip jump checking (when called from getLegalMoves with no captures), don't add them
+    if (!skipJumps && jumpMoves.length > 0) {
         moves.push(...jumpMoves); // Add all jumps
     }
     

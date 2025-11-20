@@ -158,6 +158,27 @@ export class UI {
         if (!this.selected) {
             // Initial selection
             if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
+                // If mandatory capture is enabled, check if this piece has capture moves available
+                if (this.game.isCaptureManutory) {
+                    const allLegalMoves = this.game.getLegalMoves();
+                    const hasCaptureMoves = allLegalMoves.some(m => m.capturedIds && m.capturedIds.length > 0);
+                    
+                    if (hasCaptureMoves) {
+                        // If there are captures available anywhere, only allow selecting pieces that can capture
+                        const pieceCanCapture = allLegalMoves.some(m =>
+                            m.from.row === clickedPiece.row &&
+                            m.from.col === clickedPiece.col &&
+                            m.capturedIds &&
+                            m.capturedIds.length > 0
+                        );
+                        
+                        if (!pieceCanCapture) {
+                            this.updateStatus('⚠️ Mandatory capture! You must capture with another piece.');
+                            return;
+                        }
+                    }
+                }
+                
                 this.selected = clickedPiece;
                 this.render();
             }
