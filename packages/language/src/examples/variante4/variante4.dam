@@ -36,7 +36,6 @@ game DamDamFastDark {
   }
 
   settings {
-    animationSpeed: 5
     showLegalMoves: false
     aiDifficulty: 3
   }

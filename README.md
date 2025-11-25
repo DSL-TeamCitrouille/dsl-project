@@ -7,6 +7,13 @@ npm run build
 ## Pour lancer les variantes avec X étant l'index de la variantes: 
 ```
 node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante1/variante1.dam packages/language/src/outputGenerator/variante1.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante2/variante2.dam packages/language/src/outputGenerator/variante2.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante3/variante3.dam packages/language/src/outputGenerator/variante3.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante4/variante4.dam packages/language/src/outputGenerator/variante4.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante5/variante5.dam packages/language/src/outputGenerator/variante5.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante6/variante6.dam packages/language/src/outputGenerator/variante6.html
+
 ```
 
 ## Pour lancer les tests
@@ -63,58 +70,81 @@ npx tsx packages/language/src/test/generation-test.ts
 
 ```
 
-# Récapitulatif des Variantes
+# Summary of Variants
 
-| Variant | Board Size | Pièces/camp | Dé | Capture Oblig. | Thème UI | Animation | IA |
-|---------|------------|-------------|----|-----------|--------------------|----------|-----------|
-| 1. Classiques | 8 | 12 | Non | Oui | Beige/Marron | 2 | 2 |
-| 2. Royal | 10 | 12 | Oui | Non | Gold/Purple | 3 | 3 |
-| 3. Limited | 8 | 8  | Non | Non | Gris/Bleu | 3 | 4 |
-| 4. FastDark | 8 | 12 | Non | Non | Jaune/Vert | 2 | 1 |
-| 5. SolitaireLight | 6 | 35 (1 joueur) | Non | Oui | Ivoire/BleuClair | 2 | 0 |
+| Variant | Board Size | Pieces/side | Movements | Dice | Capture Oblig. | Theme UI | Visual Aids | AI |
+|---------|------------|-------------|----|------------|--------------------|----------|-----------|-----|
+| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | Yes | 2 |
+| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | No | 3 |
+| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | No | 4 |
+| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | No | 3 |
+| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | Yes | 0 |
+| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | Yes | 3 |
 
-## Validation des Contraintes TP
 
-### Au moins 3 différences CT :
+# Validation of TP Constraints
 
-Variant 2 – Royal : ajout d’un dé et direction de déplacement libre (any), captures facultatives.
+## At least 3 CT differences:
 
-Variant 3 – Limited : plateau réduit et mouvements orthogonaux, moins de pièces.
+Variant 2 – Royal 
+- 6-sided dice added
+- Direction “any” + backward allowed
+- 10×10 board
 
-Variant 5 – SolitaireLight : un seul joueur, plateau 7×7, objectif totalement différent (solitaire).
+Variant 3 – Limited
+- Orthogonal only
+- Fewer pieces (8)
+- No backward
 
-### Au moins 2 différences RT :
+Variant 5 – SolitaireLight
+- Single player
+- 6×6 board
+- Completely different objective (solitaire)
 
-Variant 4 – FastDark : animation rapide (5), coups légaux désactivés (false), IA moyenne (3).
+## At least 2 RT differences:
 
-Variant 5 – SolitaireLight : animation lente (2), coups légaux affichés (true), IA désactivée (0).
+Variant 4 – FastDark: 
+- Legal moves not displayed 
+- Average AI (3)
 
-## UI/skin adaptée dans chaque variant :
+Variant 5 – SolitaireLight: 
+- Legal moves displayed
+- AI disabled (0)
 
-Variant 1 – Classic : Thème beige/marron, ambiance traditionnelle.
+## UI/skin adapted in each variant:
 
-Variant 2 – Royal : Thème or/violet, style luxueux.
+Variant 1 – Classic: 
+- Beige/brown theme.
 
-Variant 3 – Limited : Thème gris/noir/rouge, minimaliste et froid.
+Variant 2 – Royal: 
+- Gold/purple theme.
 
-Variant 4 – FastDark : Thème gris foncé/crimson, ambiance “ombre” rapide.
+Variant 3 – Limited: 
+- Gray/black theme.
 
-Variant 5 – SolitaireLight : Thème ivoire/bleu clair/vert, visuel apaisant et lumineux.
+Variant 4 – FastDark: 
+- Dark gray/crimson theme.
 
-## Différences Clés Entre les Variants
-### Compile-Time (Structure du jeu) :
+Variant 5 – SolitaireLight: 
+- Ivory/light blue/green theme.
 
-Taille plateau : varie de 6 à 10 cases (plus petit = plus rapide, plus grand = plus stratégique).
+Variant 5 – BubbleGum: 
+- Very colorful pink/light blue theme.
 
-Nombre de pions : de 8 à 48 selon la variante (1 joueur pour Solitaire).
 
-Dés : présents (variant 2 – Royal), absents (variants 1, 3, 4, 5).
+## Key Differences Between Variants
+### Compile-Time (Game Structure):
 
-Capture obligatoire : oui (variants 1, 3, 4, 5), non (variants 2).
+Board size: 6 → 10
 
-Objectif :
+Number of pieces: 8 → 35, 1 player possible
 
-- winByCapture → variants 1, 2, 3, 4
-- winBySolitaire → variant 5
-- winByForfeit -> 2, 3, 4
+Dice: present (Royal, BubbleGum) / absent
 
+Movements: diagonal, orthogonal, any
+
+Backward: depending on variant
+
+Mandatory capture: yes/no
+
+Objectives: capture / forfeit / solitaire

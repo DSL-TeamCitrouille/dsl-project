@@ -32,7 +32,7 @@ game DamDamLimited {
   }
 
   settings {
-    animationSpeed: 3
+    showLegalMoves: false
     aiDifficulty: 4
   }
 }

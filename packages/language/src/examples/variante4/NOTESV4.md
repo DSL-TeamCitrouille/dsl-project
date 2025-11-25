@@ -1,6 +1,7 @@
-Variante 4 - Fast Dark (Shadow Mode)
-- CT : Plateau réduit (8x8), déplacements diagonaux avec retour autorisé.
-- CT : Nouvelle règle d’action mixte (mouvement + capture).
-- CT : Objectif par forfait si l’adversaire ne bouge plus.
-- RT : Vitesse maximale, aucune aide.
-- UI : Thème “ombre et lumière” (gris foncé, rouge sang).
+Variant 4 - Fast Dark
+- CT : 8x8 board, 12 pieces per player.
+- CT : Diagonal movement with backward movement
+- CT : Mandatory capture (message enabled)  
+- CT : Objective: win by forfeit or by capturing all opponents
+- RT : No visual aids.
+- UI : Low-contrast dark theme

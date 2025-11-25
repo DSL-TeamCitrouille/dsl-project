@@ -1,5 +1,9 @@
-Variante 1 - Classic
-- CT : Plateau 8x8, 12 pièces par joueur.
-- CT : Déplacements diagonaux sans retour.
-- RT : Aides visuelles activées, vitesse moyenne.
-- UI : Thème clair classique (beige/marron).
+Variant 1 - Classic
+- CT : 8x8 board, 12 pieces per player.
+- CT : Diagonal moves without backward movement.
+- CT : Mandatory capture.
+- CT : Objective: win by capturing all opponents.
+- RT : Visual aids enabled.
+- UI : Classic light theme (beige/brown).
+
+

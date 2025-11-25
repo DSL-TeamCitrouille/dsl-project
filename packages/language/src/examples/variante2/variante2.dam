@@ -36,5 +36,7 @@ game DamDamRoyal {
     }
   }
 
-  settings { animationSpeed: 3 aiDifficulty: 3 }
+  settings { 
+    showLegalMoves: false
+    aiDifficulty: 3 }
 }

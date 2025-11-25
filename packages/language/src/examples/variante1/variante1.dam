@@ -34,7 +34,6 @@ game DamDamClassic {
   }
 
   settings {
-    animationSpeed: 2
     showLegalMoves: true
     aiDifficulty: 2
   }

@@ -1,5 +1,7 @@
-Variante 3 - Limited
-- CT : Déplacement orthogonal, plateau 8x8.
-- CT : Moins de pièces, captures obligatoires.
-- RT : Difficile, pas d’aides.
-- UI : Thème sombre minimaliste.
+Variant 3 - Limited
+- CT : 8x8 board, 8 pieces per player.
+- CT : Orthogonal movement whitout backward movement
+- CT : Fewer pieces, mandatory capture  
+- CT : Objective: win by forfeit or by capturing all opponents
+- RT : No visual aids, high difficulty
+- UI : Minimalist dark theme

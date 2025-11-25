@@ -1,4 +1,4 @@
-game MyDamDam{
+game DamDam BubbleGum{
     board{
         size 10
     }
@@ -41,7 +41,6 @@ game MyDamDam{
     }
 
   settings {
-    animationSpeed: 3
     showLegalMoves: true
     aiDifficulty: 3
   }
