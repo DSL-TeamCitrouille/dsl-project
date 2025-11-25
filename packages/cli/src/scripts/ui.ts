@@ -54,20 +54,6 @@ export class UI {
             });
         }
 
-        const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
-        if (botBtn) {
-            botBtn.addEventListener('click', async () => {
-                await this.triggerBotMove();
-            });
-        }
-
-        const llmBtn = document.querySelector('.llm-btn') as HTMLButtonElement;
-        if (llmBtn) {
-            llmBtn.addEventListener('click', async () => {
-                await this.triggerLLMMove();
-            });
-        }
-
         const toggleHintsBtn = document.querySelector('.toggle-hints-btn') as HTMLButtonElement;
         if (toggleHintsBtn) {
             toggleHintsBtn.classList.add('active');
@@ -128,17 +114,7 @@ export class UI {
             btn.classList.toggle('active', (btn as HTMLElement).dataset.mode === newMode);
         });
 
-        const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
-        const llmBtn = document.querySelector('.llm-btn') as HTMLButtonElement;
         const llmStatus = document.getElementById('llmStatus') as HTMLElement;
-
-        if (botBtn) {
-            botBtn.style.display = (newMode === 'pvb' || newMode === 'bvb') ? 'inline-block' : 'none';
-        }
-
-        if (llmBtn) {
-            llmBtn.style.display = (newMode === 'pvl' || newMode === 'lvl') ? 'inline-block' : 'none';
-        }
 
         if (llmStatus) {
             llmStatus.style.display = (newMode === 'pvl' || newMode === 'lvl') ? 'block' : 'none';
@@ -275,20 +251,6 @@ export class UI {
         setTimeout(() => {
             messageEl.classList.remove('show');
         }, 1500); 
-    }
-
-    private async triggerBotMove(): Promise<void> {
-        if (this.isProcessing || this.game.gameOver) return;
-
-        this.isProcessing = true;
-        this.render();
-
-        if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
-            await this.bot1.makeMoveWithDelay(500);
-        }
-
-        this.isProcessing = false;
-        this.render();
     }
 
     private async triggerLLMMove(): Promise<void> {
@@ -505,14 +467,23 @@ export class UI {
             this.render();
 
         } else if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
-            // Player vs Bot mode - bot plays as player 1
             this.isProcessing = true;
             this.render();
-            const piecesBefore = this.game.pieces.size;
-            await this.bot1.makeMoveWithDelay(500);
-            if (this.game.pieces.size < piecesBefore) {
-                this.showCaptureMessage();
+
+            if (this.game.diceConfig && this.game.mustRollDice) {
+                this.game.rollDice();
+                this.render();
+                await new Promise(r => setTimeout(r, 300));
             }
+
+            while (!this.game.gameOver && this.game.movesRemaining > 0) {
+                const piecesBefore = this.game.pieces.size;
+                await this.bot1.makeMoveWithDelay(500);
+                if (this.game.pieces.size < piecesBefore) this.showCaptureMessage();
+                this.render();
+                await new Promise(r => setTimeout(r, 300));
+            }
+
             this.isProcessing = false;
             this.render();
         } else if (this.mode === 'pvl' && this.game.currentPlayer === 1) {
@@ -596,7 +567,6 @@ export class UI {
         });
 
         const status = document.querySelector('.status') as HTMLElement;
-        const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
         const diceResult = document.querySelector('.dice-result') as HTMLElement;
         const throwButton = document.querySelector('.throw-button') as HTMLButtonElement;
 
@@ -647,10 +617,5 @@ export class UI {
                                         this.mode === 'bvb';
                     throwButton.disabled = shouldDisable;
                 }
-        
-        if (botBtn) {
-            botBtn.disabled = this.isProcessing || this.game.gameOver ||
-                this.mode !== 'pvb' || this.game.currentPlayer !== 1;
-        }
     }
 }

@@ -541,8 +541,6 @@ export function generateHTML(model: Damier, options?: any): string {
         
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
-            <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
-            <button class="llm-btn" style="display:none;">🧠 LLM Move</button>
             <button class="forfait-btn">🏳️ Forfait</button>
         </div>
 
