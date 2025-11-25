@@ -282,6 +282,27 @@ export function generateHTML(model: Damier): string {
             background: #7B1FA2;
         }
 
+        .llm-btn {
+            background: #FF6F00;
+        }
+        .llm-btn:hover {
+            background: #E65100;
+        }
+
+        .llm-btn.active {
+            background: #FFB300;
+            color: #333;
+        }
+
+        .llm-status {
+            border-color: #FF6F00 !important;
+        }
+
+        .mode-btn.llm-mode {
+            background: #FF6F00;
+            color: white;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -462,7 +483,9 @@ export function generateHTML(model: Damier): string {
         <div class="mode-selector">
             <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
             <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
+            <button class="mode-btn" data-mode="pvl">🧠 Player vs LLM</button>
             <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
+            <button class="mode-btn" data-mode="lvl">🧠🧠 LLM vs LLM</button>
         </div>
         <button class="toggle-hints-btn">💡 Aide</button>
         <div class="status">Loading...</div>
@@ -474,6 +497,7 @@ export function generateHTML(model: Damier): string {
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
             <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
+            <button class="llm-btn" style="display:none;">🧠 LLM Move</button>
             <button class="forfait-btn">🏳️ Forfait</button>
         </div>
 

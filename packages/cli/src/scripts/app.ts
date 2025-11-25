@@ -14,7 +14,7 @@ if (!cfg) {
 } else {
   const diceConfig = cfg.dice || null;
   const game = new Game(cfg.boardSize, cfg.direction, cfg.pieces, cfg.firstPlayer, cfg.mandatoryCapture, diceConfig);
-  const ui = new UI(game);
+  const ui = new UI(game);  // ✅ FIXED: Only pass game, not backendUrl
 
   // Setup dice functionality
   let isRolling = false;

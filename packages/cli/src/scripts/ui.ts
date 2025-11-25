@@ -1,11 +1,20 @@
 import { Game, Piece } from "./game.js";
 import { Bot } from "./randomBot.js";
 
-type GameMode = 'pvp' | 'pvb' | 'bvb';
+type GameMode = 'pvp' | 'pvb' | 'pvl' | 'bvb' | 'lvl';
 
 interface Position {
     row: number;
     col: number;
+}
+
+interface LLMResponse {
+    success: boolean;
+    piece_id: string;
+    target: { row: number; col: number };
+    reasoning: string;
+    cost?: string;
+    tokens_used?: number;
 }
 
 export class UI {
@@ -17,6 +26,7 @@ export class UI {
     private isProcessing: boolean = false;
     private stopBotLoop: boolean = false;
     private showLegalMoves: boolean = true;
+    private backendUrl: string = "http://127.0.0.1:5000/api/move";
 
     constructor(game: Game) {
         this.game = game;
@@ -46,6 +56,13 @@ export class UI {
         if (botBtn) {
             botBtn.addEventListener('click', async () => {
                 await this.triggerBotMove();
+            });
+        }
+
+        const llmBtn = document.querySelector('.llm-btn') as HTMLButtonElement;
+        if (llmBtn) {
+            llmBtn.addEventListener('click', async () => {
+                await this.triggerLLMMove();
             });
         }
 
@@ -110,10 +127,22 @@ export class UI {
         });
 
         const botBtn = document.querySelector('.bot-btn') as HTMLButtonElement;
+        const llmBtn = document.querySelector('.llm-btn') as HTMLButtonElement;
+        const llmStatus = document.getElementById('llmStatus') as HTMLElement;
+
         if (botBtn) {
-            botBtn.style.display = newMode === 'pvb' ? 'inline-block' : 'none';
+            botBtn.style.display = (newMode === 'pvb' || newMode === 'bvb') ? 'inline-block' : 'none';
         }
 
+        if (llmBtn) {
+            llmBtn.style.display = (newMode === 'pvl' || newMode === 'lvl') ? 'inline-block' : 'none';
+        }
+
+        if (llmStatus) {
+            llmStatus.style.display = (newMode === 'pvl' || newMode === 'lvl') ? 'block' : 'none';
+        }
+
+        // Disable clicks in bot vs bot and LLM vs LLM modes
         this.render();
 
         setTimeout(() => {
@@ -125,11 +154,14 @@ export class UI {
     private async handleClick(e: MouseEvent): Promise<void> {
         if (this.isProcessing || this.game.gameOver) return;
 
-        // Disable clicks in bot vs bot mode
-        if (this.mode === 'bvb') return;
+        // Disable clicks in bot vs bot and LLM vs LLM modes
+        if (this.mode === 'bvb' || this.mode === 'lvl') return;
 
         // In pvb mode, disable clicks when it's bot's turn
         if (this.mode === 'pvb' && this.game.currentPlayer === 1) return;
+
+        // In pvl mode, disable clicks when it's LLM's turn
+        if (this.mode === 'pvl' && this.game.currentPlayer === 1) return;
 
         if (this.game.diceConfig && this.game.mustRollDice) {
             this.updateStatus('⚠️ You must roll the dice first!');
@@ -240,6 +272,154 @@ export class UI {
         this.render();
     }
 
+    private async triggerLLMMove(): Promise<void> {
+        if (this.isProcessing || this.game.gameOver) return;
+
+        this.isProcessing = true;
+        this.showLLMStatus('🧠 LLM Thinking...');
+        this.render();
+
+        try {
+            const move = await this.getLLMMove();
+            if (move) {
+                this.game.executeMove(move);
+                this.showLLMStatus(`✅ LLM moved - Cost: ${move.cost || 'N/A'}`, move.reasoning);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            } else {
+                this.showLLMStatus('❌ LLM failed to make a move', 'Using fallback move');
+            }
+        } catch (error) {
+            console.error('LLM move error:', error);
+            this.showLLMStatus('❌ LLM Error', String(error));
+        }
+
+        this.isProcessing = false;
+        this.render();
+        await this.checkBotTurn();
+    }
+
+    private async getLLMMove(): Promise<any> {
+        const legalMoves = this.game.getLegalMoves();
+        if (legalMoves.length === 0) {
+            return null;
+        }
+
+        // Collect game state
+        const gameState = {
+            board_size: this.game.boardSize,
+            direction: this.game.direction,
+            current_player: this.game.currentPlayer,
+            mandatory_capture: this.game.isCaptureManutory,
+            pieces: Array.from(this.game.pieces.values()).map(p => ({
+                id: p.id,
+                player: p.player,
+                row: p.row,
+                col: p.col,
+                isQueen: p.isQueen,
+                color: p.color,
+                name: p.name
+            })),
+            legal_moves: legalMoves.map(m => ({
+                from: { row: m.from.row, col: m.from.col },
+                to: { row: m.to.row, col: m.to.col },
+                capturedIds: m.capturedIds
+            }))
+        };
+
+        try {
+            const response = await fetch(this.backendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gameState)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Backend error: ${response.status}`);
+            }
+
+            const data: LLMResponse = await response.json();
+
+            // if (data.success && data.piece_id) {
+            //     // Find piece by ID
+            //     const piece = this.game.pieces.get(data.piece_id);
+            //     if (piece) {
+            //         // Create move object
+            //         const moveToExecute = {
+            //             from: { row: piece.row, col: piece.col },
+            //             to: { row: data.target.row, col: data.target.col },
+            //             capturedIds: [],
+            //             cost: data.cost,
+            //             reasoning: data.reasoning,
+            //             tokens_used: data.tokens_used
+            //         };
+
+            //         // Validate move is in legal moves
+            //         const isLegal = legalMoves.some(m =>
+            //             m.from.row === moveToExecute.from.row &&
+            //             m.from.col === moveToExecute.from.col &&
+            //             m.to.row === moveToExecute.to.row &&
+            //             m.to.col === moveToExecute.to.col
+            //         );
+
+            //         if (isLegal) {
+            //             return moveToExecute;
+            //         }
+            //     }
+            // }
+            if (data.success && data.piece_id && data.target) {
+                // Find piece by ID
+                const piece = this.game.pieces.get(data.piece_id);
+                if (piece) {
+                    // Find the matching LEGAL move (includes capturedIds if it's a capture)
+                    const matchingMove = legalMoves.find(m =>
+                        m.from.row === piece.row &&
+                        m.from.col === piece.col &&
+                        m.to.row === data.target.row &&
+                        m.to.col === data.target.col
+                    );
+
+                    if (matchingMove) {
+                        // Return the legal move, but add the LLM extra info
+                        return {
+                            ...matchingMove,
+                            cost: data.cost,
+                            reasoning: data.reasoning,
+                            tokens_used: data.tokens_used
+                        };
+                    }
+                }
+            }
+
+        } catch (error) {
+            console.error('Failed to call LLM backend:', error);
+        }
+    }
+
+    private showLLMStatus(status: string, reasoning?: string): void {
+        const statusDiv = document.getElementById('llmStatus') as HTMLElement;
+        const thinkingDiv = document.getElementById('llmThinking') as HTMLElement;
+        const costDiv = document.getElementById('llmCost') as HTMLElement;
+        const reasoningDiv = document.getElementById('llmReasoning') as HTMLElement;
+
+        if (statusDiv) {
+            statusDiv.style.display = 'block';
+
+            if (status.includes('Thinking') && thinkingDiv) {
+                thinkingDiv.style.display = 'block';
+                if (costDiv) costDiv.textContent = '';
+                if (reasoningDiv) reasoningDiv.textContent = '';
+            } else {
+                if (thinkingDiv) thinkingDiv.style.display = 'none';
+                if (costDiv) costDiv.textContent = status;
+                if (reasoningDiv && reasoning) {
+                    reasoningDiv.textContent = `💭 ${reasoning}`;
+                }
+            }
+        }
+    }
+
     public async checkBotTurn(): Promise<void> {
         if (this.game.gameOver || this.isProcessing) return;
 
@@ -265,11 +445,36 @@ export class UI {
 
             this.isProcessing = false;
             this.render();
+        } else if (this.mode === 'lvl') {
+            // LLM vs LLM mode - both LLMs play
+            this.isProcessing = true;
+            this.stopBotLoop = false;
+
+            while (!this.game.gameOver && !this.stopBotLoop && this.mode === 'lvl') {
+                this.render();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                if (this.stopBotLoop || this.mode !== 'lvl') break;
+
+                await this.triggerLLMMove();
+
+                if (this.game.gameOver || this.stopBotLoop || this.mode !== 'lvl') break;
+            }
+
+            this.isProcessing = false;
+            this.render();
         } else if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
             // Player vs Bot mode - bot plays as player 1
             this.isProcessing = true;
             this.render();
             await this.bot1.makeMoveWithDelay(500);
+            this.isProcessing = false;
+            this.render();
+        } else if (this.mode === 'pvl' && this.game.currentPlayer === 1) {
+            // Player vs LLM mode - LLM plays as player 1
+            this.isProcessing = true;
+            this.render();
+            await this.triggerLLMMove();
             this.isProcessing = false;
             this.render();
         }

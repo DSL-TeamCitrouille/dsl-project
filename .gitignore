@@ -9,3 +9,6 @@ out/
 syntaxes/
 *.tsbuildinfo
 *.vsix
+SDK.ts
+venv/
+package-lock.json
