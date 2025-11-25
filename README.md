@@ -25,6 +25,10 @@ npx tsx packages/language/src/test/generation-test.ts
 
 ---
 
+## Pip install for LLM
+
+pip install flask flask-cors flask-limiter python-dotenv requests
+
 # Hiérarchie du projet
 
 ```
