@@ -7,12 +7,6 @@ npm run build
 ## Pour lancer les variantes avec X étant l'index de la variantes: 
 ```
 node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante1/variante1.dam packages/language/src/outputGenerator/variante1.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante2/variante2.dam packages/language/src/outputGenerator/variante2.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante3/variante3.dam packages/language/src/outputGenerator/variante3.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante4/variante4.dam packages/language/src/outputGenerator/variante4.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante5/variante5.dam packages/language/src/outputGenerator/variante5.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante6/variante6.dam packages/language/src/outputGenerator/variante6.html
 
 ```
 
