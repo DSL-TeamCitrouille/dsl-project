@@ -5,8 +5,9 @@ export function generateHTML(model: Damier): string {
     const size = model.board.size;
     const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
     const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
-    const mandatoryRule = model.rules.rule.find((r: any): r is CaptureRule => 'mandatory' in r);
-    const mandatoryCapture = mandatoryRule?.mandatory || false;
+    const captureRule = model.rules.rule.find((r: any): r is CaptureRule => 'mandatory' in r);
+    const mandatoryCapture = captureRule?.mandatory || false;
+    const captureMessage = captureRule?.message || 'Capture!';
     const direction = moveRule?.direction || 'any';
     const theme = model.ui?.theme;
     const dice = model.dice;
@@ -77,6 +78,7 @@ export function generateHTML(model: Damier): string {
         direction,
         firstPlayer,
         mandatoryCapture,
+        captureMessage,
         pieces: model.pieces.piece.map((p: any) => ({
             name: p.name,
             color: p.color,
@@ -474,6 +476,25 @@ export function generateHTML(model: Damier): string {
             background-color: #eee;
             color: white;
         }
+
+        .capture-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: bold;
+            color: #fc5c00ff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+
+        .capture-message.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -489,6 +510,7 @@ export function generateHTML(model: Damier): string {
         </div>
         <button class="toggle-hints-btn">💡 Aide</button>
         <div class="status">Loading...</div>
+        <div class="capture-message"></div>
         <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px;">
             <div class="board">${boardHTML}</div>
             <div class="dice-container">${diceHTML}</div>
