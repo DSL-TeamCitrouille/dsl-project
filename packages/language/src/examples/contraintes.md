@@ -57,7 +57,7 @@ Variant 4 – FastDark:
 Variant 5 – SolitaireLight: 
 - Ivory/light blue/green theme.
 
-Variant 5 – BubbleGum: 
+Variant 6 – BubbleGum: 
 - Very colorful pink/light blue theme.
 
 
