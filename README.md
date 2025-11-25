@@ -1,29 +1,28 @@
-# Comment générer le code 
+# How to generate the code 
 ```
 npm install
 npm run langium:generate
 npm run build
 ```
-## Pour lancer les variantes avec X étant l'index de la variantes: 
+## To launch the variants with X being the index of the variant: 
 ```
 node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
 
 ```
 
-## Pour lancer les tests
+## To start testing
 ```
 npx tsx packages/language/src/test/validation-test.ts
 npx tsx packages/language/src/test/generation-test.ts 
 ```
-/!\ Pour que la validation des fichiers générés fonctionnnent, il faut que ceux-ci soient placés dans le dossier packages/language/src/outputGenerator/* comme expliqué précédemment
-
+/!\ For the validation of the generated files to work, they must be placed in the packages/language/src/outputGenerator/* folder as explained above.
 ---
 
 ## Pip install for LLM
 
 pip install flask flask-cors flask-limiter python-dotenv requests
 
-# Hiérarchie du projet
+# Project hierarchy
 
 ```
 .
