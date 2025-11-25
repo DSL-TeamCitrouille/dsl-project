@@ -18,9 +18,12 @@ npx tsx packages/language/src/test/generation-test.ts
 /!\ For the validation of the generated files to work, they must be placed in the packages/language/src/outputGenerator/* folder as explained above.
 ---
 
-## Pip install for LLM
+## LLM
 
 pip install flask flask-cors flask-limiter python-dotenv requests
+python3 LLM_connection.py
+
+/!\ Flask will act as a backend to a response from LLM. So while testing variants, the python script should be running.
 
 # Project hierarchy
 

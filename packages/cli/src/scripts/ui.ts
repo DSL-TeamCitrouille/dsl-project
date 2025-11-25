@@ -292,6 +292,7 @@ export class UI {
     }
 
     private async triggerLLMMove(): Promise<void> {
+
         if (this.isProcessing || this.game.gameOver) return;
 
         this.isProcessing = true;
@@ -314,7 +315,6 @@ export class UI {
 
         this.isProcessing = false;
         this.render();
-        await this.checkBotTurn();
     }
 
     private async getLLMMove(): Promise<any> {
@@ -474,7 +474,6 @@ export class UI {
             this.render();
         } else if (this.mode === 'lvl') {
             // LLM vs LLM mode - both LLMs play
-            this.isProcessing = true;
             this.stopBotLoop = false;
 
             while (!this.game.gameOver && !this.stopBotLoop && this.mode === 'lvl') {
@@ -483,7 +482,21 @@ export class UI {
 
                 if (this.stopBotLoop || this.mode !== 'lvl') break;
 
-                await this.triggerLLMMove();
+                if (this.game.diceConfig && this.game.mustRollDice) {
+                    this.game.rollDice();
+                    this.render();
+                    await new Promise(r => setTimeout(r, 300));
+
+                    while (!this.game.gameOver && this.game.movesRemaining > 0) {
+                        await this.triggerLLMMove();
+                        this.render();
+                        await new Promise(r => setTimeout(r, 300));
+                    }
+                }else{
+                    await this.triggerLLMMove();
+                    this.render();
+                    await new Promise(r => setTimeout(r, 300));
+                }
 
                 if (this.game.gameOver || this.stopBotLoop || this.mode !== 'lvl') break;
             }
@@ -504,9 +517,25 @@ export class UI {
             this.render();
         } else if (this.mode === 'pvl' && this.game.currentPlayer === 1) {
             // Player vs LLM mode - LLM plays as player 1
-            this.isProcessing = true;
             this.render();
-            await this.triggerLLMMove();
+
+            // AUTO DICE
+            if (this.game.diceConfig && this.game.mustRollDice) {
+                this.game.rollDice();
+                this.render();
+                await new Promise(r => setTimeout(r, 300));
+
+                while (!this.game.gameOver && this.game.movesRemaining > 0) {
+                    await this.triggerLLMMove();
+                    this.render();
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            }else{
+                await this.triggerLLMMove();
+                this.render();
+                await new Promise(r => setTimeout(r, 300));
+            }
+
             this.isProcessing = false;
             this.render();
         }
