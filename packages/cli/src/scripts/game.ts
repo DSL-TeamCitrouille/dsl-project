@@ -1,4 +1,4 @@
-// ===== GAME ENGINE (Embedded) =====
+// ===== GAME ENGINE =====
 export interface Position {
   row: number;
   col: number;
@@ -29,14 +29,14 @@ export class Game {
   winner: number | null = null;
   direction: string;
   pieces_config: any[];
-  isCaptureManutory: boolean;
+  isCaptureMandatory: boolean;
   nextId: number = 0;
   diceConfig: { faces: number } | null = null;
   diceResult: number | null = null;
   movesRemaining: number;
   mustRollDice: boolean;
 
-  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0,  isCaptureManutory: boolean = false, diceConfig: { faces: number } | null = null) {
+  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0,  isCaptureMandatory: boolean = false, diceConfig: { faces: number } | null = null) {
       this.boardSize = boardSize;
       this.pieces = new Map();
       this.firstPlayer = firstPlayer;
@@ -45,7 +45,7 @@ export class Game {
       this.winner = null;
       this.direction = direction;
       this.pieces_config = pieces_config;
-      this.isCaptureManutory = isCaptureManutory;
+      this.isCaptureMandatory = isCaptureMandatory;
       this.nextId = 0;
       this.diceConfig = diceConfig;
       this.diceResult = null;
@@ -147,7 +147,7 @@ export class Game {
     const moves: Move[] = [];
     
     // If mandatory capture is enabled, check if ANY piece can capture
-    if (this.isCaptureManutory) {
+    if (this.isCaptureMandatory) {
       let hasAnyCaptures = false;
       
       // First pass: check if any piece can capture
@@ -422,7 +422,6 @@ export class Game {
           return false;
       }
 
-      // SIMPLE FIX: If the move has capturedIds, remove those pieces
       // The move generation already calculated exactly which pieces to capture
       if (move.capturedIds && move.capturedIds.length > 0) {
           for (const capturedId of move.capturedIds) {
@@ -434,7 +433,7 @@ export class Game {
       piece.row = move.to.row;
       piece.col = move.to.col;
 
-      // CHECK FOR QUEEN PROMOTION
+      // Check for queen promotion :
       // Player 0 reaches bottom (last row), Player 1 reaches top (first row)
       if (this.pieces_config.length !== 1) {
           const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
@@ -490,8 +489,8 @@ export class Game {
 
     const result: number = Math.floor(Math.random() * this.diceConfig.faces) + 1;
 
-    this.diceResult = result;        // doit être de type number | null
-    this.movesRemaining = result;    // doit être de type number | null
+    this.diceResult = result;        
+    this.movesRemaining = result;    
     this.mustRollDice = false;
 
     console.log(`Dice rolled: ${result}. You have ${result} moves.`);
@@ -503,14 +502,14 @@ export class Game {
         if (this.pieces_config.length === 1) {
             const pieces = Array.from(this.pieces.values()).filter(p => p.player === 0);
             
-            // Condition Solitaire : plus de pièces
+            // Condition Solitaire : no more pieces
             if (pieces.length === 1) {
                 this.gameOver = true;
                 this.winner = 0;
                 return;
             }
 
-            // Condition : plus de mouvements possibles
+            // Condition : no more moves available
             if (this.getLegalMoves().length === 0 && pieces.length !== 1) {
                 this.gameOver = true;
                 this.winner = null;
@@ -539,7 +538,7 @@ export class Game {
         } else if (p1Pieces.length > p0Pieces.length) {
             this.winner = 1;
         } else {
-            // En cas d'égalité, c'est le joueur courant qui perd
+            // In case of equality, current player looses
             this.winner = 1 - this.currentPlayer;
         }
         

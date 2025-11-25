@@ -19,6 +19,7 @@ interface LLMResponse {
 
 export class UI {
     private game: Game;
+    private captureMessage: string;
     private selected: Piece | null = null;
     private mode: GameMode = 'pvp';
     private bot1: Bot;
@@ -28,8 +29,9 @@ export class UI {
     private showLegalMoves: boolean = true;
     private backendUrl: string = "http://127.0.0.1:5000/api/move";
 
-    constructor(game: Game) {
+    constructor(game: Game, captureMessage: string) {
         this.game = game;
+        this.captureMessage = captureMessage;
         this.bot1 = new Bot(game, 1);
         this.bot0 = new Bot(game, 0);
         this.setupEvents();
@@ -191,7 +193,7 @@ export class UI {
             // Initial selection
             if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
                 // If mandatory capture is enabled, check if this piece has capture moves available
-                if (this.game.isCaptureManutory) {
+                if (this.game.isCaptureMandatory) {
                     const allLegalMoves = this.game.getLegalMoves();
                     const hasCaptureMoves = allLegalMoves.some(m => m.capturedIds && m.capturedIds.length > 0);
                     
@@ -239,8 +241,13 @@ export class UI {
 
             // Use the legal move (which has capturedIds if it's a jump)
             const moveToExecute = matchingMove || move;
+            const piecesBefore = this.game.pieces.size;
 
             if (this.game.executeMove(moveToExecute)) {
+                const piecesAfter = this.game.pieces.size;
+                if (piecesAfter < piecesBefore) {
+                    this.showCaptureMessage();
+                }
                 this.selected = null;
                 this.render();
                 await this.checkBotTurn();
@@ -256,6 +263,18 @@ export class UI {
                 this.render(); // Restore normal status
             }, 2000);
         }
+    }
+
+    showCaptureMessage(): void {
+        const messageEl = document.querySelector('.capture-message') as HTMLElement;
+        if (!messageEl || !this.captureMessage) return;
+        
+        messageEl.textContent = this.captureMessage;
+        messageEl.classList.add('show');
+        
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+        }, 1500); 
     }
 
     private async triggerBotMove(): Promise<void> {
@@ -309,7 +328,7 @@ export class UI {
             board_size: this.game.boardSize,
             direction: this.game.direction,
             current_player: this.game.currentPlayer,
-            mandatory_capture: this.game.isCaptureManutory,
+            mandatory_capture: this.game.isCaptureMandatory,
             pieces: Array.from(this.game.pieces.values()).map(p => ({
                 id: p.id,
                 player: p.player,
@@ -435,9 +454,17 @@ export class UI {
                 if (this.stopBotLoop || this.mode !== 'bvb') break;
 
                 if (this.game.currentPlayer === 0) {
+                    const piecesBefore = this.game.pieces.size;
                     await this.bot0.makeMoveWithDelay(100);
+                    if (this.game.pieces.size < piecesBefore) {
+                        this.showCaptureMessage();
+                    }
                 } else {
+                    const piecesBefore = this.game.pieces.size;
                     await this.bot1.makeMoveWithDelay(100);
+                    if (this.game.pieces.size < piecesBefore) {
+                        this.showCaptureMessage();
+                    }
                 }
 
                 if (this.game.gameOver || this.stopBotLoop || this.mode !== 'bvb') break;
@@ -463,11 +490,16 @@ export class UI {
 
             this.isProcessing = false;
             this.render();
+
         } else if (this.mode === 'pvb' && this.game.currentPlayer === 1) {
             // Player vs Bot mode - bot plays as player 1
             this.isProcessing = true;
             this.render();
+            const piecesBefore = this.game.pieces.size;
             await this.bot1.makeMoveWithDelay(500);
+            if (this.game.pieces.size < piecesBefore) {
+                this.showCaptureMessage();
+            }
             this.isProcessing = false;
             this.render();
         } else if (this.mode === 'pvl' && this.game.currentPlayer === 1) {
