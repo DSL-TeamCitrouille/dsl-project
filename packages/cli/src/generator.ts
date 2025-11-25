@@ -10,10 +10,12 @@ import { generateHTML } from './htmlGeneratorPlayable.js';
 export async function generateOutput(
   model: Damier,
   source: string,
-  destination: string
+  destination: string,
+  options?: any
+
 ): Promise<string> {
   const data = extractDestinationAndName(destination);
-  let htmlContent = generateHTML(model);
+  let htmlContent = generateHTML(model, options);
 
   // Créer le dossier de destination si nécessaire
   if (!fs.existsSync(data.destination)) {

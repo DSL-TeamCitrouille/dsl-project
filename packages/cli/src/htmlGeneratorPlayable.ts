@@ -1,28 +1,51 @@
 // packages/cli/src/htmlGenerator.ts
 import type { CaptureRule, Damier, MoveRule } from "dam-dam-language";
 
-export function generateHTML(model: Damier): string {
+export function generateHTML(model: Damier, options?: any): string {
     const size = model.board.size;
     const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
     const playerRule = model.rules.rule.find((r: any): r is MoveRule => 'firstPlayer' in r);
     const captureRule = model.rules.rule.find((r: any): r is CaptureRule => 'mandatory' in r);
-    const mandatoryCapture = captureRule?.mandatory || false;
-    const captureMessage = captureRule?.message || 'Capture!';
+    
+    const mandatoryCapture = options?.mandatoryCapture !== undefined 
+        ? options.mandatoryCapture === 'true' 
+        : (captureRule?.mandatory || false);
+    const captureMessage = options?.message || captureRule?.message || 'Capture!';
     const direction = moveRule?.direction || 'any';
     const theme = model.ui?.theme;
     const dice = model.dice;
 
     let firstPlayerIndex = 0;
-        if (playerRule?.firstPlayer) {
-            const firstPlayerName = playerRule.firstPlayer;
-            // Find the index of the piece with matching color/name
-            const pieceIndex = model.pieces.piece.findIndex((p: any) => 
-                p.name?.toLowerCase() === firstPlayerName?.toLowerCase() || 
-                p.color?.toLowerCase() === firstPlayerName?.toLowerCase()
+    if (options?.firstPlayer) {
+        const fp = options.firstPlayer.toString().toLowerCase().trim();
+
+        // Si c'est un nombre (1 ou 2)
+        if (/^[0-9]+$/.test(fp)) {
+            const n = parseInt(fp) - 1;
+            firstPlayerIndex = n >= 0 && n < model.pieces.piece.length ? n : 0;
+        } else {
+            const idx = model.pieces.piece.findIndex((p: any) =>
+                p.name?.toLowerCase() === fp || p.color?.toLowerCase() === fp
             );
-            firstPlayerIndex = pieceIndex >= 0 ? pieceIndex : 0;
+            firstPlayerIndex = idx >= 0 ? idx : 0;
         }
-        const firstPlayer = firstPlayerIndex;
+
+    } else if (playerRule?.firstPlayer) {
+        const fp = playerRule.firstPlayer.toString().toLowerCase().trim();
+
+        if (/^[0-9]+$/.test(fp)) {
+            const n = parseInt(fp) - 1;
+            firstPlayerIndex = n >= 0 && n < model.pieces.piece.length ? n : 0;
+        } else {
+            const idx = model.pieces.piece.findIndex((p: any) =>
+                p.name?.toLowerCase() === fp || p.color?.toLowerCase() === fp
+            );
+            firstPlayerIndex = idx >= 0 ? idx : 0;
+        }
+    }
+
+    const firstPlayer = firstPlayerIndex;
+
 
 
     const lightColor = theme?.lightSquares || '#f0d9b5';

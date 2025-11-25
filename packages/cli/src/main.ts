@@ -13,10 +13,10 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const packagePath = path.resolve(__dirname, '..', 'package.json');
 const packageContent = await fs.readFile(packagePath, 'utf-8');
 
-export const generateAction = async (source: string, destination: string): Promise<void> => {
+export const generateAction = async (source: string, destination: string, options: any): Promise<void> => {
     const services = createDamDamServices(NodeFileSystem).DamDam;
     const model = await extractAstNode<Damier>(source, services);
-    const generatedFilePath = await generateOutput(model, source, destination);
+    const generatedFilePath = await generateOutput(model, source, destination, options);
     console.log(chalk.green(`Code generated succesfully: ${generatedFilePath}`));
 };
 
@@ -32,6 +32,11 @@ export default function(): void {
         .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)
         .argument('<destination>', 'destination file')
         .description('Generates code for a provided source file.')
+        // Options : variability CT
+        .option('--firstPlayer <player>', 'Override first player (e.g., white, black)')
+        .option('--mandatoryCapture <bool>', 'Override mandatory capture (true/false)')
+        .option('--message <text>', 'Override capture message')
+        .option('--moveBackward <bool>', 'Override backward movement (true/false)')
         .action(generateAction);
 
     program.parse(process.argv);

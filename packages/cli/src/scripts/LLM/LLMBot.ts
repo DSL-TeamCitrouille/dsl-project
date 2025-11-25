@@ -58,7 +58,7 @@ export class LLMBot {
             board_size: this.game.boardSize,
             direction: this.game.direction,
             current_player: this.game.currentPlayer,
-            mandatory_capture: this.game.isCaptureManutory,
+            mandatory_capture: this.game.isCaptureMandatory,
             pieces: pieces,
             legal_moves: serializedMoves,
             dice_config: this.game.diceConfig,
