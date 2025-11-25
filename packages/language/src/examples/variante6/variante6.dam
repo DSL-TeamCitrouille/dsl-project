@@ -1,4 +1,4 @@
-game DamDam BubbleGum{
+game DamDamBubbleGum{
     board{
         size 10
     }
