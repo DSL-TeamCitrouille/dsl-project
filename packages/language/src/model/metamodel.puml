@@ -81,14 +81,6 @@ class Theme {
     highlight: String
 }
 
-class Sprites {
-}
-
-class SpriteDef {
-    key: String
-    path: String
-}
-
 class Layout {
     showCaptured: boolean
 }
