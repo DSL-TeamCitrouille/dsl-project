@@ -36,5 +36,6 @@ game DamDamFastDark {
   settings {
     showLegalMoves: false
     mode : "pvp"
+    darkMode: true
   }
 }

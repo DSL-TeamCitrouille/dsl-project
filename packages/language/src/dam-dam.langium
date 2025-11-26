@@ -109,6 +109,7 @@ Settings:
    'settings' '{'
        ('showLegalMoves' ':' showLegalMoves=BOOLEAN)?
        ('mode' ':' mode=STRING)?
+       ('darkMode' ':' darkMode=BOOLEAN)?
    '}';
 
 

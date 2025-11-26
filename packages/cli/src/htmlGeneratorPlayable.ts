@@ -15,6 +15,8 @@ export function generateHTML(model: Damier, options?: any): string {
     const theme = model.ui?.theme;
     const dice = model.dice;
     const botDifficulty = options?.botDifficulty || 'random';
+    const darkModeOption = options?.darkMode;
+    const darkMode = darkModeOption !== undefined ? darkModeOption ==='true' : model.settings?.darkMode || false;
 
     let firstPlayerIndex = 0;
     if (options?.firstPlayer) {
@@ -518,9 +520,77 @@ export function generateHTML(model: Damier, options?: any): string {
             .capture-message.show {
                 opacity: 1;
             }
+
+            /* DARK MODE BUTTON */
+            .dark-mode-btn {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #333;
+                color: white;
+                border: none;
+                padding: 10px 14px;
+                font-size: 20px;
+                border-radius: 50%;
+                cursor: pointer;
+                z-index: 2000;
+                transition: all 0.2s;
+            }
+
+            .dark-mode-btn:hover {
+                transform: scale(1.1);
+            }
+
+            /* DARK MODE BODY */
+            body.dark {
+                background: #121212 !important;
+                color: #eee !important;
+            }
+
+            body.dark .container {
+                background: #1e1e1e !important;
+                color: white !important;
+            }
+
+            body.dark .status {
+                color: #ccc !important;
+            }
+
+            body.dark .board {
+                border-color: white !important;
+            }
+
+            body.dark .modal-content {
+                background: #2a2a2a !important;
+                color: white !important;
+            }
+
+            body.dark button {
+                background: #444 !important;
+                color: white !important;
+            }
+
+            body.dark button:hover {
+                background: #555 !important;
+            }
+
+            /* In dark mode, squares need higher contrast */
+            body.dark .square {
+                filter: brightness(0.8);
+            }
+            body.dark .dice-result {
+                color: #fff !important;     /* dice result text stays visible */
+            }
+
+            body.dark .dice {
+                background: #222 !important; /* dark dice background */
+                border-color: #fff !important;
+            }
+
         </style>
     </head>
     <body>
+    <button id="darkModeToggle" class="dark-mode-btn">🌙</button>
     <div class="container">
         <h1>🎮 ${model.name}</h1>
         
@@ -559,8 +629,27 @@ export function generateHTML(model: Damier, options?: any): string {
 
         <script>
             window.__GAME_CONFIG = ${configJson};
+            window.__GAME_DARK_MODE = ${darkMode};
         </script>
         <script type="module" src="./app.js"></script>
+        <script>
+            const toggle = document.getElementById("darkModeToggle");
+
+            // Initialize based on generator (default = false)
+            if (window.__GAME_DARK_MODE) {
+                document.body.classList.add("dark");
+                toggle.textContent = "☀️";
+            } else {
+                document.body.classList.remove("dark");
+                toggle.textContent = "🌙";
+            }
+
+            // Toggle on click
+            toggle.addEventListener("click", () => {
+                const isDark = document.body.classList.toggle("dark");
+                toggle.textContent = isDark ? "☀️" : "🌙";
+            });
+        </script>
     </body>
     </html>`;
 }

@@ -38,5 +38,6 @@ game DamDamRoyal {
   settings { 
     showLegalMoves: false
     mode : "pvp"
+    darkMode : true
   }
 }

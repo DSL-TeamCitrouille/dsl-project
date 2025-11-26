@@ -12,14 +12,16 @@
 | **first_player**          | enum / integer        | {white, black, 1, 2}                | CT           | 1              | Determines who starts.                     |
 | **can_move_backward**     | boolean      | {true, false}                                | CT           | false          | Allows or forbids backward moves.          |
 | **mandatory_capture**     | boolean      | {true, false}                                | CT           | true           | Capture is forced when possible.           |
-| **message_capture**       | string        | any string    |   CT  | "Nomnomnom"   | Message displayed when capture occures
+| **message_capture**       | string       | any string    |   CT  | "Nomnomnom"   | Message displayed when capture occures
 | **goal_type**             | enum         | {WinByCapture, WinBySolitaire, WinByForfeit} | CT           | WinByCapture   | Defines the win condition.                 |
-| **ai_difficulty**         | enum      | {heuristic, greedy, random}                   | CT           | random             | Strength of the AI.                        |
+| **ai_difficulty**         | enum         | {heuristic, greedy, random}                   | CT           | random             | Strength of the AI.                        |
 | **light_squares_color**   | string (hex) | color                                        | UI           | #F0D9B5      | Color of light board squares.              |
 | **dark_squares_color**    | string (hex) | color                                        | UI           | #B58863      | Color of dark board squares.               |
 | **highlight_color**       | string (hex) | color                                        | UI           | #FFFF00      | Highlight color for legal moves.           |
 | **show_legal_moves**      | boolean      | {true, false}                                | RT           | false          | Shows move hints.                          |
-| **mode**                  | enum       | {pvp, pvl, pvb, bvb, lvl}                               | RT           | pvp            | Game mode : who vs who 
+| **mode**                  | enum          | {pvp, pvl, pvb, bvb, lvl}                   | RT           | pvp            | Game mode : who vs who 
+darkMode.
+| **darkMode**              | boolean       | {true,false}                                | RT           | false          | Changes to dark style 
 
 
 ---
