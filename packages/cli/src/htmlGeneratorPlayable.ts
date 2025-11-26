@@ -586,6 +586,14 @@ export function generateHTML(model: Damier, options?: any): string {
                 background: #222 !important; /* dark dice background */
                 border-color: #fff !important;
             }
+            
+            body.dark .mode-btn.active {
+                background: #b3b0b0ff !important;
+            }
+
+            body.dark .toggle-hints-btn.active {
+                background: #b3b0b0ff !important;
+        }
 
         </style>
     </head>
