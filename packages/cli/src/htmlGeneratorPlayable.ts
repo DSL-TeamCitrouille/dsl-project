@@ -14,6 +14,7 @@ export function generateHTML(model: Damier, options?: any): string {
     const direction = moveRule?.direction || 'any';
     const theme = model.ui?.theme;
     const dice = model.dice;
+    const botDifficulty = options?.botDifficulty || 'random';
 
     let firstPlayerIndex = 0;
     if (options?.firstPlayer) {
@@ -45,8 +46,6 @@ export function generateHTML(model: Damier, options?: any): string {
     }
 
     const firstPlayer = firstPlayerIndex;
-
-
 
     const lightColor = theme?.lightSquares || '#f0d9b5';
     const darkColor = theme?.darkSquares || '#b58863';
@@ -108,6 +107,7 @@ export function generateHTML(model: Damier, options?: any): string {
             quantity: p.quantity,
         })),
         dice: dice ? { faces: dice.faces } : null,
+        botDifficulty
     };
 
     const configJson = JSON.stringify(gameConfig);

@@ -28,12 +28,14 @@ export class UI {
     private stopBotLoop: boolean = false;
     private showLegalMoves: boolean = true;
     private backendUrl: string = "http://127.0.0.1:5000/api/move";
+    private botDifficulty: string;
 
-    constructor(game: Game, captureMessage: string) {
+    constructor(game: Game, captureMessage: string, botDifficulty: string) {
         this.game = game;
         this.captureMessage = captureMessage;
-        this.bot1 = new Bot(game, 1, 'heuristic');
-        this.bot0 = new Bot(game, 0, 'heuristic');
+        this.botDifficulty = botDifficulty;
+        this.bot1 = new Bot(game, 1, this.botDifficulty);
+        this.bot0 = new Bot(game, 0, this.botDifficulty);
         this.setupEvents();
         this.render();
     }

@@ -37,7 +37,7 @@ export default function(): void {
         .option('--mandatoryCapture <bool>', 'Override mandatory capture (true/false)')
         .option('--message <text>', 'Override capture message')
         .option('--moveBackward <bool>', 'Override backward movement (true/false)')
-        .option('--botDifficulty <text>', 'Override bot difficulty (e.g., random or greedy)')
+        .option('--botDifficulty <text>', 'Override bot difficulty (e.g., random, greedy or heuristic)')
         .action(generateAction);
 
     program.parse(process.argv);
