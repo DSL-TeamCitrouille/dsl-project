@@ -30,9 +30,6 @@
         "packages/cli/backends/html"
     ],
     "dependencies": {
-        "@angular/common": "^21.0.0",
-        "@angular/core": "^21.0.0",
-        "@angular/platform-browser-dynamic": "^21.0.0",
         "@openrouter/sdk": "^0.1.23",
         "cheerio": "^1.1.2",
         "langium": "^4.1.0"
