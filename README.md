@@ -4,32 +4,48 @@ npm install
 npm run langium:generate
 npm run build
 ```
+## LLM
+```
+pip install flask flask-cors flask-limiter python-dotenv requests
+```
+
+If error: externally managed environement:
+```
+python3 -m venv venv 
+source /your/path/to/project/venv/bin/activate
+```
+
+Then to run the LLM server :
+```
+python3 ./packages/cli/scripts/LLM/LLM_connection.py
+```
+
+/!\ Flask will act as a backend to a response from LLM. So while testing variants, the python script should be running.
+
 ## To launch the variants with X being the index of the variant: 
 ```
 node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
-
+ --firstPlayer <player>
+ --mandatoryCapture <bool>
+ --message <text>
+ --moveBackward <bool>
+ --botDifficulty <text>
 ```
 
-## To start testing
+The options are as followed : 
+- firstPlayer <player> : Override first player (e.g., white, black or 1, 2)
+- mandatoryCapture <bool> : Override mandatory capture (true/false)
+- message <text> : Override capture message (e.g., 'MiamMiamMiam')
+- moveBackward <bool> : Override backward movement (true/false)
+- botDifficulty <text> : Override bot difficulty (e.g., random, greedy or heuristic)
+
+## To start testing the validation of the variants and the generated files
 ```
 npx tsx packages/language/src/test/validation-test.ts
 npx tsx packages/language/src/test/generation-test.ts 
 ```
 /!\ For the validation of the generated files to work, they must be placed in the packages/language/src/outputGenerator/* folder as explained above.
 ---
-
-## LLM
-
-pip install flask flask-cors flask-limiter python-dotenv requests
-
-If error: externally managed environement:
-    python3 -m venv venv 
-    source /your/path/to/project/venv/bin/activate
-
-Where your script python is:
-    python3 LLM_connection.py
-
-/!\ Flask will act as a backend to a response from LLM. So while testing variants, the python script should be running.
 
 # Project hierarchy
 
@@ -40,8 +56,16 @@ Where your script python is:
 |   │   ├── bin/
 |   |   |   ├── cli.js      
 |   │   ├── src/
+|   |   |   ├── scripts/  
+|   |   |   |   ├── LLM/
+|   |   |   |   |   ├── LLM_connection.py
+|   |   |   |   |   └── variability.md
+|   |   |   |   ├── app.ts
+|   |   |   |   ├── game.ts
+|   |   |   |   ├── ui.ts
+|   |   |   |   └── ...
 |   |   |   ├── generator.js
-|   |   |   ├── htmlGenerator.js    
+|   |   |   ├── htmlGeneratorPlayable.js    
 |   |   |   └── main.js
 |   ├── extension/...
 │   ├── language/
@@ -78,14 +102,14 @@ Where your script python is:
 
 # Summary of Variants
 
-| Variant | Board Size | Pieces/side | Movements | Dice | Capture Oblig. | Theme UI | Visual Aids | AI |
-|---------|------------|-------------|----|------------|--------------------|----------|-----------|-----|
-| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | Yes | 2 |
-| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | No | 3 |
-| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | No | 4 |
-| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | No | 3 |
-| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | Yes | 0 |
-| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | Yes | 3 |
+| Variant | Board Size | Pieces/side | Movements | Dice | Mandatory Capture | Theme UI | AI difficulty |
+|---------|------------|-------------|----|------------|--------------------|----------|---------------|
+| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | heuristic |
+| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | random |
+| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | heuristic |
+| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | greedy
+| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | random
+| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | random
 
 
 # Validation of TP Constraints
@@ -111,11 +135,11 @@ Variant 5 – SolitaireLight
 
 Variant 4 – FastDark: 
 - Legal moves not displayed 
-- Average AI (3)
+- mode is pvp
 
 Variant 5 – SolitaireLight: 
 - Legal moves displayed
-- AI disabled (0)
+- mode is lvl
 
 ## UI/skin adapted in each variant:
 
@@ -154,3 +178,5 @@ Backward: depending on variant
 Mandatory capture: yes/no
 
 Objectives: capture / forfeit / solitaire
+
+AI difficulty: random / heuristic / greedy

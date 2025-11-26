@@ -6,22 +6,20 @@
 | ------------------------- | ------------ | -------------------------------------------- | ------------ | -------------- | ------------------------------------------ |
 | **board_size**            | integer      | [4–20]                                       | CT           | 10             | Board size (NxN); modifies topology.       |
 | **piece_color** (logical) | enum         | {white, black, red, blue}                    | CT           | {white, black} | Logical identifier of factions (players).  |
-| **piece_quantity**        | integer      | [1–30]                                       | CT           | 20             | Number of pieces per faction.              |
-| **can_promote**           | boolean      | {true, false}                                | CT           | false          | Enables promotion (e.g., becoming a king). |
-| **dice_enabled**          | boolean      | {true, false}                                | CT           | true           | Enables dice mechanics.                    |
+| **piece_quantity**        | integer      | [1–30]                                       | CT           | 20             | Number of pieces per faction.              |                  |
 | **dice_faces**            | integer      | [2–12]                                       | CT           | 6              | Number of die faces.                       |
-| **dice_quantity**         | integer      | [1–3]                                        | CT           | 1              | Number of dice rolled.                     |
-| **first_player**          | enum         | {white, black, random}                       | CT           | white          | Determines who starts.                     |
+| **direction**             | enum         |    {diagonal, orthogonal, any} | CT    | diagonal  | Which direction(s) can the piece goes
+| **first_player**          | enum / integer        | {white, black, 1, 2}                | CT           | 1              | Determines who starts.                     |
 | **can_move_backward**     | boolean      | {true, false}                                | CT           | false          | Allows or forbids backward moves.          |
 | **mandatory_capture**     | boolean      | {true, false}                                | CT           | true           | Capture is forced when possible.           |
-| **capture_allowed**       | boolean      | {true, false}                                | CT           | true           | Enables capturing opponent pieces.         |
+| **message_capture**       | string        | any string    |   CT  | "Nomnomnom"   | Message displayed when capture occures
 | **goal_type**             | enum         | {WinByCapture, WinBySolitaire, WinByForfeit} | CT           | WinByCapture   | Defines the win condition.                 |
+| **ai_difficulty**         | enum      | {heuristic, greedy, random}                   | CT           | random             | Strength of the AI.                        |
 | **light_squares_color**   | string (hex) | color                                        | UI           | #F0D9B5      | Color of light board squares.              |
 | **dark_squares_color**    | string (hex) | color                                        | UI           | #B58863      | Color of dark board squares.               |
 | **highlight_color**       | string (hex) | color                                        | UI           | #FFFF00      | Highlight color for legal moves.           |
-| **board_style**           | enum         | {grid, isometric, 3d}                        | UI           | grid           | Rendering style.                           |
 | **show_legal_moves**      | boolean      | {true, false}                                | RT           | false          | Shows move hints.                          |
-| **ai_difficulty**         | integer      | [1–5]                                        | RT           | 1              | Strength of the AI.                        |
+| **mode**                  | enum       | {pvp, pvl, pvb, bvb, lvl}                               | RT           | pvp            | Game mode : who vs who 
 
 
 ---

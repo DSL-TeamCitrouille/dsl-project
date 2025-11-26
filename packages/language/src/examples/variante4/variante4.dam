@@ -14,10 +14,7 @@ game DamDamFastDark {
     }
     capture {
       mandatory true
-      message "Une capture illumine brièvement le plateau."
-    }
-    action {
-      type both
+      message "Yummyyyyyy !"
     }
   }
 
@@ -26,17 +23,18 @@ game DamDamFastDark {
     winByCapture { captureAll opponent }
   }
 
+  aiDifficulty: "greedy"
+
   ui {
     theme {
       lightSquares: "darkgray"
       darkSquares: "black"
       highlight: "crimson"
     }
-    layout { showCaptured false }
   }
 
   settings {
     showLegalMoves: false
-    aiDifficulty: 3
+    mode : "pvp"
   }
 }

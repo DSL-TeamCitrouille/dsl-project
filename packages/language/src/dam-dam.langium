@@ -9,6 +9,7 @@ entry Damier:
        (dice=Dice)?
        rules=Rules
        objective=Objective
+       ('aiDifficulty' ':' aiDifficulty=STRING)?
        
        // UI/SKIN: Visual appearance (how the game LOOKS)
        (ui=UI)?
@@ -49,7 +50,7 @@ Rules:
    '}';
 
 Rule:
-   MoveRule | CaptureRule | ActionRule ;
+   MoveRule | CaptureRule ;
 
 MoveRule:
    'movement' '{'
@@ -63,11 +64,6 @@ CaptureRule:
    'capture' '{'
        ('mandatory' mandatory=BOOLEAN)?
        ('message' message=STRING)?
-   '}';
-
-ActionRule:
-   'action' '{'
-       'type' type=('move' | 'capture' | 'both')
    '}';
 
 Objective:
@@ -99,7 +95,6 @@ WinByForfeit:
 UI:
    'ui' '{'
        (theme=Theme)?
-       (layout=Layout)?
    '}';
 
 Theme:
@@ -109,18 +104,11 @@ Theme:
        ('highlight' ':' highlight=STRING)?
    '}';
 
-Layout:
-   'layout' '{'
-       ('showCaptured' showCaptured=BOOLEAN)?
-   '}';
-
-
 // ===== RUN-TIME (User Experience) =====
 Settings:
    'settings' '{'
-       ('animationSpeed' ':' animationSpeed=INT)?
        ('showLegalMoves' ':' showLegalMoves=BOOLEAN)?
-       ('aiDifficulty' ':' aiDifficulty=INT)?
+       ('mode' ':' mode=STRING)?
    '}';
 
 

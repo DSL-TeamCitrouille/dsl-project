@@ -14,7 +14,7 @@ game DamDamLimited {
     }
     capture {
       mandatory true
-      message "Captures obligatoires"
+      message "Delicious !"
     }
   }
 
@@ -22,6 +22,8 @@ game DamDamLimited {
     winByForfeit { allowed true }
     winByCapture { captureAll opponent }
   }
+
+  aiDifficulty: "heuristic"
 
   ui {
     theme {
@@ -33,6 +35,6 @@ game DamDamLimited {
 
   settings {
     showLegalMoves: false
-    aiDifficulty: 4
+    mode : "pvp"
   }
 }
