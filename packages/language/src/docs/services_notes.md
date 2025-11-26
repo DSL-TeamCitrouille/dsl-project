@@ -1,65 +1,65 @@
-# Services – Notes de conception du DSL
+# Services – DSL Design Notes
 
 
 
-## 1. Légalité & Coups
+## 1. Legality & Moves
 
-Le DSL doit permettre de décrire des règles de jeu suffisantes pour déterminer la légalité d’un coup, la fin de partie et la validité des séquences d’actions.  
-Chaque coup doit pouvoir être validé ou refusé automatiquement en fonction des règles définies (mouvements autorisés, captures, interdictions, bornes du damier).  
-Le système doit aussi pouvoir expliquer, en langage clair, pourquoi une action est illégale ou pourquoi la partie se termine.
-
----
-
-## 2. Complexité
-
-Le langage devra exposer les paramètres nécessaires pour analyser la complexité d’une variante : facteur de branchement (nombre moyen de coups possibles), profondeur de partie moyenne, résolubilité (éventuellement bornée).  
-L’utilisateur doit pouvoir évaluer et comparer la difficulté ou la richesse stratégique de différentes variantes définies dans le DSL.  
-Ces mesures doivent pouvoir être calculées automatiquement à partir des définitions de règles et d’état.
+The DSL must allow the description of game rules sufficient to determine the legality of a move, end-of-game conditions, and the validity of action sequences.  
+Each move must be automatically validated or rejected based on the defined rules (allowed movements, captures, prohibitions, board boundaries).  
+The system must also be able to explain, in clear language, why an action is illegal or why the game ends.
 
 ---
 
-## 3. Mode Texte
+## 2. Complexity
 
-Le DSL doit permettre une représentation textuelle stable des états du jeu et des coups.  
-Il doit définir une notation claire pour les déplacements, les captures et les configurations initiales, afin de pouvoir jouer en ligne de commande ou via des scripts.  
-Des commandes simples doivent permettre de jouer, d’annuler un coup, de rejouer une partie ou de charger une configuration sauvegardée.
-
----
-
-## 4. Mode Graphique / Skin
-
-Le DSL doit pouvoir être lié à un moteur graphique capable de rendre le damier, les pions et leurs états (actif, capturé, promu, etc.).  
-Les thèmes visuels (couleurs, textures, disposition du damier) et les styles d’interface (classique, moderne, abstrait) doivent être paramétrables.  
-L’objectif est que le même code de règles puisse être visualisé avec différents rendus, sans modification de la logique du jeu.
+The language must expose the parameters needed to analyze the complexity of a variant: branching factor (average number of possible moves), average game depth, solvability (possibly bounded).  
+The user must be able to evaluate and compare the difficulty or strategic richness of different variants defined in the DSL.  
+These measurements must be computable automatically from the definitions of rules and state.
 
 ---
 
-## 5. IA Basique
+## 3. Text Mode
 
-Le langage doit prévoir la génération automatique d’un adversaire simple basé sur des heuristiques de base (choix aléatoire parmi les coups légaux, ou préférence pour les captures).  
-Cette IA doit pouvoir jouer contre un humain dans n’importe quelle variante décrite par le DSL.  
-L’objectif est de fournir un outil minimal pour tester rapidement la validité et la jouabilité des règles.
-
----
-
-## 6. IA Plus Forte (ex. MCTS)
-
-Le DSL doit inclure des points d’intégration permettant de brancher des algorithmes de recherche plus avancés tels que le **Monte Carlo Tree Search (MCTS)** ou d’autres méthodes d’apprentissage par renforcement.  
-Ces intégrations ne sont pas obligatoires à implémenter dans un premier temps, mais le langage doit permettre d’exposer les informations nécessaires (états, coups légaux, transitions, récompenses).  
-Ainsi, toute variante écrite dans le DSL pourra être utilisée pour des expérimentations d’IA avancée sans adaptation spécifique.
+The DSL must allow a stable textual representation of game states and moves.  
+It must define a clear notation for movements, captures, and initial configurations, in order to play from the command line or through scripts.  
+Simple commands must allow playing, undoing a move, replaying a game, or loading a saved configuration.
 
 ---
 
-## 7. Jeu avec LLM
+## 4. Graphical Mode / Skin
 
-Le DSL doit pouvoir interagir avec un modèle de langage (LLM) capable de comprendre et jouer selon les règles décrites.  
-Chaque variante définie doit pouvoir être traduite en un format interprétable par le LLM, avec un vocabulaire cohérent pour les actions et les états.  
-Le but est de permettre à un LLM de commenter, expliquer ou même participer à une partie en suivant les règles générées par le DSL.
+The DSL must be linkable to a graphical engine capable of rendering the board, the pieces, and their states (active, captured, promoted, etc.).  
+Visual themes (colors, textures, board layout) and interface styles (classic, modern, abstract) must be configurable.  
+The goal is for the same rule code to be visualized with different renderings, without modifying the game logic.
 
 ---
 
-## 8. Comparaison / Évaluation de variantes
+## 5. Basic AI
 
-Le système doit permettre de définir, charger et comparer plusieurs variantes issues du même modèle de base.  
-Des métriques (durée moyenne d’une partie, équilibre, diversité stratégique, complexité) pourront être extraites pour évaluer les différences.  
-L’objectif est de rendre possible une analyse automatique ou semi-automatique de la richesse des variantes créées avec le DSL.
+The language must support the automatic generation of a simple opponent based on basic heuristics (random choice among legal moves, or preference for captures).  
+This AI must be able to play against a human in any variant described by the DSL.  
+The goal is to provide a minimal tool to quickly test the validity and playability of the rules.
+
+---
+
+## 6. Stronger AI (e.g., MCTS)
+
+The DSL must include integration points allowing advanced search algorithms such as **Monte Carlo Tree Search (MCTS)** or other reinforcement-learning methods to be plugged in.  
+These integrations do not have to be implemented initially, but the language must expose the necessary information (states, legal moves, transitions, rewards).  
+Thus, any variant written in the DSL can be used for advanced AI experimentation without specific adaptation.
+
+---
+
+## 7. Play with LLM
+
+The DSL must be able to interact with a language model (LLM) capable of understanding and playing according to the described rules.  
+Each defined variant must be translatable into a format interpretable by the LLM, with a coherent vocabulary for actions and states.  
+The goal is to allow an LLM to comment on, explain, or even participate in a game following the rules generated by the DSL.
+
+---
+
+## 8. Variant Comparison / Evaluation
+
+The system must allow defining, loading, and comparing several variants derived from the same base model.  
+Metrics (average game duration, balance, strategic diversity, complexity) can be extracted to evaluate differences.  
+The goal is to make automatic or semi-automatic analysis of the richness of variants created with the DSL possible.
