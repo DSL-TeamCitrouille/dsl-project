@@ -16,7 +16,7 @@ game DamDamClassic {
     }
     capture {
       mandatory true
-      message "Capture obligatoire !"
+      message "Nomnomnom!"
     }
   }
 

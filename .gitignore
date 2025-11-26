@@ -13,3 +13,5 @@ SDK.ts
 venv/
 package-lock.json
 .env
+packages/language/src/outputGenerator/*.html
+packages/cli/src/scripts/LLM/*.log
