@@ -12,3 +12,4 @@ syntaxes/
 SDK.ts
 venv/
 package-lock.json
+.env
