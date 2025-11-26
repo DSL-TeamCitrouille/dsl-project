@@ -29,6 +29,7 @@ export class UI {
     private showLegalMoves: boolean = true;
     private backendUrl: string = "http://127.0.0.1:5000/api/move";
     private botDifficulty: string;
+    private turn: number = 0;
 
     constructor(game: Game, captureMessage: string, botDifficulty: string) {
         this.game = game;
@@ -228,6 +229,7 @@ export class UI {
                 }
                 this.selected = null;
                 this.render();
+                this.turn++;
                 await this.checkBotTurn();
             }
         }
@@ -267,6 +269,7 @@ export class UI {
             const move = await this.getLLMMove();
             if (move) {
                 this.game.executeMove(move);
+                this.turn++;
                 this.showLLMStatus(`✅ LLM moved - Cost: ${move.cost || 'N/A'}`, move.reasoning);
                 await new Promise(resolve => setTimeout(resolve, 500));
             } else {
@@ -306,7 +309,8 @@ export class UI {
                 from: { row: m.from.row, col: m.from.col },
                 to: { row: m.to.row, col: m.to.col },
                 capturedIds: m.capturedIds
-            }))
+            })),
+            turn: this.turn, 
         };
 
         try {
@@ -393,12 +397,14 @@ export class UI {
                 if (this.game.currentPlayer === 0) {
                     const piecesBefore = this.game.pieces.size;
                     await this.bot0.makeMoveWithDelay(100);
+                    this.turn++;
                     if (this.game.pieces.size < piecesBefore) {
                         this.showCaptureMessage();
                     }
                 } else {
                     const piecesBefore = this.game.pieces.size;
                     await this.bot1.makeMoveWithDelay(100);
+                    this.turn++;
                     if (this.game.pieces.size < piecesBefore) {
                         this.showCaptureMessage();
                     }
@@ -466,6 +472,7 @@ export class UI {
                 // Without dice: play one move
                 const piecesBefore = this.game.pieces.size;
                 await this.bot1.makeMoveWithDelay(500);
+                this.turn++;
                 if (this.game.pieces.size < piecesBefore) this.showCaptureMessage();
             }
 

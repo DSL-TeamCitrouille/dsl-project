@@ -1,381 +1,424 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MyDamDam - With Bot</title>
-  <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .container {
-            text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        h1 { 
-            margin-bottom: 10px; 
-            color: #333; 
-            font-size: 28px;
-        }
-
-        .status {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #666;
-            min-height: 24px;
-        }
-
-        .board {
-            display: inline-grid;
-            grid-template-columns: repeat(10, 50px);
-            gap: 0;
-            border: 3px solid #333;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .square {
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .square:hover { 
-            filter: brightness(0.95);
-        }
-
-        .square.selected {
-            box-shadow: inset 0 0 10px rgba(255, 200, 0, 0.8);
-            background-color: rgba(255, 200, 0, 0.2) !important;
-        }
-
-        .square.legalmoves {
-            box-shadow: inset 0 0 10px rgba(218, 76, 253, 0.8);
-            background-color: rgba(255, 200, 0, 0.2) !important;
-        }
-
-        .piece {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease;
-        }
-
-        .square:hover .piece {
-            transform: scale(1.1);
-        }
-
-        .piece.white { 
-            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-            color: #333; 
-            border: 2px solid #333; 
-        }
-        .piece.black { 
-            background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
-        }
-        .piece.red { 
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-        }
-        .piece.blue { 
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a5c2 100%);
-        }
-        .piece.green { 
-            background: linear-gradient(135deg, #95de64 0%, #69db7c 100%);
-            color: #333;
-        }
-        .piece.yellow { 
-            background: linear-gradient(135deg, #ffd93d 0%, #ffec99 100%);
-            color: #333;
-        }
-
-        .piece.queen::after {
-            content: '👑';
-            position: absolute;
-            font-size: 16px;
-            top: -2px;
-            right: 0px;
-        }
-
-        .piece.queen {
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 215, 0, 0.6);
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 14px;
-            border: none;
-            border-radius: 6px;
-            background: #2196F3;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        button:hover { 
-            background: #1976D2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .reset-btn { 
-            background: #4CAF50;
-        }
-        .reset-btn:hover { 
-            background: #45a049;
-        }
-        
-        .forfait-btn {
-            background: #FF5722;
-        }
-        .forfait-btn:hover {
-            background: #E64A19;
-        }
-
-        .bot-btn {
-            background: #9C27B0;
-        }
-        .bot-btn:hover {
-            background: #7B1FA2;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            max-width: 400px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>DamDamBubbleGum - With Bot</title>
+        <style>
+            * { 
+                margin: 0; 
+                padding: 0; 
+                box-sizing: border-box; 
             }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-content h2 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 22px;
-        }
-
-        .modal-content p {
-            margin-bottom: 25px;
-            color: #666;
-            font-size: 16px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .modal-buttons button {
-            padding: 10px 25px;
-            font-size: 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        .confirm-btn {
-            background: #FF5722;
-            color: white;
-        }
-
-        .confirm-btn:hover {
-            background: #E64A19;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .cancel-btn {
-            background: #757575;
-            color: white;
-        }
-
-        .cancel-btn:hover {
-            background: #616161;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-
-        .mode-btn {
-            padding: 8px 16px;
-            font-size: 13px;
-            background: #eee;
-            color: #333;
-        }
-
-        .mode-btn.active {
-            background: #2196F3;
-            color: white;
-        }
-
-        @media (max-width: 600px) {
-            .container {
+            
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 padding: 20px;
             }
+
+            .container {
+                text-align: center;
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                max-width: 1200px;
+                width: 100%;
+            }
+
+            h1 { 
+                margin-bottom: 10px; 
+                color: #333; 
+                font-size: 28px;
+            }
+
+            .status {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 20px;
+                color: #666;
+                min-height: 24px;
+            }
+
             .board {
+                display: inline-grid;
+                grid-template-columns: repeat(10, 50px);
+                gap: 0;
+                border: 3px solid #333;
+                margin-bottom: 20px;
+                border-radius: 4px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .square {
+                width: 50px;
+                height: 50px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                transition: all 0.2s ease;
+                user-select: none;
+            }
+
+            .square:hover { 
+                filter: brightness(0.95);
+            }
+
+            .square.selected {
+                box-shadow: inset 0 0 10px rgba(255, 200, 0, 0.8);
+                background-color: rgba(255, 200, 0, 0.2) !important;
+            }
+
+            .square.legalmoves {
+                box-shadow: inset 0 0 10px rgba(218, 76, 253, 0.8);
+                background-color: rgba(255, 200, 0, 0.2) !important;
+            }
+
+            .piece {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                color: white;
+                font-size: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                transition: transform 0.2s ease;
+            }
+
+            .square:hover .piece {
+                transform: scale(1.1);
+            }
+
+            .piece.white { 
+                background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+                color: #333; 
+                border: 2px solid #333; 
+            }
+            .piece.black { 
+                background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
+            }
+            .piece.red { 
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            }
+            .piece.blue { 
+                background: linear-gradient(135deg, #4ecdc4 0%, #44a5c2 100%);
+            }
+            .piece.green { 
+                background: linear-gradient(135deg, #95de64 0%, #69db7c 100%);
+                color: #333;
+            }
+            .piece.yellow { 
+                background: linear-gradient(135deg, #ffd93d 0%, #ffec99 100%);
+                color: #333;
+            }
+
+            .piece.queen::after {
+                content: '👑';
+                position: absolute;
+                font-size: 16px;
+                top: -2px;
+                right: 0px;
+            }
+
+            .piece.queen {
+                position: relative;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 215, 0, 0.6);
+            }
+
+            .controls {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+                border: none;
+                border-radius: 6px;
+                background: #2196F3;
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.2s ease;
+            }
+
+            button:hover { 
+                background: #1976D2;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            button:active {
+                transform: translateY(0);
+            }
+
+            button:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .reset-btn { 
+                background: #4CAF50;
+            }
+            .reset-btn:hover { 
+                background: #45a049;
+            }
+            
+            .forfait-btn {
+                background: #FF5722;
+            }
+            .forfait-btn:hover {
+                background: #E64A19;
+            }
+
+            .bot-btn {
+                background: #9C27B0;
+            }
+            .bot-btn:hover {
+                background: #7B1FA2;
+            }
+
+            .llm-btn {
+                background: #FF6F00;
+            }
+            .llm-btn:hover {
+                background: #E65100;
+            }
+
+            .llm-btn.active {
+                background: #FFB300;
+                color: #333;
+            }
+
+            .llm-status {
+                border-color: #FF6F00 !important;
+            }
+
+            .mode-btn.llm-mode {
+                background: #FF6F00;
+                color: white;
+            }
+
+            /* Modal Styles */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal.active {
+                display: flex;
+            }
+
+            .modal-content {
+                background-color: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                text-align: center;
+                max-width: 400px;
+                animation: slideIn 0.3s ease;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(-50px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .modal-content h2 {
+                margin-bottom: 15px;
+                color: #333;
+                font-size: 22px;
+            }
+
+            .modal-content p {
+                margin-bottom: 25px;
+                color: #666;
+                font-size: 16px;
+            }
+
+            .modal-buttons {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            }
+
+            .modal-buttons button {
+                padding: 10px 25px;
+                font-size: 14px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.2s ease;
+            }
+
+            .confirm-btn {
+                background: #FF5722;
+                color: white;
+            }
+
+            .confirm-btn:hover {
+                background: #E64A19;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .cancel-btn {
+                background: #757575;
+                color: white;
+            }
+
+            .cancel-btn:hover {
+                background: #616161;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .mode-selector {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
                 margin-bottom: 15px;
             }
-            .controls {
-                gap: 8px;
-            }
-            button {
+
+            .mode-btn {
                 padding: 8px 16px;
-                font-size: 12px;
-            }
-        }
-
-        .dice.rolling {
-            animation: diceRoll 0.6s ease-in-out;
-        }
-
-        @keyframes diceRoll {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(90deg) scale(1.1); }
-            50% { transform: rotate(180deg); }
-            75% { transform: rotate(270deg) scale(1.1); }
-        }
-
-        .throw-button:hover {
-            background: #F57C00 !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .throw-button:active {
-            transform: translateY(0);
-        }
-
-        .throw-button:disabled {
-            background: #ccc !important;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .toggle-hints-btn {
-            display: center;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 15px;
+                font-size: 13px;
+                background: #eee;
+                color: #333;
             }
 
-        .toggle-hints-btn:hover {
-            background-color: #1976D2;
-        }
+            .mode-btn.active {
+                background: #2196F3;
+                color: white;
+            }
 
-        .toggle-hints-btn.active {
-            background-color: #2196F3;
-            color: white;
-        }
+            @media (max-width: 600px) {
+                .container {
+                    padding: 20px;
+                }
+                .board {
+                    margin-bottom: 15px;
+                }
+                .controls {
+                    gap: 8px;
+                }
+                button {
+                    padding: 8px 16px;
+                    font-size: 12px;
+                }
+            }
 
-        .toggle-hints-btn {
-            background-color: #eee;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-  <div class="container">
-        <h1>🎮 MyDamDam</h1>
+            .dice.rolling {
+                animation: diceRoll 0.6s ease-in-out;
+            }
+
+            @keyframes diceRoll {
+                0%, 100% { transform: rotate(0deg); }
+                25% { transform: rotate(90deg) scale(1.1); }
+                50% { transform: rotate(180deg); }
+                75% { transform: rotate(270deg) scale(1.1); }
+            }
+
+            .throw-button:hover {
+                background: #F57C00 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .throw-button:active {
+                transform: translateY(0);
+            }
+
+            .throw-button:disabled {
+                background: #ccc !important;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .toggle-hints-btn {
+                display: center;
+                gap: 10px;
+                justify-content: center;
+                margin-bottom: 15px;
+                }
+
+            .toggle-hints-btn:hover {
+                background-color: #1976D2;
+            }
+
+            .toggle-hints-btn.active {
+                background-color: #2196F3;
+                color: white;
+            }
+
+            .toggle-hints-btn {
+                background-color: #eee;
+                color: white;
+            }
+
+            .capture-message {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 80px;
+                font-weight: bold;
+                color: #fc5c00ff;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 999;
+            }
+
+            .capture-message.show {
+                opacity: 1;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="container">
+        <h1>🎮 DamDamBubbleGum</h1>
         
         <div class="mode-selector">
             <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
             <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
+            <button class="mode-btn" data-mode="pvl">🧠 Player vs LLM</button>
             <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
+            <button class="mode-btn" data-mode="lvl">🧠🧠 LLM vs LLM</button>
         </div>
         <button class="toggle-hints-btn">💡 Aide</button>
         <div class="status">Loading...</div>
+        <div class="capture-message"></div>
         <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px;">
             <div class="board"><div class="square" data-row="0" data-col="0" style="background-color: pink;"></div><div class="square" data-row="0" data-col="1" style="background-color: lightblue;"></div><div class="square" data-row="0" data-col="2" style="background-color: pink;"></div><div class="square" data-row="0" data-col="3" style="background-color: lightblue;"></div><div class="square" data-row="0" data-col="4" style="background-color: pink;"></div><div class="square" data-row="0" data-col="5" style="background-color: lightblue;"></div><div class="square" data-row="0" data-col="6" style="background-color: pink;"></div><div class="square" data-row="0" data-col="7" style="background-color: lightblue;"></div><div class="square" data-row="0" data-col="8" style="background-color: pink;"></div><div class="square" data-row="0" data-col="9" style="background-color: lightblue;"></div><div class="square" data-row="1" data-col="0" style="background-color: lightblue;"></div><div class="square" data-row="1" data-col="1" style="background-color: pink;"></div><div class="square" data-row="1" data-col="2" style="background-color: lightblue;"></div><div class="square" data-row="1" data-col="3" style="background-color: pink;"></div><div class="square" data-row="1" data-col="4" style="background-color: lightblue;"></div><div class="square" data-row="1" data-col="5" style="background-color: pink;"></div><div class="square" data-row="1" data-col="6" style="background-color: lightblue;"></div><div class="square" data-row="1" data-col="7" style="background-color: pink;"></div><div class="square" data-row="1" data-col="8" style="background-color: lightblue;"></div><div class="square" data-row="1" data-col="9" style="background-color: pink;"></div><div class="square" data-row="2" data-col="0" style="background-color: pink;"></div><div class="square" data-row="2" data-col="1" style="background-color: lightblue;"></div><div class="square" data-row="2" data-col="2" style="background-color: pink;"></div><div class="square" data-row="2" data-col="3" style="background-color: lightblue;"></div><div class="square" data-row="2" data-col="4" style="background-color: pink;"></div><div class="square" data-row="2" data-col="5" style="background-color: lightblue;"></div><div class="square" data-row="2" data-col="6" style="background-color: pink;"></div><div class="square" data-row="2" data-col="7" style="background-color: lightblue;"></div><div class="square" data-row="2" data-col="8" style="background-color: pink;"></div><div class="square" data-row="2" data-col="9" style="background-color: lightblue;"></div><div class="square" data-row="3" data-col="0" style="background-color: lightblue;"></div><div class="square" data-row="3" data-col="1" style="background-color: pink;"></div><div class="square" data-row="3" data-col="2" style="background-color: lightblue;"></div><div class="square" data-row="3" data-col="3" style="background-color: pink;"></div><div class="square" data-row="3" data-col="4" style="background-color: lightblue;"></div><div class="square" data-row="3" data-col="5" style="background-color: pink;"></div><div class="square" data-row="3" data-col="6" style="background-color: lightblue;"></div><div class="square" data-row="3" data-col="7" style="background-color: pink;"></div><div class="square" data-row="3" data-col="8" style="background-color: lightblue;"></div><div class="square" data-row="3" data-col="9" style="background-color: pink;"></div><div class="square" data-row="4" data-col="0" style="background-color: pink;"></div><div class="square" data-row="4" data-col="1" style="background-color: lightblue;"></div><div class="square" data-row="4" data-col="2" style="background-color: pink;"></div><div class="square" data-row="4" data-col="3" style="background-color: lightblue;"></div><div class="square" data-row="4" data-col="4" style="background-color: pink;"></div><div class="square" data-row="4" data-col="5" style="background-color: lightblue;"></div><div class="square" data-row="4" data-col="6" style="background-color: pink;"></div><div class="square" data-row="4" data-col="7" style="background-color: lightblue;"></div><div class="square" data-row="4" data-col="8" style="background-color: pink;"></div><div class="square" data-row="4" data-col="9" style="background-color: lightblue;"></div><div class="square" data-row="5" data-col="0" style="background-color: lightblue;"></div><div class="square" data-row="5" data-col="1" style="background-color: pink;"></div><div class="square" data-row="5" data-col="2" style="background-color: lightblue;"></div><div class="square" data-row="5" data-col="3" style="background-color: pink;"></div><div class="square" data-row="5" data-col="4" style="background-color: lightblue;"></div><div class="square" data-row="5" data-col="5" style="background-color: pink;"></div><div class="square" data-row="5" data-col="6" style="background-color: lightblue;"></div><div class="square" data-row="5" data-col="7" style="background-color: pink;"></div><div class="square" data-row="5" data-col="8" style="background-color: lightblue;"></div><div class="square" data-row="5" data-col="9" style="background-color: pink;"></div><div class="square" data-row="6" data-col="0" style="background-color: pink;"></div><div class="square" data-row="6" data-col="1" style="background-color: lightblue;"></div><div class="square" data-row="6" data-col="2" style="background-color: pink;"></div><div class="square" data-row="6" data-col="3" style="background-color: lightblue;"></div><div class="square" data-row="6" data-col="4" style="background-color: pink;"></div><div class="square" data-row="6" data-col="5" style="background-color: lightblue;"></div><div class="square" data-row="6" data-col="6" style="background-color: pink;"></div><div class="square" data-row="6" data-col="7" style="background-color: lightblue;"></div><div class="square" data-row="6" data-col="8" style="background-color: pink;"></div><div class="square" data-row="6" data-col="9" style="background-color: lightblue;"></div><div class="square" data-row="7" data-col="0" style="background-color: lightblue;"></div><div class="square" data-row="7" data-col="1" style="background-color: pink;"></div><div class="square" data-row="7" data-col="2" style="background-color: lightblue;"></div><div class="square" data-row="7" data-col="3" style="background-color: pink;"></div><div class="square" data-row="7" data-col="4" style="background-color: lightblue;"></div><div class="square" data-row="7" data-col="5" style="background-color: pink;"></div><div class="square" data-row="7" data-col="6" style="background-color: lightblue;"></div><div class="square" data-row="7" data-col="7" style="background-color: pink;"></div><div class="square" data-row="7" data-col="8" style="background-color: lightblue;"></div><div class="square" data-row="7" data-col="9" style="background-color: pink;"></div><div class="square" data-row="8" data-col="0" style="background-color: pink;"></div><div class="square" data-row="8" data-col="1" style="background-color: lightblue;"></div><div class="square" data-row="8" data-col="2" style="background-color: pink;"></div><div class="square" data-row="8" data-col="3" style="background-color: lightblue;"></div><div class="square" data-row="8" data-col="4" style="background-color: pink;"></div><div class="square" data-row="8" data-col="5" style="background-color: lightblue;"></div><div class="square" data-row="8" data-col="6" style="background-color: pink;"></div><div class="square" data-row="8" data-col="7" style="background-color: lightblue;"></div><div class="square" data-row="8" data-col="8" style="background-color: pink;"></div><div class="square" data-row="8" data-col="9" style="background-color: lightblue;"></div><div class="square" data-row="9" data-col="0" style="background-color: lightblue;"></div><div class="square" data-row="9" data-col="1" style="background-color: pink;"></div><div class="square" data-row="9" data-col="2" style="background-color: lightblue;"></div><div class="square" data-row="9" data-col="3" style="background-color: pink;"></div><div class="square" data-row="9" data-col="4" style="background-color: lightblue;"></div><div class="square" data-row="9" data-col="5" style="background-color: pink;"></div><div class="square" data-row="9" data-col="6" style="background-color: lightblue;"></div><div class="square" data-row="9" data-col="7" style="background-color: pink;"></div><div class="square" data-row="9" data-col="8" style="background-color: lightblue;"></div><div class="square" data-row="9" data-col="9" style="background-color: pink;"></div></div>
             <div class="dice-container">
@@ -398,32 +441,31 @@
         
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
-            <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
-            <button class="forfait-btn">🏳️ Forfait</button>
+            <button class="forfeit-btn">🏳️ Forfeit</button>
         </div>
 
-        <!-- Forfait Confirmation Modal -->
-        <div class="modal" id="forfaitModal">
+        <!-- Forfeit Confirmation Modal -->
+        <div class="modal" id="forfeitModal">
             <div class="modal-content">
-                <h2>Forfait Confirmation</h2>
-                <p>Are you sure you want to forfait? You will lose the game.</p>
+                <h2>Forfeit Confirmation</h2>
+                <p>Are you sure you want to forfeit? You will lose the game.</p>
                 <div class="modal-buttons">
-                    <button class="confirm-btn" id="confirmForfait">Yes, Forfait</button>
-                    <button class="cancel-btn" id="cancelForfait">No, Continue</button>
+                    <button class="confirm-btn" id="confirmForfeit">Yes, Forfeit</button>
+                    <button class="cancel-btn" id="cancelForfeit">No, Continue</button>
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
-  <script>
-    window.__GAME_CONFIG = {"boardSize":10,"direction":"orthogonal","firstPlayer":1,"mandatoryCapture":false,"pieces":[{"name":"red","color":"red","quantity":20},{"name":"blue","color":"blue","quantity":20}],"dice":{"faces":3}};
-  </script>
-  <script>
+        <script>
+            window.__GAME_CONFIG = {"boardSize":10,"direction":"orthogonal","firstPlayer":1,"mandatoryCapture":false,"captureMessage":"Une capture illumine brièvement le plateau.","pieces":[{"name":"red","color":"red","quantity":20},{"name":"blue","color":"blue","quantity":20}],"dice":{"faces":3}};
+        </script>
+        <script>
 "use strict";
 (() => {
   // packages/cli/out/scripts/game.js
   var Game = class {
-    constructor(boardSize, direction, pieces_config, firstPlayer = 0, isCaptureManutory = false, diceConfig = null) {
+    constructor(boardSize, direction, pieces_config, firstPlayer = 0, isCaptureMandatory = false, diceConfig = null) {
       this.pieces = /* @__PURE__ */ new Map();
       this.firstPlayer = 0;
       this.currentPlayer = 0;
@@ -440,7 +482,7 @@
       this.winner = null;
       this.direction = direction;
       this.pieces_config = pieces_config;
-      this.isCaptureManutory = isCaptureManutory;
+      this.isCaptureMandatory = isCaptureMandatory;
       this.nextId = 0;
       this.diceConfig = diceConfig;
       this.diceResult = null;
@@ -532,7 +574,7 @@
         return moves2;
       }
       const moves = [];
-      if (this.isCaptureManutory) {
+      if (this.isCaptureMandatory) {
         let hasAnyCaptures = false;
         this.pieces.forEach((piece) => {
           if (piece.player === this.currentPlayer) {
@@ -831,10 +873,7 @@
       this.game = game;
       this.playerId = playerId;
     }
-    /**
-     * Makes a random legal move for the bot's player
-     * @returns The move that was made, or null if no legal moves available
-     */
+    // Makes a random legal move for the bot's player
     makeMove() {
       if (this.game.currentPlayer !== this.playerId || this.game.gameOver) {
         return null;
@@ -851,11 +890,7 @@
       }
       return null;
     }
-    /**
-     * Makes a move after a delay (useful for UI visualization)
-     * @param delayMs Delay in milliseconds before making the move
-     * @returns Promise that resolves with the move that was made
-     */
+    // Makes a move after a delay (useful for UI visualization)
     async makeMoveWithDelay(delayMs = 500) {
       if (this.game.diceConfig && this.game.mustRollDice) {
         const result = this.game.rollDice();
@@ -873,13 +908,16 @@
 
   // packages/cli/out/scripts/ui.js
   var UI = class {
-    constructor(game) {
+    constructor(game, captureMessage) {
       this.selected = null;
       this.mode = "pvp";
       this.isProcessing = false;
       this.stopBotLoop = false;
       this.showLegalMoves = true;
+      this.backendUrl = "http://127.0.0.1:5000/api/move";
+      this.turn = 0;
       this.game = game;
+      this.captureMessage = captureMessage;
       this.bot1 = new Bot(game, 1);
       this.bot0 = new Bot(game, 0);
       this.setupEvents();
@@ -899,19 +937,13 @@
           this.checkBotTurn();
         });
       }
-      const botBtn = document.querySelector(".bot-btn");
-      if (botBtn) {
-        botBtn.addEventListener("click", async () => {
-          await this.triggerBotMove();
-        });
-      }
       const toggleHintsBtn = document.querySelector(".toggle-hints-btn");
       if (toggleHintsBtn) {
         toggleHintsBtn.classList.add("active");
         toggleHintsBtn.addEventListener("click", () => {
           this.showLegalMoves = !this.showLegalMoves;
           toggleHintsBtn.classList.toggle("active");
-          toggleHintsBtn.textContent = this.showLegalMoves ? "\u{1F4A1} Aide" : "\u{1F4A1} Aide (d\xE9sactiv\xE9e)";
+          toggleHintsBtn.textContent = this.showLegalMoves ? "\u{1F4A1} Disable Help" : "\u{1F4A1} Enable Help";
           this.render();
         });
       }
@@ -957,9 +989,9 @@
       modeBtns.forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === newMode);
       });
-      const botBtn = document.querySelector(".bot-btn");
-      if (botBtn) {
-        botBtn.style.display = newMode === "pvb" ? "inline-block" : "none";
+      const llmStatus = document.getElementById("llmStatus");
+      if (llmStatus) {
+        llmStatus.style.display = newMode === "pvl" || newMode === "lvl" ? "block" : "none";
       }
       this.render();
       setTimeout(() => {
@@ -970,16 +1002,18 @@
     async handleClick(e) {
       if (this.isProcessing || this.game.gameOver)
         return;
-      if (this.mode === "bvb")
+      if (this.mode === "bvb" || this.mode === "lvl")
         return;
       if (this.mode === "pvb" && this.game.currentPlayer === 1)
         return;
+      if (this.mode === "pvl" && this.game.currentPlayer === 1)
+        return;
       if (this.game.diceConfig && this.game.mustRollDice) {
-        this.updateStatus("\u26A0\uFE0F You must roll the dice first!");
+        this.updateStatus("\u26A0\uFE0F Not so fast ! You must roll the dice first!");
         return;
       }
       if (this.game.diceConfig && this.game.movesRemaining <= 0) {
-        this.updateStatus("\u26A0\uFE0F No moves remaining! Roll the dice again.");
+        this.updateStatus("\u26A0\uFE0F No moves remaining! Roll the dice again to continue.");
         return;
       }
       const target = e.target;
@@ -995,13 +1029,13 @@
       const clickedPiece = this.getPieceAt(row, col);
       if (!this.selected) {
         if (clickedPiece && clickedPiece.player === this.game.currentPlayer) {
-          if (this.game.isCaptureManutory) {
+          if (this.game.isCaptureMandatory) {
             const allLegalMoves = this.game.getLegalMoves();
             const hasCaptureMoves = allLegalMoves.some((m) => m.capturedIds && m.capturedIds.length > 0);
             if (hasCaptureMoves) {
               const pieceCanCapture = allLegalMoves.some((m) => m.from.row === clickedPiece.row && m.from.col === clickedPiece.col && m.capturedIds && m.capturedIds.length > 0);
               if (!pieceCanCapture) {
-                this.updateStatus("\u26A0\uFE0F Mandatory capture! You must capture with another piece.");
+                this.updateStatus("\u26A0\uFE0F Mandatory capture! You must NomNomNomNomNom your opponent.");
                 return;
               }
             }
@@ -1022,9 +1056,15 @@
         const legalMoves = this.game.getLegalMoves();
         const matchingMove = legalMoves.find((m) => m.from.row === move.from.row && m.from.col === move.from.col && m.to.row === move.to.row && m.to.col === move.to.col);
         const moveToExecute = matchingMove || move;
+        const piecesBefore = this.game.pieces.size;
         if (this.game.executeMove(moveToExecute)) {
+          const piecesAfter = this.game.pieces.size;
+          if (piecesAfter < piecesBefore) {
+            this.showCaptureMessage();
+          }
           this.selected = null;
           this.render();
+          this.turn++;
           await this.checkBotTurn();
         }
       }
@@ -1038,16 +1078,118 @@
         }, 2e3);
       }
     }
-    async triggerBotMove() {
+    showCaptureMessage() {
+      const messageEl = document.querySelector(".capture-message");
+      if (!messageEl || !this.captureMessage)
+        return;
+      messageEl.textContent = this.captureMessage;
+      messageEl.classList.add("show");
+      setTimeout(() => {
+        messageEl.classList.remove("show");
+      }, 1500);
+    }
+    async triggerLLMMove() {
       if (this.isProcessing || this.game.gameOver)
         return;
       this.isProcessing = true;
+      this.showLLMStatus("\u{1F9E0} LLM Thinking...");
       this.render();
-      if (this.mode === "pvb" && this.game.currentPlayer === 1) {
-        await this.bot1.makeMoveWithDelay(500);
+      try {
+        const move = await this.getLLMMove();
+        if (move) {
+          this.game.executeMove(move);
+          this.turn++;
+          this.showLLMStatus(`\u2705 LLM moved - Cost: ${move.cost || "N/A"}`, move.reasoning);
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        } else {
+          this.showLLMStatus("\u274C LLM failed to make a move", "Using fallback move");
+        }
+      } catch (error) {
+        console.error("LLM move error:", error);
+        this.showLLMStatus("\u274C LLM Error", String(error));
       }
       this.isProcessing = false;
       this.render();
+    }
+    async getLLMMove() {
+      const legalMoves = this.game.getLegalMoves();
+      if (legalMoves.length === 0) {
+        return null;
+      }
+      const gameState = {
+        board_size: this.game.boardSize,
+        direction: this.game.direction,
+        current_player: this.game.currentPlayer,
+        mandatory_capture: this.game.isCaptureMandatory,
+        pieces: Array.from(this.game.pieces.values()).map((p) => ({
+          id: p.id,
+          player: p.player,
+          row: p.row,
+          col: p.col,
+          isQueen: p.isQueen,
+          color: p.color,
+          name: p.name
+        })),
+        legal_moves: legalMoves.map((m) => ({
+          from: { row: m.from.row, col: m.from.col },
+          to: { row: m.to.row, col: m.to.col },
+          capturedIds: m.capturedIds
+        })),
+        turn: this.turn
+      };
+      try {
+        const response = await fetch(this.backendUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(gameState)
+        });
+        if (!response.ok) {
+          throw new Error(`Backend error: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.success && data.piece_id && data.target) {
+          const piece = this.game.pieces.get(data.piece_id);
+          if (piece) {
+            const matchingMove = legalMoves.find((m) => m.from.row === piece.row && m.from.col === piece.col && m.to.row === data.target.row && m.to.col === data.target.col);
+            if (matchingMove) {
+              return {
+                ...matchingMove,
+                cost: data.cost,
+                reasoning: data.reasoning,
+                tokens_used: data.tokens_used
+              };
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to call LLM backend:", error);
+      }
+    }
+    showLLMStatus(status, reasoning) {
+      const statusDiv = document.getElementById("llmStatus");
+      const thinkingDiv = document.getElementById("llmThinking");
+      const costDiv = document.getElementById("llmCost");
+      const reasoningDiv = document.getElementById("llmReasoning");
+      if (statusDiv) {
+        statusDiv.style.display = "block";
+        if (status.includes("Thinking") && thinkingDiv) {
+          thinkingDiv.style.display = "block";
+          if (costDiv)
+            costDiv.textContent = "";
+          if (reasoningDiv)
+            reasoningDiv.textContent = "";
+        } else {
+          if (thinkingDiv)
+            thinkingDiv.style.display = "none";
+          if (costDiv)
+            costDiv.textContent = status;
+          if (reasoningDiv && reasoning) {
+            reasoningDiv.textContent = `\u{1F4AD} ${reasoning}`;
+          }
+        }
+      }
     }
     async checkBotTurn() {
       if (this.game.gameOver || this.isProcessing)
@@ -1061,11 +1203,47 @@
           if (this.stopBotLoop || this.mode !== "bvb")
             break;
           if (this.game.currentPlayer === 0) {
+            const piecesBefore = this.game.pieces.size;
             await this.bot0.makeMoveWithDelay(100);
+            this.turn++;
+            if (this.game.pieces.size < piecesBefore) {
+              this.showCaptureMessage();
+            }
           } else {
+            const piecesBefore = this.game.pieces.size;
             await this.bot1.makeMoveWithDelay(100);
+            this.turn++;
+            if (this.game.pieces.size < piecesBefore) {
+              this.showCaptureMessage();
+            }
           }
           if (this.game.gameOver || this.stopBotLoop || this.mode !== "bvb")
+            break;
+        }
+        this.isProcessing = false;
+        this.render();
+      } else if (this.mode === "lvl") {
+        this.stopBotLoop = false;
+        while (!this.game.gameOver && !this.stopBotLoop && this.mode === "lvl") {
+          this.render();
+          await new Promise((resolve) => setTimeout(resolve, 1e3));
+          if (this.stopBotLoop || this.mode !== "lvl")
+            break;
+          if (this.game.diceConfig && this.game.mustRollDice) {
+            this.game.rollDice();
+            this.render();
+            await new Promise((r) => setTimeout(r, 300));
+            while (!this.game.gameOver && this.game.movesRemaining > 0) {
+              await this.triggerLLMMove();
+              this.render();
+              await new Promise((r) => setTimeout(r, 300));
+            }
+          } else {
+            await this.triggerLLMMove();
+            this.render();
+            await new Promise((r) => setTimeout(r, 300));
+          }
+          if (this.game.gameOver || this.stopBotLoop || this.mode !== "lvl")
             break;
         }
         this.isProcessing = false;
@@ -1073,7 +1251,38 @@
       } else if (this.mode === "pvb" && this.game.currentPlayer === 1) {
         this.isProcessing = true;
         this.render();
-        await this.bot1.makeMoveWithDelay(500);
+        if (this.game.diceConfig && this.game.mustRollDice) {
+          this.game.rollDice();
+          this.render();
+          await new Promise((r) => setTimeout(r, 300));
+        }
+        while (!this.game.gameOver && this.game.movesRemaining > 0) {
+          const piecesBefore = this.game.pieces.size;
+          await this.bot1.makeMoveWithDelay(500);
+          this.turn++;
+          if (this.game.pieces.size < piecesBefore)
+            this.showCaptureMessage();
+          this.render();
+          await new Promise((r) => setTimeout(r, 300));
+        }
+        this.isProcessing = false;
+        this.render();
+      } else if (this.mode === "pvl" && this.game.currentPlayer === 1) {
+        this.render();
+        if (this.game.diceConfig && this.game.mustRollDice) {
+          this.game.rollDice();
+          this.render();
+          await new Promise((r) => setTimeout(r, 300));
+          while (!this.game.gameOver && this.game.movesRemaining > 0) {
+            await this.triggerLLMMove();
+            this.render();
+            await new Promise((r) => setTimeout(r, 300));
+          }
+        } else {
+          await this.triggerLLMMove();
+          this.render();
+          await new Promise((r) => setTimeout(r, 300));
+        }
         this.isProcessing = false;
         this.render();
       }
@@ -1120,7 +1329,6 @@
         }
       });
       const status = document.querySelector(".status");
-      const botBtn = document.querySelector(".bot-btn");
       const diceResult = document.querySelector(".dice-result");
       const throwButton = document.querySelector(".throw-button");
       if (status) {
@@ -1158,9 +1366,6 @@
       if (throwButton && this.game.diceConfig) {
         const shouldDisable = this.isProcessing || this.game.gameOver || !this.game.mustRollDice || this.mode === "pvb" && this.game.currentPlayer === 1 || this.mode === "bvb";
         throwButton.disabled = shouldDisable;
-      }
-      if (botBtn) {
-        botBtn.disabled = this.isProcessing || this.game.gameOver || this.mode !== "pvb" || this.game.currentPlayer !== 1;
       }
     }
   };
@@ -1207,7 +1412,7 @@
     throwDice2 = throwDice;
     const diceConfig = cfg.dice || null;
     const game = new Game(cfg.boardSize, cfg.direction, cfg.pieces, cfg.firstPlayer, cfg.mandatoryCapture, diceConfig);
-    const ui = new UI(game);
+    const ui = new UI(game, cfg.captureMessage);
     let isRolling = false;
     const throwButton = document.querySelector(".throw-button");
     if (throwButton) {
@@ -1218,5 +1423,5 @@
 })();
 
 </script>
-</body>
-</html>
+    </body>
+    </html>
