@@ -1,9 +1,9 @@
 @startuml
 '==== LÉGENDE ====
-'Noir plein = Concepts compile-time (dans l'AST)
-'Gris pointillé = Concepts runtime (hors AST)
+'Full black = Compile-time concepts (dans l'AST)
+'Gris pointillé = Runtime concepts (hors AST)
 
-'==== COMPILE-TIME: Structure du jeu (AST) ====
+'==== COMPILE-TIME: Game Structure (AST) ====
 
 class Damier <<entry>> {
     name: String
@@ -70,7 +70,7 @@ class WinByForfeit {
     allowed: boolean
 }
 
-'==== UI/SKIN: Apparence visuelle ====
+'==== UI/SKIN: Visual appearance ====
 
 class UI {
 }
@@ -93,7 +93,7 @@ class Layout {
     showCaptured: boolean
 }
 
-'==== RUNTIME: Paramètres UX ====
+'==== RUNTIME: UX Parameters ====
 
 class Settings {
     animationSpeed: int
@@ -101,7 +101,7 @@ class Settings {
     aiDifficulty: int
 }
 
-'==== RUNTIME: État du jeu (hors AST) ====
+'==== RUNTIME: State of the game (Outside of AST) ====
 
 class State <<runtime>> {
     tourActuel: String
@@ -136,7 +136,7 @@ class Position <<runtime>> {
     y: int
 }
 
-'==== RELATIONS COMPILE-TIME ====
+'==== COMPILE-TIME RELATIONS ====
 
 Damier "1" --> "1" Board : définit
 Damier "1" --> "1" Pieces : contient
@@ -165,7 +165,7 @@ Sprites "1" --> "0..*" SpriteDef : contient
 
 Damier "1" --> "0..1" Settings : configure
 
-'==== RELATIONS RUNTIME ====
+'==== RUNTIME RELATIONS ====
 
 Damier ..> State : << génère >>
 State ..> Damier_Physical : << maintient >>

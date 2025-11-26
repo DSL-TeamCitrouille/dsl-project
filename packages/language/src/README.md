@@ -1,71 +1,69 @@
-# **Sous-domaine : Jeu de plateau en damier**
+# **Subdomain: Checkered Board Game**
 
-## **Périmètre**
+## **Scope**
 
-### **Concepts Objets**
-- **Jetons :**  
-  - X jetons de couleur 1  
-  - X jetons de couleur 2  
-  - Variante : possibilité de changer les couleurs des jetons
-- **Damier :**  
-  - Plateau  size×size cases  
-  - Variante : possibilité de changer la taille du plateau
+### **Object Concepts**
+- **Tokens:**  
+  - X tokens of color 1  
+  - X tokens of color 2  
+  - Variant: ability to change token colors
+- **Board:**  
+  - Board with size×size squares  
+  - Variant: ability to change board size
 
-### **Hasard**
-- Dé à 6 faces utilisé pour influencer les déplacements ou les actions  
-
----
-
-## **Coups / Règles**
-
-1. **Tour de jeu :**
-   - Les déplacements se font en alternance entre les joueurs.    
-
-2. **Déplacements :**
-   - Interdiction de sortir du damier.  
-   - Un seul lancé de dé par tour [s'il y a présence du dé ou non].  
-   - Interdiction de revenir en arrière, sauf pour manger un pion adverse.  
-
-3. **Actions possibles :**
-   - À chaque tour, un joueur peut :
-     - Effectuer un déplacement, ou
-     - Manger un pion adverse.  
-
-4. **Manger :** 
-   - Il est possible d’enchaîner plusieurs prises (manger plusieurs pions à la suite).  
-   - Les enchaînements de déplacements vides (sans manger) sont interdits.  
+### **Randomness**
+- A 6-sided die used to influence movements or actions  
 
 ---
 
-## **Objectifs de victoire**
+## **Moves / Rules**
 
-- Manger tous les jetons adverses.
-- Manger tous ses propres jetons sauf un (mode solitaire).  
-- Victoire par forfait de l’adversaire.  
+1. **Turn Order:**
+   - Movements alternate between players.    
 
----
+2. **Movement:**
+   - Leaving the board is forbidden.  
+   - Only one die roll per turn [if the die exists or not].  
 
-## **Familles de jeux visées / non visées**
+3. **Possible Actions:**
+   - Each turn, a player may:
+     - Perform a movement, or
+     - Capture an opposing token.  
 
-### **Jeux visés**
-- Jeux de plateau à 2 joueurs  
-- Jeux de plateau à 1 joueur (mode solitaire) 
-- Jeux de dés  
-- Tournois de dames possibles  
-
-### **Jeux non visés**
-- Pas de 3D
-- Pas de tournois multi-tables  
+4. **Capturing:** 
+   - Multiple captures in a row are allowed (capture several tokens consecutively).  
+   - Empty-move chains (moving multiple times without capturing) are forbidden.  
 
 ---
 
-## **Pourquoi c’est atteignable et fécond en variantes**
+## **Victory Conditions**
 
-- Grand nombre de variantes de dames déjà existantes, adaptables avec le dé.  
-- Possibilité de transformer en jeu solitaire (objectif : ne garder qu’un pion).  
-- Ajout du hasard et de la stratégie via le dé → renouvellement du gameplay.  
-- Variantes simples à inventer :  
-  - Règles spéciales selon le résultat du dé  
-  - Pions spéciaux ou pouvoirs  
-  - Modes de jeu alternatifs 
+- Capture all opposing tokens.  
+- Capture all your own tokens except one (solitaire mode).  
+- Win by opponent forfeiting.  
 
+---
+
+## **Targeted / Non-Targeted Game Families**
+
+### **Targeted Games**
+- 2-player board games  
+- 1-player board games (solitaire mode)  
+- Dice-based games  
+- Possible checkers tournaments  
+
+### **Non-Targeted Games**
+- No 3D  
+- No multi-table tournaments  
+
+---
+
+## **Why This Is Achievable and Rich in Variants**
+
+- Large number of existing checkers variants, adaptable with the die.  
+- Can be transformed into a solitaire game (goal: keep only one token).  
+- Added randomness and strategy through the die → renewed gameplay.  
+- Easy-to-create variants:  
+  - Special rules depending on die results  
+  - Special tokens or powers  
+  - Alternative game modes  

@@ -21,7 +21,13 @@ npx tsx packages/language/src/test/generation-test.ts
 ## LLM
 
 pip install flask flask-cors flask-limiter python-dotenv requests
-python3 LLM_connection.py
+
+If error: externally managed environement:
+    python3 -m venv venv 
+    source /your/path/to/project/venv/bin/activate
+
+Where your script python is:
+    python3 LLM_connection.py
 
 /!\ Flask will act as a backend to a response from LLM. So while testing variants, the python script should be running.
 
