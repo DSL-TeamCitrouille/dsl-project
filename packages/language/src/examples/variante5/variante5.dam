@@ -14,7 +14,7 @@ game DamDamSolitaireLight {
     }
     capture {
       mandatory true
-      message "Sauter un pion pour la retirer du plateau."
+      message "Lets goooo !"
     }
   }
 
@@ -25,17 +25,18 @@ game DamDamSolitaireLight {
     }
   }
 
+  aiDifficulty: "random"
+
   ui {
     theme {
       lightSquares: "ivory"
       darkSquares: "lightblue"
       highlight: "limegreen"
     }
-    layout { showCaptured true }
   }
 
   settings {
     showLegalMoves: true
-    aiDifficulty: 0
+    mode : "lvl"
   }
 }

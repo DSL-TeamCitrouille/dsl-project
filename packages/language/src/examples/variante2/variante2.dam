@@ -14,9 +14,6 @@ game DamDamRoyal {
       direction any
       canMoveBackward true
     }
-    action {
-      type move
-    }
     capture {
       mandatory true
       message "NomNomNomNom"
@@ -26,7 +23,9 @@ game DamDamRoyal {
   objective { 
     winByForfeit { allowed true} 
     winByCapture { captureAll opponent }
-        }
+  }
+
+  aiDifficulty: "random" 
 
   ui {
     theme {
@@ -38,5 +37,6 @@ game DamDamRoyal {
 
   settings { 
     showLegalMoves: false
-    aiDifficulty: 3 }
+    mode : "pvp"
+  }
 }

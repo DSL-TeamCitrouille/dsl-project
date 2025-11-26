@@ -19,10 +19,7 @@ game DamDamBubbleGum{
         }
         capture {
             mandatory false
-            message "Une capture illumine brièvement le plateau."
-        }
-        action {
-            type both
+            message "And another one !"
         }
     }
 
@@ -30,6 +27,8 @@ game DamDamBubbleGum{
         winByForfeit { allowed true }
         winByCapture { captureAll opponent }
     } 
+
+    aiDifficulty: "random"
     
     ui {
         theme {
@@ -37,11 +36,10 @@ game DamDamBubbleGum{
             darkSquares: "lightblue"
             highlight: "rosybrown"
         }
-        layout { showCaptured false }
     }
 
   settings {
     showLegalMoves: true
-    aiDifficulty: 3
+    mode : "pvp"
   }
 }

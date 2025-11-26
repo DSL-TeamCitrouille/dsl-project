@@ -16,7 +16,7 @@ game DamDamClassic {
     }
     capture {
       mandatory true
-      message "Nomnomnom!"
+      message "Miam Miam Miam !"
     }
   }
 
@@ -24,17 +24,18 @@ game DamDamClassic {
     winByCapture { captureAll opponent }
   }
 
+  aiDifficulty: "heuristic"
+
   ui {
     theme {
       lightSquares: "beige"
       darkSquares: "brown"
       highlight: "sandybrown"
     }
-    layout { showCaptured true }
   }
 
   settings {
     showLegalMoves: true
-    aiDifficulty: 2
+    mode: "pvp"
   }
 }
