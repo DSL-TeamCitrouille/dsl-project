@@ -56,7 +56,7 @@ limiter = Limiter(
 # Configuration
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct" #"anthropic/claude-3-haiku"
+DEFAULT_MODEL = "anthropic/claude-3.5-sonnet" #"openai/gpt-4.1" #"anthropic/claude-3-haiku"
 DEFAULT_TEMPERATURE = 0.7
 
 # Token costs (OpenRouter pricing)
@@ -235,18 +235,27 @@ SPECIAL RULES:
 STRATEGY CONSIDERATIONS:
 ═══════════════════════════════════════════════════════════════════════════════
 
-1. PIECE SAFETY (IMPORTANT): Avoid moves that expose pieces to capture. The opponent can see your pieces and will try to capture them.
-2. CONTROL: Try to control the center of the board
-3. ADVANCEMENT: Move toward opponent's side when safe
-4. CAPTURE OPPORTUNITIES: Take opponent pieces when possible
-5. QUEEN PROMOTION: Work toward promoting pieces to queens
-6. POSITION: Keep pieces coordinated and supporting each other
+First and foremost, prioritize the SAFETY of your pieces. Consider the following factors in order of importance:
 
+1. PIECE SAFETY ( MOST IMPORTANT): AVOID LOSING PIECES. Avoid moves that expose pieces to capture. The opponent can see your pieces and will try to capture them
+2. OPONNENT MOVES: Consider how the opponent might respond to your move and try to block their strategies
+3. POSITION: Keep pieces coordinated and supporting each other
+4. CONTROL: Try to control the center of the board
+5. ADVANCEMENT: Move toward opponent's side ONLY when safe
+6. CAPTURE OPPORTUNITIES: Take opponent pieces when possible
+8. CHAIN CAPTURES: Look for opportunities to make multiple captures in one turn
+
+You must consider all these factors when choosing your move. And keep the goal of the game in mind. Do not just focus on capturing pieces, but also on protecting your own pieces and maintaining a strong position on the board.
+Connsider all pieces on the board, both yours and your opponent's, when analyzing the situation.
+Do not focus on just one piece or one area of the board. Do not focus on advancing a single piece at the expense of overall strategy.
 ═══════════════════════════════════════════════════════════════════════════════
 GOAL OF THE GAME (IMPORTANT):
 ═══════════════════════════════════════════════════════════════════════════════
 
-To win the game you have to eliminate all opponent pieces by capturing them. The player who captures all opponent pieces first wins the game.
+You are playing to WIN the game. You MUST focus on protecting your pieces.
+The player who captures all opponent pieces first without loosing its own pieces wins the game.
+To win you must focus on both offense (capturing opponent pieces) and defense (protecting your own pieces from being captured).
+Always think several moves ahead to outmaneuver your opponent.
 
 ═══════════════════════════════════════════════════════════════════════════════
 RESPONSE FORMAT (IMPORTANT)
@@ -275,7 +284,6 @@ Your answer MUST be:
 ═══════════════════════════════════════════════════════════════════════════════
 
 Now, analyze the current board state and provide your best move following the format above exactly.
-Your response must start with "SELECTED_PIECE:" and include all three lines.
 """
     
     return prompt
