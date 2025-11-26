@@ -1,5 +1,5 @@
 import { Game, Piece } from "./game.js";
-import { Bot } from "./randomBot.js";
+import { Bot } from "./Bot.js";
 
 type GameMode = 'pvp' | 'pvb' | 'pvl' | 'bvb' | 'lvl';
 
@@ -32,8 +32,8 @@ export class UI {
     constructor(game: Game, captureMessage: string) {
         this.game = game;
         this.captureMessage = captureMessage;
-        this.bot1 = new Bot(game, 1);
-        this.bot0 = new Bot(game, 0);
+        this.bot1 = new Bot(game, 1, 'heuristic');
+        this.bot0 = new Bot(game, 0, 'heuristic');
         this.setupEvents();
         this.render();
     }
