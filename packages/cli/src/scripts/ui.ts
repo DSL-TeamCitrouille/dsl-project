@@ -443,18 +443,28 @@ export class UI {
             this.isProcessing = true;
             this.render();
 
+            // Roll dice if needed
             if (this.game.diceConfig && this.game.mustRollDice) {
                 this.game.rollDice();
                 this.render();
                 await new Promise(r => setTimeout(r, 300));
             }
-
-            while (!this.game.gameOver && this.game.movesRemaining > 0) {
+            
+            // Play moves
+            if (this.game.diceConfig) {
+                // With dice: play all remaining moves
+                while (!this.game.gameOver && this.game.movesRemaining > 0) {
+                    const piecesBefore = this.game.pieces.size;
+                    await this.bot1.makeMoveWithDelay(500);
+                    if (this.game.pieces.size < piecesBefore) this.showCaptureMessage();
+                    this.render();
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            } else {
+                // Without dice: play one move
                 const piecesBefore = this.game.pieces.size;
                 await this.bot1.makeMoveWithDelay(500);
                 if (this.game.pieces.size < piecesBefore) this.showCaptureMessage();
-                this.render();
-                await new Promise(r => setTimeout(r, 300));
             }
 
             this.isProcessing = false;
