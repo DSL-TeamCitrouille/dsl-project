@@ -33,10 +33,11 @@ export default function(): void {
         .argument('<destination>', 'destination file')
         .description('Generates code for a provided source file.')
         // Options : variability CT
-        .option('--firstPlayer <player>', 'Override first player (e.g., white, black)')
+        .option('--firstPlayer <player>', 'Override first player (e.g., white, black or 1, 2)')
         .option('--mandatoryCapture <bool>', 'Override mandatory capture (true/false)')
         .option('--message <text>', 'Override capture message')
         .option('--moveBackward <bool>', 'Override backward movement (true/false)')
+        .option('--botDifficulty <text>', 'Override bot difficulty (e.g., random or greedy)')
         .action(generateAction);
 
     program.parse(process.argv);
