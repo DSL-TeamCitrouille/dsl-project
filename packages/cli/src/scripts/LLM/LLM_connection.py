@@ -56,7 +56,7 @@ limiter = Limiter(
 # Configuration
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "openai/gpt-4o-mini"
+DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct" #"anthropic/claude-3-haiku"
 DEFAULT_TEMPERATURE = 0.7
 
 # Token costs (OpenRouter pricing)
@@ -235,7 +235,7 @@ SPECIAL RULES:
 STRATEGY CONSIDERATIONS:
 ═══════════════════════════════════════════════════════════════════════════════
 
-1. PIECE SAFETY: Avoid moves that expose pieces to capture
+1. PIECE SAFETY (IMPORTANT): Avoid moves that expose pieces to capture. The opponent can see your pieces and will try to capture them.
 2. CONTROL: Try to control the center of the board
 3. ADVANCEMENT: Move toward opponent's side when safe
 4. CAPTURE OPPORTUNITIES: Take opponent pieces when possible
@@ -243,25 +243,34 @@ STRATEGY CONSIDERATIONS:
 6. POSITION: Keep pieces coordinated and supporting each other
 
 ═══════════════════════════════════════════════════════════════════════════════
-GOAL OF THE GAME:
+GOAL OF THE GAME (IMPORTANT):
 ═══════════════════════════════════════════════════════════════════════════════
 
-Eliminate all opponent pieces by capturing them. The player who captures all opponent pieces first wins the game.
+To win the game you have to eliminate all opponent pieces by capturing them. The player who captures all opponent pieces first wins the game.
 
 ═══════════════════════════════════════════════════════════════════════════════
-RESPONSE FORMAT
+RESPONSE FORMAT (IMPORTANT)
 ═══════════════════════════════════════════════════════════════════════════════
+Analyze the board and provide your best move:
 
-Analyze the board and provide your best move in this exact format:
+Return EXACTLY one JSON object in ONE LINE.
+No extra text. No explanation. No markdown. No comments.
 
-SELECTED_PIECE: <piece_id>
-TARGET_POSITION: <row>,<col>
-REASONING: <brief explanation of why this move is strategic>
+Use this schema:
 
-Example response:
-SELECTED_PIECE: p4
-TARGET_POSITION: 3,4
-REASONING: Moving toward the opponent's side while maintaining piece safety. This position allows for potential captures on the next turn.
+{{"piece_id": "<id>", "target": {{"row": <row>, "col": <col>}}, "reasoning": "<short_reason>"}}
+
+Example (one-line only):
+
+{{"piece_id": "p4", "target": {{"row": 3, "col": 4}}, "reasoning": "Safe advancement"}}
+
+Your answer MUST be:
+- valid JSON
+- one line only
+- no text before or after
+- no trailing commas
+- no backticks
+
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -271,69 +280,152 @@ Your response must start with "SELECTED_PIECE:" and include all three lines.
     
     return prompt
 
+def build_repair_prompt(original_prompt: str, bad_response: str, legal_moves: list) -> str:
+    """
+    Build a repair prompt when the LLM returned invalid JSON or an illegal move.
+    We reuse the original prompt (rules + game state) to keep full context.
+    """
+    legal_moves_json = json.dumps(legal_moves, ensure_ascii=False)
 
-def parse_llm_response(response_text: str, pieces: list) -> dict | None:
+    return (
+        f"{original_prompt}\n\n"
+        "⚠️ The answer you gave previously was INVALID (wrong JSON format or illegal move).\n\n"
+        f"Here is your INVALID answer:\n{bad_response}\n\n"
+        "Here is the list of ALL LEGAL MOVES you are allowed to choose from:\n"
+        f"{legal_moves_json}\n\n"
+        "You must now FIX your previous answer.\n\n"
+        "STRICT INSTRUCTIONS:\n"
+        "- Return EXACTLY ONE line of VALID JSON.\n"
+        "- NO text before the JSON.\n"
+        "- NO text after the JSON.\n"
+        "- NO markdown, NO commentary, NO explanation.\n"
+        "- The move MUST be one of the legal moves listed above.\n\n"
+        "VALID JSON FORMAT:\n"
+        '{{"piece_id":"<id>","target":{{"row":<row>,"col":<col>}},"reasoning":"<short_reason>"}}'
+    )
+
+def is_legal(parsed_move: dict | None, game_state: dict) -> bool:
     """
-    Parse LLM response to extract piece ID and target position
-    
-    Args:
-        response_text: Raw response from LLM
-        pieces: List of all pieces to validate piece ID
-    
-    Returns:
-        Dict with piece_id and target (row, col) or None if parsing fails
+    Check if the parsed move corresponds to one of the legal_moves
+    in the game_state.
+
+    parsed_move format:
+      {
+        "piece_id": "p8",
+        "target": {"row": 2, "col": 1},
+        "reasoning": "..."
+      }
+
+    legal_moves format (from frontend):
+      {
+        "from": {"row": 1, "col": 3},
+        "to": {"row": 2, "col": 1},
+        "capturedIds": [...]
+      }
     """
-    logger.info(f"Parsing LLM response: {response_text[:100]}...")
-    
-    # Extract SELECTED_PIECE
-    piece_match = re.search(r'SELECTED_PIECE:\s*([p\d]+)', response_text, re.IGNORECASE)
-    if not piece_match:
-        logger.error("Could not find SELECTED_PIECE in response")
-        return None
-    
-    piece_id = piece_match.group(1).strip()
-    
-    # Validate piece ID exists
-    valid_piece_ids = [p['id'] for p in pieces]
-    if piece_id not in valid_piece_ids:
-        logger.error(f"Invalid piece ID: {piece_id}. Valid IDs: {valid_piece_ids}")
-        return None
-    
-    # Extract TARGET_POSITION
-    target_match = re.search(r'TARGET_POSITION:\s*(\d+)\s*,\s*(\d+)', response_text, re.IGNORECASE)
-    if not target_match:
-        logger.error("Could not find TARGET_POSITION in response")
-        return None
-    
+    if not parsed_move:
+        return False
+
+    pieces = game_state.get("pieces", [])
+    legal_moves = game_state.get("legal_moves", [])
+
+    piece_id = parsed_move.get("piece_id")
+    target = parsed_move.get("target") or {}
+
+    if not piece_id or "row" not in target or "col" not in target:
+        return False
+
+    # Find piece position
+    piece = next((p for p in pieces if p.get("id") == piece_id), None)
+    if not piece:
+        return False
+
+    from_row, from_col = piece.get("row"), piece.get("col")
+    to_row, to_col = target.get("row"), target.get("col")
+
+    # Compare against legal_moves
+    for mv in legal_moves:
+        frm = mv.get("from", {})
+        to = mv.get("to", {})
+        if (
+            frm.get("row") == from_row and
+            frm.get("col") == from_col and
+            to.get("row") == to_row and
+            to.get("col") == to_col
+        ):
+            return True
+
+    return False
+
+def parse_llm_response(response_text: str, pieces: list):
     try:
-        row = int(target_match.group(1).strip())
-        col = int(target_match.group(2).strip())
-    except (ValueError, IndexError):
-        logger.error(f"Could not parse coordinates from TARGET_POSITION")
+        data = json.loads(response_text.strip())
+    except json.JSONDecodeError:
+        logger.error(f"LLM did not return valid JSON: {response_text}")
         return None
-    
-    # Extract REASONING
-    reasoning = ""
-    reasoning_match = re.search(r'REASONING:\s*(.+?)(?:\n|$)', response_text, re.IGNORECASE)
-    if reasoning_match:
-        reasoning = reasoning_match.group(1).strip()
-    
-    logger.info(f"Successfully parsed: piece_id={piece_id}, target=({row},{col})")
-    
+
+    # Validate fields
+    piece_id = data.get("piece_id")
+    if piece_id not in [p["id"] for p in pieces]:
+        return None
+
+    target = data.get("target", {})
+    reasoning = data.get("reasoning", "")
+
     return {
         "piece_id": piece_id,
         "target": {
-            "row": row,
-            "col": col
+            "row": int(target.get("row")),
+            "col": int(target.get("col"))
         },
         "reasoning": reasoning
     }
 
 
 def hash_game_state(game_state: dict) -> str:
-    """Create a hash of the game state for caching"""
-    state_json = json.dumps(game_state, sort_keys=True, default=str)
+    """
+    Create a stable, deterministic hash of the game state.
+    Only include fields that define the board position.
+    """
+
+    # Normalize pieces (sorted by id)
+    pieces = sorted(
+        [
+            {
+                "id": p["id"],
+                "player": p["player"],
+                "row": p["row"],
+                "col": p["col"],
+                "isQueen": bool(p.get("isQueen", False))
+            }
+            for p in game_state.get("pieces", [])
+        ],
+        key=lambda x: x["id"]
+    )
+
+    # Normalize legal moves (sorted)
+    legal_moves = sorted(
+        [
+            {
+                "from": (m["from"]["row"], m["from"]["col"]),
+                "to": (m["to"]["row"], m["to"]["col"])
+            }
+            for m in game_state.get("legal_moves", [])
+        ],
+        key=lambda x: (x["from"], x["to"])
+    )
+
+    clean_state = {
+        "pieces": pieces,
+        "legal_moves": legal_moves,
+        "current_player": game_state.get("current_player"),
+        "turn": game_state.get("turn", 0)
+    }
+
+    state_json = json.dumps(clean_state, sort_keys=True)
     return hashlib.md5(state_json.encode()).hexdigest()
+
+
 
 
 def call_openrouter(prompt: str, model: str = DEFAULT_MODEL, temperature: float = DEFAULT_TEMPERATURE):
@@ -408,7 +500,7 @@ def call_openrouter(prompt: str, model: str = DEFAULT_MODEL, temperature: float 
 
 
 @app.route("/api/move", methods=["POST"])
-@limiter.limit("30 per minute")
+@limiter.exempt
 def get_best_move():
     """
     Main endpoint to get the best move for the current game state
@@ -511,14 +603,35 @@ def get_best_move():
 
         # Parse response
         parsed_move = parse_llm_response(response_text, data.get("pieces", []))
-        
-        if parsed_move is None:
-            logger.error("Failed to parse LLM response")
-            return jsonify({
-                "error": "Failed to parse LLM response",
-                "success": False,
-                "raw_response": response_text[:200]
-            }), 500
+
+        if parsed_move is None or not is_legal(parsed_move, data):
+            logger.warning("Invalid JSON or illegal move. Trying repair once...")
+
+            repair_prompt = build_repair_prompt(
+                prompt,                         # original_prompt
+                response_text,                  # bad_response
+                data.get("legal_moves", [])     # legal_moves
+            )
+
+            repaired_text, tokens_used_repair, cost_repair = call_openrouter(
+                repair_prompt, model, temperature
+            )
+
+            parsed_repair = parse_llm_response(repaired_text, data.get("pieces", []))
+
+            if parsed_repair is None or not is_legal(parsed_repair, data):
+                logger.error("Repair failed — LLM loses the turn")
+                return jsonify({
+                    "success": False,
+                    "error": "LLM failed to return a valid legal move twice. Turn lost.",
+                    "raw_first": response_text[:200],
+                    "raw_repair": (repaired_text or "")[:200]
+                }), 200  # not 500: game continues, just no move
+            else:
+                parsed_move = parsed_repair
+                tokens_used += tokens_used_repair
+                cost += cost_repair
+
 
         # Cache the response
         response_cache[state_hash] = parsed_move
