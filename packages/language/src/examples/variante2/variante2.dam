@@ -19,7 +19,7 @@ game DamDamRoyal {
     }
     capture {
       mandatory true
-      message "Nomnomnomnom"
+      message "NomNomNomNom"
     }
   }
 

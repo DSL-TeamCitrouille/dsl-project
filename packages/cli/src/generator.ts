@@ -27,7 +27,7 @@ export async function generateOutput(
   const mainJsPath = path.resolve(__dirname, '../out/scripts/app.js');
 
   if (!fs.existsSync(mainJsPath)) {
-    console.warn('⚠️ main.js introuvable. Lance `npm run build` d\'abord.');
+    console.warn('⚠️ main.js not found. Run `npm run build` first.');
     fs.writeFileSync(destination, htmlContent, { encoding: 'utf8' });
     return destination;
   }
@@ -52,7 +52,7 @@ export async function generateOutput(
 
     console.log('✅ Scripts injectés dans le HTML');
   } catch (error) {
-    console.error('❌ Erreur bundling:', error);
+    console.error('❌ Bundling error:', error);
   }
 
   fs.writeFileSync(destination, htmlContent, { encoding: 'utf8' });

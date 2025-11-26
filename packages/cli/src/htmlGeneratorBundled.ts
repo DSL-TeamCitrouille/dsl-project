@@ -1,9 +1,8 @@
 /// <reference lib="dom" />
 
-/**
- * Bundled HTML Generator with Bot Support
- * FIXED: Use capturedIds from move generation instead of path walking
- */
+
+ // Bundled HTML Generator with Bot Support
+
 
 import type { Damier, MoveRule } from 'dam-dam-language';
 
@@ -467,7 +466,7 @@ export function generateBundledHTML(model: Damier): string {
                 <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
                 <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
             </div>
-            <button class="toggle-hints-btn">💡 Aide</button>
+            <button class="toggle-hints-btn">💡 Help</button>
             <div class="status">Loading...</div>
             <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 20px;">
                 <div class="board">${boardHTML}</div>
@@ -477,13 +476,13 @@ export function generateBundledHTML(model: Damier): string {
             <div class="controls">
                 <button class="reset-btn">↻ Reset</button>
                 <button class="bot-btn" style="display:none;">🤖 Bot Move</button>
-                <button class="forfait-btn">🏳️ Forfait</button>
+                <button class="forfait-btn">🏳️ Forfeit</button>
             </div>
-            <!-- Forfait Confirmation Modal -->
-            <div class="modal" id="forfaitModal">
+            <!-- Forfeit Confirmation Modal -->
+            <div class="modal" id="forfeitModal">
                 <div class="modal-content">
-                    <h2>Forfait Confirmation</h2>
-                    <p>Are you sure you want to forfait? You will lose the game.</p>
+                    <h2>Forfeit Confirmation</h2>
+                    <p>Are you sure you want to forfeit? You will lose the game.</p>
                     <div class="modal-buttons">
                         <button class="confirm-btn" id="confirmForfait">Yes, Forfait</button>
                         <button class="cancel-btn" id="cancelForfait">No, Continue</button>
@@ -621,7 +620,7 @@ export function generateBundledHTML(model: Damier): string {
                 // First check for capture moves (jumps)
                 const jumpMoves = this.getJumpMoves(piece, new Set());
                 
-                                // If capture is mandatory and this piece can capture, return ONLY capture moves
+                // If capture is mandatory and this piece can capture, return ONLY capture moves
                 if (this.isCaptureMandatory && jumpMoves.length > 0) {
                     return jumpMoves; // Must capture if possible
                 }
@@ -692,7 +691,7 @@ export function generateBundledHTML(model: Damier): string {
             }
 
             getJumpMoves(piece, capturedIds, originalFrom = null) {
-                // originalFrom keeps track of the ACTUAL piece starting position for chain jumps
+                // originalFrom keeps track of the actual piece starting position for chain jumps
                 if (originalFrom === null) {
                     originalFrom = { row: piece.row, col: piece.col };
                 }
@@ -760,7 +759,6 @@ export function generateBundledHTML(model: Damier): string {
                                     const newCapturedIds = new Set(capturedIds);
                                     newCapturedIds.add(targetPiece.id);
                                     
-                                    // IMPORTANT: Use originalFrom, not piece.row/col!
                                     const jumpMove = {
                                         from: { row: originalFrom.row, col: originalFrom.col },
                                         to: { row: landRow, col: landCol },
@@ -837,7 +835,7 @@ export function generateBundledHTML(model: Damier): string {
                     return false;
                 }
 
-                // VALIDATE MOVE FIRST
+                // Validate move first
                 const legalMoves = this.getLegalMoves();
                 const isLegal = legalMoves.some(m => 
                     m.from.row === move.from.row &&
@@ -855,7 +853,6 @@ export function generateBundledHTML(model: Damier): string {
                     return false;
                 }
 
-                // SIMPLE FIX: If the move has capturedIds, remove those pieces
                 // The move generation already calculated exactly which pieces to capture
                 if (move.capturedIds && move.capturedIds.length > 0) {
                     for (const capturedId of move.capturedIds) {
@@ -867,7 +864,7 @@ export function generateBundledHTML(model: Damier): string {
                 piece.row = move.to.row;
                 piece.col = move.to.col;
 
-                // CHECK FOR QUEEN PROMOTION
+                // Check for queen promotion
                 // Player 0 reaches bottom (last row), Player 1 reaches top (first row)
                 if (this.pieces_config.length !== 1){
                     const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
@@ -969,7 +966,7 @@ export function generateBundledHTML(model: Damier): string {
                 } else if (p1Pieces.length > p0Pieces.length) {
                     this.winner = 1;
                 } else {
-                    // En cas d'égalité, c'est le joueur courant qui perd
+                    // In case of a tie, the current player loses
                     this.winner = 1 - this.currentPlayer;
                 }
                 
@@ -1080,7 +1077,7 @@ export function generateBundledHTML(model: Damier): string {
                     toggleHintsBtn.addEventListener('click', () => {
                         this.showLegalMoves = !this.showLegalMoves;
                         toggleHintsBtn.classList.toggle('active');
-                        toggleHintsBtn.textContent = this.showLegalMoves ? '💡 Aide' : '💡 Aide (désactivée)';
+                        toggleHintsBtn.textContent = this.showLegalMoves ? '💡 Disable help' : '💡 Enable help';
                         this.render();
                     });
                 }

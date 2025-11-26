@@ -10,7 +10,7 @@ export function validateGeneratedHTML(filePath: string): GeneratorDiagnostic[] {
   const diagnostics: GeneratorDiagnostic[] = [];
 
   if (!fs.existsSync(filePath)) {
-    diagnostics.push({ severity: 'error', message: `Fichier introuvable: ${filePath}` });
+    diagnostics.push({ severity: 'error', message: `File not found: ${filePath}` });
     return diagnostics;
   }
 
@@ -19,45 +19,45 @@ export function validateGeneratedHTML(filePath: string): GeneratorDiagnostic[] {
 
   const board = $('.board');
   if (board.length === 0) {
-    diagnostics.push({ severity: 'error', message: 'Le fichier ne contient pas de plateau (.board).' });
+    diagnostics.push({ severity: 'error', message: 'The file does not contain a board (.board).' });
     return diagnostics;
   }
 
   const squares = $('.square');
 
   if (squares.length === 0) {
-    diagnostics.push({ severity: 'error', message: 'Aucune case détectée dans le plateau.' });
+    diagnostics.push({ severity: 'error', message: 'No squares detected on the board.' });
   }
 
   const size = Math.sqrt(squares.length);
   if (!Number.isInteger(size)) {
     diagnostics.push({
       severity: 'error',
-      message: `Le nombre de cases (${squares.length}) ne correspond pas à une grille carrée.`
+      message: `The number of squares (${squares.length}) does not correspond to a square grid.`
     });
   }
 
-  // Vérifie qu’il n’y a pas de double pièce dans une case
+  // Check that there are no multiple pieces in a single square
   const squaresWithMultiplePieces = squares.filter((_, el) => $(el).find('.piece').length > 1);
   if (squaresWithMultiplePieces.length > 0) {
     diagnostics.push({
       severity: 'error',
-      message: `Certaines cases contiennent plusieurs pièces (${squaresWithMultiplePieces.length}).`
+      message: `Certain squares contain multiple pieces (${squaresWithMultiplePieces.length}).`
     });
   }
 
-  // Vérifie le dé si présent
+  // Check the dice if present
   const dice = $('.dice');
   if (dice.length > 0 && $('.throw-button').length === 0) {
     diagnostics.push({
       severity: 'warning',
-      message: 'Un dé est présent, mais aucun bouton "Throw Dice" trouvé.'
+      message: 'A dice is present, but no "Throw Dice" button was found.'
     });
   }
 
-  // Si aucun problème → success
+  // If no issues → success
   if (diagnostics.length === 0) {
-    diagnostics.push({ severity: 'ok', message: '✅ Fichier HTML valide.' });
+    diagnostics.push({ severity: 'ok', message: '✅ Valid HTML file.' });
   }
 
   return diagnostics;

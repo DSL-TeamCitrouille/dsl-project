@@ -404,7 +404,7 @@ export class Game {
         return false;
       }
 
-      // VALIDATE MOVE FIRST
+      // Validate move first
       const legalMoves = this.getLegalMoves();
       const isLegal = legalMoves.some(m => 
           m.from.row === move.from.row &&

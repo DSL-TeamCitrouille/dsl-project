@@ -40,7 +40,6 @@ export function setupDice() {
     return;
   }
 
-  // création du handler sans fermeture sur des éléments possiblement null
   const throwDice = createDiceThrower(diceEl, resultEl, buttonEl);
 
   buttonEl.addEventListener("click", throwDice);

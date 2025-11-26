@@ -1,7 +1,6 @@
-/**
- * CLI entry to parse & validate DAM files with optional "variant" constraints.
- * ESM-friendly (no `require.main`); works with `tsx`.
- */
+
+// CLI entry to parse & validate DAM files with optional "variant" constraints.
+
 import { NodeFileSystem } from 'langium/node';
 import { URI, DocumentState, type AstNode, type LangiumDocument } from 'langium';
 import { createDamDamServices } from './dam-dam-module.js';

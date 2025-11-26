@@ -1,7 +1,6 @@
 /**
  * Bot Player
  * Plays random legal moves
- * Updated to match game.ts (supports capturedIds in moves)
  */
 
 import type { Game, Move } from './game.js';
@@ -15,10 +14,7 @@ export class Bot {
     this.playerId = playerId;
   }
 
-  /**
-   * Makes a random legal move for the bot's player
-   * @returns The move that was made, or null if no legal moves available
-   */
+    // Makes a random legal move for the bot's player
   makeMove(): Move | null {
     // Check if it's the bot's turn
     if (this.game.currentPlayer !== this.playerId || this.game.gameOver) {
@@ -46,11 +42,8 @@ export class Bot {
     return null;
   }
 
-  /**
-   * Makes a move after a delay (useful for UI visualization)
-   * @param delayMs Delay in milliseconds before making the move
-   * @returns Promise that resolves with the move that was made
-   */
+  
+   // Makes a move after a delay (useful for UI visualization)
   async makeMoveWithDelay(delayMs: number = 500): Promise<Move | null> {
     if (this.game.diceConfig && this.game.mustRollDice) {
       const result = this.game.rollDice();

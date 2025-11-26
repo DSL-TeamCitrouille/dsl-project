@@ -541,17 +541,17 @@ export function generateHTML(model: Damier, options?: any): string {
         
         <div class="controls">
             <button class="reset-btn">↻ Reset</button>
-            <button class="forfait-btn">🏳️ Forfait</button>
+            <button class="forfeit-btn">🏳️ Forfeit</button>
         </div>
 
-        <!-- Forfait Confirmation Modal -->
-        <div class="modal" id="forfaitModal">
+        <!-- Forfeit Confirmation Modal -->
+        <div class="modal" id="forfeitModal">
             <div class="modal-content">
-                <h2>Forfait Confirmation</h2>
-                <p>Are you sure you want to forfait? You will lose the game.</p>
+                <h2>Forfeit Confirmation</h2>
+                <p>Are you sure you want to forfeit? You will lose the game.</p>
                 <div class="modal-buttons">
-                    <button class="confirm-btn" id="confirmForfait">Yes, Forfait</button>
-                    <button class="cancel-btn" id="cancelForfait">No, Continue</button>
+                    <button class="confirm-btn" id="confirmForfeit">Yes, Forfeit</button>
+                    <button class="cancel-btn" id="cancelForfeit">No, Continue</button>
                 </div>
             </div>
         </div>

@@ -1,8 +1,7 @@
 import type { Damier, MoveRule, Piece } from 'dam-dam-language';
 
-/**
- * Generate HTML with interactive board and pieces
- */
+
+ // Generate HTML with interactive board and pieces
 export function generateBoardHTML(model: Damier): string {
   const boardSize = model.board.size;
   const pieces = model.pieces.piece;

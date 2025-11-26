@@ -38,10 +38,10 @@ export class DamDamValidator {
         }
         return null;
     }
-    /**
-     * Board Size Constraint - COMPILE-TIME 
-     * Ensures the board size is within reasonable bounds (between 2 and 26) and it is a pair number
-     * This prevents impractical board sizes that could affect gameplay
+    /*
+     Board Size Constraint - COMPILE-TIME 
+     Ensures the board size is within reasonable bounds (between 2 and 26) and it is a pair number
+     This prevents impractical board sizes that could affect gameplay
      */
     checkBoardSizeIsValid(damier: Damier, accept: ValidationAcceptor): void {
         const boardSize = damier.board.size;
@@ -69,10 +69,10 @@ export class DamDamValidator {
         }
     }
 
-    /**
-     * Movement Rule Piece References
-     * VARIABILITY CONSTRAINT: Ensures all pieces mentioned in movement rules are defined
-     * This prevents undefined piece references in game rules
+    /*
+     Movement Rule Piece References
+     VARIABILITY CONSTRAINT: Ensures all pieces mentioned in movement rules are defined
+     This prevents undefined piece references in game rules
      */
     checkMovementPiecesExist(moveRule: MoveRule, accept: ValidationAcceptor): void {
         const damier = this.findRoot(moveRule) as Damier;
@@ -99,10 +99,9 @@ export class DamDamValidator {
         }
     }
 
-    /**
-     * Piece Color Consistency (SKIN/UI Constraint)
-     * Ensures piece colors are consistent and not duplicated
-     * This validates the UI/SKIN layer - visual appearance constraints
+    /*
+     Piece Color Consistency (SKIN/UI Constraint)
+     Ensures piece colors are consistent and not duplicated
      */
     checkPieceColorConsistency(piece: Piece, accept: ValidationAcceptor): void {
         const damier = this.findRoot(piece) as Damier;
@@ -125,10 +124,10 @@ export class DamDamValidator {
         });
     }
 
-    /**
-     * At Least One Objective
-     * CONSTRAINT: Game must have at least one win condition
-     * This ensures the game structure is complete
+    /*
+     At Least One Objective
+     CONSTRAINT: Game must have at least one win condition
+     This ensures the game structure is complete
      */
     checkAtLeastOneObjective(damier: Damier, accept: ValidationAcceptor): void {
         if (damier.objective.goal.length === 0) {
@@ -139,10 +138,10 @@ export class DamDamValidator {
         }
     }
 
-    /**
-     * Valid Piece Count
-     * CONSTRAINT: Ensures there are enough pieces defined for gameplay
-     * This prevents scenarios where gameplay is impossible due to lack of pieces
+    /*
+     Valid Piece Count
+     CONSTRAINT: Ensures there are enough pieces defined for gameplay
+     This prevents scenarios where gameplay is impossible due to lack of pieces
      */
     checkValidPieceCount(damier: Damier, accept: ValidationAcceptor): void {
         const pieces = damier.pieces.piece;

@@ -60,7 +60,7 @@ export class UI {
             toggleHintsBtn.addEventListener('click', () => {
                 this.showLegalMoves = !this.showLegalMoves;
                 toggleHintsBtn.classList.toggle('active');
-                toggleHintsBtn.textContent = this.showLegalMoves ? '💡 Aide' : '💡 Aide (désactivée)';
+                toggleHintsBtn.textContent = this.showLegalMoves ? '💡 Disable Help' : '💡 Enable Help';
                 this.render();
             });
         }
@@ -142,13 +142,13 @@ export class UI {
         if (this.mode === 'pvl' && this.game.currentPlayer === 1) return;
 
         if (this.game.diceConfig && this.game.mustRollDice) {
-            this.updateStatus('⚠️ You must roll the dice first!');
+            this.updateStatus('⚠️ Not so fast ! You must roll the dice first!');
             return;
         }
 
         // NOUVEAU : If no moves remaining, prevent moves
         if (this.game.diceConfig && this.game.movesRemaining <= 0) {
-            this.updateStatus('⚠️ No moves remaining! Roll the dice again.');
+            this.updateStatus('⚠️ No moves remaining! Roll the dice again to continue.');
             return;
         }
 
@@ -183,7 +183,7 @@ export class UI {
                         );
                         
                         if (!pieceCanCapture) {
-                            this.updateStatus('⚠️ Mandatory capture! You must capture with another piece.');
+                            this.updateStatus('⚠️ Mandatory capture! You must NomNomNomNomNom your opponent.');
                             return;
                         }
                     }
@@ -322,33 +322,6 @@ export class UI {
 
             const data: LLMResponse = await response.json();
 
-            // if (data.success && data.piece_id) {
-            //     // Find piece by ID
-            //     const piece = this.game.pieces.get(data.piece_id);
-            //     if (piece) {
-            //         // Create move object
-            //         const moveToExecute = {
-            //             from: { row: piece.row, col: piece.col },
-            //             to: { row: data.target.row, col: data.target.col },
-            //             capturedIds: [],
-            //             cost: data.cost,
-            //             reasoning: data.reasoning,
-            //             tokens_used: data.tokens_used
-            //         };
-
-            //         // Validate move is in legal moves
-            //         const isLegal = legalMoves.some(m =>
-            //             m.from.row === moveToExecute.from.row &&
-            //             m.from.col === moveToExecute.from.col &&
-            //             m.to.row === moveToExecute.to.row &&
-            //             m.to.col === moveToExecute.to.col
-            //         );
-
-            //         if (isLegal) {
-            //             return moveToExecute;
-            //         }
-            //     }
-            // }
             if (data.success && data.piece_id && data.target) {
                 // Find piece by ID
                 const piece = this.game.pieces.get(data.piece_id);
