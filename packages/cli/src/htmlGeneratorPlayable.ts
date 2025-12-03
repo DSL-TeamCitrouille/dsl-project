@@ -14,7 +14,7 @@ export function generateHTML(model: Damier, options?: any): string {
     const direction = moveRule?.direction || 'any';
     const theme = model.ui?.theme;
     const dice = model.dice;
-    const botDifficulty = options?.botDifficulty || 'random';
+    const botDifficulty = options?.botDifficulty || model?.aiDifficulty || 'random';
     const darkModeOption = options?.darkMode;
     const darkMode = darkModeOption !== undefined ? darkModeOption ==='true' : model.settings?.darkMode || false;
 
@@ -51,6 +51,11 @@ export function generateHTML(model: Damier, options?: any): string {
 
     const lightColor = theme?.lightSquares || '#f0d9b5';
     const darkColor = theme?.darkSquares || '#b58863';
+
+    const showLegalMoves = model.settings?.showLegalMoves !== undefined 
+        ? model.settings.showLegalMoves 
+        : true;
+    const mode = model.settings?.mode || 'pvp' ;
 
     let boardHTML = '';
         for (let r = 0; r < size; r++) {
@@ -109,7 +114,9 @@ export function generateHTML(model: Damier, options?: any): string {
             quantity: p.quantity,
         })),
         dice: dice ? { faces: dice.faces } : null,
-        botDifficulty
+        botDifficulty,
+        showLegalMoves,
+        mode
     };
 
     const configJson = JSON.stringify(gameConfig);
@@ -602,14 +609,14 @@ export function generateHTML(model: Damier, options?: any): string {
     <div class="container">
         <h1>🎮 ${model.name}</h1>
         
-        <div class="mode-selector">
-            <button class="mode-btn active" data-mode="pvp">👥 Player vs Player</button>
-            <button class="mode-btn" data-mode="pvb">🤖 Player vs Bot</button>
-            <button class="mode-btn" data-mode="pvl">🧠 Player vs LLM</button>
-            <button class="mode-btn" data-mode="bvb">🤖🤖 Bot vs Bot</button>
-            <button class="mode-btn" data-mode="lvl">🧠🧠 LLM vs LLM</button>
+         <div class="mode-selector">
+            <button class="mode-btn ${mode === 'pvp' ? 'active' : ''}" data-mode="pvp">👥 Player vs Player</button>
+            <button class="mode-btn ${mode === 'pvb' ? 'active' : ''}" data-mode="pvb">🤖 Player vs Bot</button>
+            <button class="mode-btn ${mode === 'pvl' ? 'active' : ''}" data-mode="pvl">🧠 Player vs LLM</button>
+            <button class="mode-btn ${mode === 'bvb' ? 'active' : ''}" data-mode="bvb">🤖🤖 Bot vs Bot</button>
+            <button class="mode-btn ${mode === 'lvl' ? 'active' : ''}" data-mode="lvl">🧠🧠 LLM vs LLM</button>
         </div>
-        <button class="toggle-hints-btn">💡 Aide</button>
+        <button class="toggle-hints-btn ${showLegalMoves ? 'active' : ''}">💡 ${showLegalMoves ? 'Disable Help' : 'Enable Help'}</button>
         <div class="status">Loading...</div>
         <div class="capture-message"></div>
         <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px;">

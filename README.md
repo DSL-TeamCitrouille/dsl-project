@@ -17,7 +17,7 @@ source /your/path/to/project/venv/bin/activate
 
 Then to run the LLM server :
 ```
-python3 ./packages/cli/scripts/LLM/LLM_connection.py
+python3 ./packages/cli/src/scripts/LLM/LLM_connection.py
 ```
 
 /!\ Flask will act as a backend to a response from LLM. So while testing variants, the python script should be running.
@@ -136,10 +136,12 @@ Variant 5 – SolitaireLight
 Variant 4 – FastDark: 
 - Legal moves not displayed 
 - mode is pvp
+- darkMode is one
 
 Variant 5 – SolitaireLight: 
 - Legal moves displayed
 - mode is lvl
+- darkMode is off
 
 ## UI/skin adapted in each variant:
 

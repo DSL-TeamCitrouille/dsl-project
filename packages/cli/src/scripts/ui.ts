@@ -3,6 +3,10 @@ import { Bot } from "./Bot.js";
 
 type GameMode = 'pvp' | 'pvb' | 'pvl' | 'bvb' | 'lvl';
 
+function isGameMode(value: string): value is GameMode {
+    return ['pvp', 'pvb', 'pvl', 'bvb', 'lvl'].includes(value);
+}
+
 interface Position {
     row: number;
     col: number;
@@ -21,20 +25,25 @@ export class UI {
     private game: Game;
     private captureMessage: string;
     private selected: Piece | null = null;
-    private mode: GameMode = 'pvp';
+    private mode: GameMode;
     private bot1: Bot;
     private bot0: Bot;
     private isProcessing: boolean = false;
     private stopBotLoop: boolean = false;
-    private showLegalMoves: boolean = true;
+    private showLegalMoves: boolean;
     private backendUrl: string = "http://127.0.0.1:5000/api/move";
     private botDifficulty: string;
     private turn: number = 0;
 
-    constructor(game: Game, captureMessage: string, botDifficulty: string) {
+    constructor(game: Game, captureMessage: string, botDifficulty: string, showLegalMoves : boolean, mode : string) {
         this.game = game;
         this.captureMessage = captureMessage;
         this.botDifficulty = botDifficulty;
+        this.showLegalMoves = showLegalMoves;
+        if (!isGameMode(mode)) {
+            throw new Error(`Mode invalide : ${mode}`);
+        }
+        this.mode = mode;
         this.bot1 = new Bot(game, 1, this.botDifficulty);
         this.bot0 = new Bot(game, 0, this.botDifficulty);
         this.setupEvents();
@@ -59,7 +68,14 @@ export class UI {
 
         const toggleHintsBtn = document.querySelector('.toggle-hints-btn') as HTMLButtonElement;
         if (toggleHintsBtn) {
-            toggleHintsBtn.classList.add('active');
+            if (this.showLegalMoves) {
+                toggleHintsBtn.classList.add('active');
+                toggleHintsBtn.textContent = '💡 Disable Help';
+            } else {
+                toggleHintsBtn.classList.remove('active');
+                toggleHintsBtn.textContent = '💡 Enable Help';
+            }
+
             toggleHintsBtn.addEventListener('click', () => {
                 this.showLegalMoves = !this.showLegalMoves;
                 toggleHintsBtn.classList.toggle('active');
@@ -114,7 +130,7 @@ export class UI {
 
         const modeBtns = document.querySelectorAll('.mode-btn');
         modeBtns.forEach(btn => {
-            btn.classList.toggle('active', (btn as HTMLElement).dataset.mode === newMode);
+            btn.classList.toggle('active', (btn as HTMLElement).dataset.mode === this.mode);        
         });
 
         const llmStatus = document.getElementById('llmStatus') as HTMLElement;
