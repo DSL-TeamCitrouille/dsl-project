@@ -249,14 +249,17 @@ class HeadlessGame {
     const legalMoves = this.getLegalMoves();
     if (legalMoves.length === 0) return null;
 
+    let bestMove;
+    let bestScore;
+
     switch (strategy) {
       case 'random':
         return legalMoves[this.random.nextInt(legalMoves.length)];
       
       case 'greedy':
         // Simple greedy: prefer moves that advance pieces
-        let bestMove = legalMoves[0];
-        let bestScore = -Infinity;
+        bestMove = legalMoves[0];
+        bestScore = -Infinity;
         
         for (const move of legalMoves) {
           const piece = this.pieces.get(move.pieceId);

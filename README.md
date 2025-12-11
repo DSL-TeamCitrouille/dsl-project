@@ -1,50 +1,107 @@
-# How to generate the code 
+# How to generate the code and play the different variants available
 ```
 npm install
 npm run langium:generate
 npm run build
 ```
-## LLM
+## Environment Setup
+
+### Required Environment Variables
+Create a `.env` file in the root directory with the following variables:
+```
+# OpenRouter API Key (required for LLM bot)
+OPENROUTER_API_KEY=your_api_key_here
+```
+### LLM Backend Setup
+Install Python dependencies:
 ```
 pip install flask flask-cors flask-limiter python-dotenv requests
 ```
-
-If error: externally managed environement:
+If you encounter an "externally managed environment" error:
 ```
 python3 -m venv venv 
 source /your/path/to/project/venv/bin/activate
+pip install flask flask-cors flask-limiter python-dotenv requests
 ```
-
-Then to run the LLM server :
+**Start the LLM server:**
 ```
 python3 ./packages/cli/src/scripts/LLM/LLM_connection.py
 ```
 
-/!\ Flask will act as a backend to a response from LLM. So while testing variants, the python script should be running.
+⚠️ **Important:** The Flask server must be running for LLM bot functionality. Keep it running in a separate terminal while testing variants.
 
-## To launch the variants with X being the index of the variant: 
+---
+
+## Game Modes
+The game supports multiple player configurations, which can be modified at runtime
+| Mode | Description | 
+|------|-------------|
+| **pvp** | player vs player | 
+| **pvb** | Human vs AI Bot | 
+| **pvl** | Human vs LLM Bot | 
+| **bvb** | AI Bot vs AI Bot |
+| **lvl** | LLM Bot vs AI Bot | 
+*player is used as short for human player
+
+---
+
+## Launching Variants
+### Basic Command Structure
 ```
-node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
- --firstPlayer <player>
- --mandatoryCapture <bool>
- --message <text>
- --moveBackward <bool>
- --botDifficulty <text>
+node packages/cli/bin/cli.js generate \
+  packages/language/src/examples/[variantX]/[variantX].dam \
+  packages/language/src/outputGenerator/[variantX].html \
+  [OPTIONS]
 ```
+### Available Options
+| Option | Type | Description | Example |
+|--------|------|-------------|---------|
+| `--firstPlayer` | string/number | Override first player | `--firstPlayer white` or `--firstPlayer 1` |
+| `--mandatoryCapture` | boolean | Override mandatory capture rule | `--mandatoryCapture true` |
+| `--message` | string | Override capture message | `--message "MiamMiamMiam!"` |
+| `--moveBackward` | boolean | Allow backward movement | `--moveBackward true` |
+| `--botDifficulty` | string | AI difficulty (random/greedy/heuristic) | `--botDifficulty greedy` |
+| `--seed`  | integer | Deterministic seed to reproduce randomness | `--seed=42` |
+| `--headless` | integer : [0,1] | Launches game with or without UI | `--headless=1` |
 
-The options are as followed : 
-- firstPlayer <player> : Override first player (e.g., white, black or 1, 2)
-- mandatoryCapture <bool> : Override mandatory capture (true/false)
-- message <text> : Override capture message (e.g., 'MiamMiamMiam')
-- moveBackward <bool> : Override backward movement (true/false)
-- botDifficulty <text> : Override bot difficulty (e.g., random, greedy or heuristic)
+---
 
-## To start testing the validation of the variants and the generated files
+### Example Commands
+```
+node packages/cli/bin/cli.js generate \
+  packages/language/src/examples/variante1/variante1.dam \
+  packages/language/src/outputGenerator/variante1.html \
+  --mandatoryCapture false \
+  --moveBackward true \
+  --message "Gotcha!"
+  --botDifficulty "greedy"
+```
+---
+
+### Open the generated HTML file in your browser
+open packages/language/src/outputGenerator/varianteX.html
+
+---
+
+## Headless Mode
+**BLABALBALBALBALABALBALBAABALB**
+
+---
+
+# Testing
+
+## Validation Tests
+Test variant validation rules:
 ```
 npx tsx packages/language/src/test/validation-test.ts
+```
+## Generation Tests
+Test HTML generation for all variants:
+```
 npx tsx packages/language/src/test/generation-test.ts 
 ```
-/!\ For the validation of the generated files to work, they must be placed in the packages/language/src/outputGenerator/* folder as explained above.
+⚠️ **Important:** Generated HTML files must be in `packages/language/src/outputGenerator/` for validation tests to work.
+
 ---
 
 # Project hierarchy
@@ -59,7 +116,7 @@ npx tsx packages/language/src/test/generation-test.ts
 |   |   |   ├── scripts/  
 |   |   |   |   ├── LLM/
 |   |   |   |   |   ├── LLM_connection.py
-|   |   |   |   |   └── variability.md
+|   |   |   |   |   └── LLMBot.ts
 |   |   |   |   ├── app.ts
 |   |   |   |   ├── game.ts
 |   |   |   |   ├── ui.ts
@@ -100,19 +157,20 @@ npx tsx packages/language/src/test/generation-test.ts
 
 ```
 
-# Summary of Variants
+# Summary of Variants and Tests
 
-| Variant | Board Size | Pieces/side | Movements | Dice | Mandatory Capture | Theme UI | AI difficulty |
-|---------|------------|-------------|----|------------|--------------------|----------|---------------|
-| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | heuristic |
-| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | random |
-| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | heuristic |
-| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | greedy
-| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | random
-| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | random
+| Variant | Board Size | Pieces/side | Movements | Dice | Mandatory Capture | Theme UI | Test : AI | Test : Seed |
+|---------|------------|-------------|----|------------|--------------------|----------|---------------|-----------|
+| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | heuristic | blabla |
+| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | random | balbalb |
+| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | heuristic | blabalba |
+| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | greedy | blabla |
+| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | random | balbal |
+| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | random | blabla |
 
+*Each test was only extended to 10 moves so there was never any winner
 
-# Validation of TP Constraints
+# Validation of Constraints
 
 ## At least 3 CT differences:
 
