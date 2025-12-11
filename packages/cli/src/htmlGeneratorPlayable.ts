@@ -14,9 +14,8 @@ export function generateHTML(model: Damier, options?: any): string {
     const direction = moveRule?.direction || 'any';
     const theme = model.ui?.theme;
     const dice = model.dice;
-    const botDifficulty = options?.botDifficulty || model?.aiDifficulty || 'random';
-    const darkModeOption = options?.darkMode;
-    const darkMode = darkModeOption !== undefined ? darkModeOption ==='true' : model.settings?.darkMode || false;
+    const botDifficulty = options?.botDifficulty || 'random';
+    const darkMode = model.settings?.darkMode || false;
 
     let firstPlayerIndex = 0;
     if (options?.firstPlayer) {

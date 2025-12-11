@@ -9,7 +9,6 @@ entry Damier:
        (dice=Dice)?
        rules=Rules
        objective=Objective
-       ('aiDifficulty' ':' aiDifficulty=STRING)?
        
        // UI/SKIN: Visual appearance (how the game LOOKS)
        (ui=UI)?
