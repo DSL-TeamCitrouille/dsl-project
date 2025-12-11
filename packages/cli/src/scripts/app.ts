@@ -14,7 +14,7 @@ if (!cfg) {
 } else {
   const diceConfig = cfg.dice || null;
   const game = new Game(cfg.boardSize, cfg.direction, cfg.pieces, cfg.firstPlayer, cfg.mandatoryCapture, diceConfig);
-  const ui = new UI(game, cfg.captureMessage, cfg.botDifficulty, cfg.showLegalMoves, cfg.mode);
+  const ui = new UI(game, cfg.captureMessage, cfg.botDifficulty, cfg.showLegalMoves);
 
   // Setup dice functionality
   let isRolling = false;

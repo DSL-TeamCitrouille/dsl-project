@@ -23,8 +23,6 @@ game DamDamFastDark {
     winByCapture { captureAll opponent }
   }
 
-  aiDifficulty: "greedy"
-
   ui {
     theme {
       lightSquares: "darkgray"
@@ -35,7 +33,6 @@ game DamDamFastDark {
 
   settings {
     showLegalMoves: false
-    mode : "pvp"
     darkMode: true
   }
 }

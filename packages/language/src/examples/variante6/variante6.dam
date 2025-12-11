@@ -28,8 +28,6 @@ game DamDamBubbleGum{
         winByCapture { captureAll opponent }
     } 
 
-    aiDifficulty: "random"
-    
     ui {
         theme {
             lightSquares: "pink"
@@ -40,6 +38,5 @@ game DamDamBubbleGum{
 
   settings {
     showLegalMoves: true
-    mode : "pvp"
   }
 }

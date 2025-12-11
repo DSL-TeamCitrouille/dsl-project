@@ -23,8 +23,6 @@ game DamDamLimited {
     winByCapture { captureAll opponent }
   }
 
-  aiDifficulty: "heuristic"
-
   ui {
     theme {
       lightSquares: "gray"
@@ -35,6 +33,5 @@ game DamDamLimited {
 
   settings {
     showLegalMoves: false
-    mode : "pvp"
   }
 }

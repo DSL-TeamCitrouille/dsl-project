@@ -25,8 +25,6 @@ game DamDamSolitaireLight {
     }
   }
 
-  aiDifficulty: "random"
-
   ui {
     theme {
       lightSquares: "ivory"
@@ -37,6 +35,5 @@ game DamDamSolitaireLight {
 
   settings {
     showLegalMoves: true
-    mode : "lvl"
   }
 }

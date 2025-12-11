@@ -14,15 +14,16 @@
 | **mandatory_capture**     | boolean      | {true, false}                                | CT           | true           | Capture is forced when possible.           |
 | **message_capture**       | string       | any string    |   CT  | "Nomnomnom"   | Message displayed when capture occures
 | **goal_type**             | enum         | {WinByCapture, WinBySolitaire, WinByForfeit} | CT           | WinByCapture   | Defines the win condition.                 |
-| **ai_difficulty**         | enum         | {heuristic, greedy, random}                   | CT           | random             | Strength of the AI.                        |
 | **light_squares_color**   | string (hex) | color                                        | UI           | #F0D9B5      | Color of light board squares.              |
 | **dark_squares_color**    | string (hex) | color                                        | UI           | #B58863      | Color of dark board squares.               |
 | **highlight_color**       | string (hex) | color                                        | UI           | #FFFF00      | Highlight color for legal moves.           |
 | **show_legal_moves**      | boolean      | {true, false}                                | RT           | false          | Shows move hints.                          |
-| **mode**                  | enum          | {pvp, pvl, pvb, bvb, lvl}                   | RT           | pvp            | Game mode : who vs who 
-darkMode.
-| **darkMode**              | boolean       | {true,false}                                | RT           | false          | Changes to dark style 
-
+| **darkMode**              | boolean      | {true,false}                                 | RT           | false          | Changes to dark style darkMode.            |
+| Not directly linked to the langium langage but that can be modified in CT or RT
+| **mode**                  | enum         | {pvp, pvl, pvb, bvb, lvl}                    | RT           | pvp            | Game mode : who vs who 
+| **ai_difficulty**         | enum         | {heuristic, greedy, random}                  | CT           | random         | Strength of the AI.                        |
+| **seed**                  | integer      | [0–(2^53−1)]                                 | CT           | 42             | Sets a deterministic seed to reproduce randomness.
+| **headless**              | integer      | [0,1]                                        | CT           | 0              | Define if the game is launched with or without the UI.                        |
 
 ---
 
@@ -87,7 +88,7 @@ darkMode.
 - Dice : disabled
 - First Player : black
 - Rules : Mandatory capture, backward movements allowed
-- Goal : WinBySolitaire (removeOwn: true, movesLeft: 0)
+- Goal : WinBySolitaire
 
 **Effect :** Solo puzzle variant where the goal is to keep one piece.
 
@@ -122,11 +123,10 @@ A designer changes `board_size` from 10 to 8 and `piece_quantity` from 20 to 12.
 A user changes :
 - `light_squares_color`: `#F0D9B5` → `#E8E8E8` (off-white)
 - `dark_squares_color`: `#B58863` → `#2C3E50` (dark blue)
-- `piece_sprites`: replace images with futuristic icons
 
 → Visual theme updates instantly.
 → Game rules and state remain untouched.
-→ Aucun impact sur le déroulement de la partie en cours.
+→ No impact on the gameplay.
 
 **Impact :** Changes are cosmetic only, no regeneration necessary.
 
@@ -134,13 +134,11 @@ A user changes :
 
 ### **Scenario 3 — Run-time adjustment (User experience)**
 During gameplay, the player modifies :
-- `animation_speed`: 3 → 5 (accelerates the animations)
 - `show_legal_moves`: false → true (activates visual help)
-- `ai_difficulty`: 2 → 4 (stronger AI)
+- `darkMode`: false → true (activates dark mode)
 
-→ The animations speed up immediatly.
 → Move hints appear.
-→ AI gets stronger but slower (more calculations).
+→ Dark mode is activated with changes the cosmetic appearence of the game.
 → State of the game and rules don't change.
 
 **Impact :** Real-time UX changes without altering game logic
@@ -179,9 +177,8 @@ Defines how the game looks :
 
 ### **Run-Time (RT) — User Experience**
 Defines how the game feels :
-- Animation speed
 - Visual aids (legal moves)
-- Ai strength
+- Overall game color (dark or light mode)
 
 **These parameters are adjustable during gameplay without affecting the rules or the state of the game.**
 
@@ -189,7 +186,7 @@ Defines how the game feels :
 
 ## 5. Color consistency
 
-**Distinction importante :**
+**Important Distinction:**
 
 ### Logical Color (CT - in `Pieces`)
 ```

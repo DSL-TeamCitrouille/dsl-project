@@ -53,7 +53,7 @@ export const generateAction = async (source: string, destination: string, option
     const mandatoryCapture = options.mandatoryCapture === 'true';
     
     await runHeadless(model, {
-      ai: botDifficulty, // botDifficulty as ai parameter
+      ai: botDifficulty,
       seed,
       numMoves: 10, // Simulate 10 moves by default
       outputPath: nextStatePath,

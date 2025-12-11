@@ -3,9 +3,6 @@ import { Bot } from "./Bot.js";
 
 type GameMode = 'pvp' | 'pvb' | 'pvl' | 'bvb' | 'lvl';
 
-function isGameMode(value: string): value is GameMode {
-    return ['pvp', 'pvb', 'pvl', 'bvb', 'lvl'].includes(value);
-}
 
 interface Position {
     row: number;
@@ -25,7 +22,7 @@ export class UI {
     private game: Game;
     private captureMessage: string;
     private selected: Piece | null = null;
-    private mode: GameMode;
+    private mode: GameMode = 'pvp';
     private bot1: Bot;
     private bot0: Bot;
     private isProcessing: boolean = false;
@@ -35,15 +32,11 @@ export class UI {
     private botDifficulty: string;
     private turn: number = 0;
 
-    constructor(game: Game, captureMessage: string, botDifficulty: string, showLegalMoves : boolean, mode : string) {
+    constructor(game: Game, captureMessage: string, botDifficulty: string, showLegalMoves : boolean) {
         this.game = game;
         this.captureMessage = captureMessage;
         this.botDifficulty = botDifficulty;
         this.showLegalMoves = showLegalMoves;
-        if (!isGameMode(mode)) {
-            throw new Error(`Mode invalide : ${mode}`);
-        }
-        this.mode = mode;
         this.bot1 = new Bot(game, 1, this.botDifficulty);
         this.bot0 = new Bot(game, 0, this.botDifficulty);
         this.setupEvents();
