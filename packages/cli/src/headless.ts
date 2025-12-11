@@ -2,8 +2,13 @@
 import type { CaptureRule, Damier, MoveRule } from 'dam-dam-language';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { Bot } from './scripts/Bot.js';
+import { Game } from './scripts/game.js';
 
-// Seeded random number generator (simple LCG)
+/**
+ * Seeded Random Number Generator for reproducibility
+ * Uses Linear Congruential Generator (LCG) algorithm
+ */
 class SeededRandom {
   private seed: number;
   
@@ -21,331 +26,189 @@ class SeededRandom {
   }
 }
 
-// Simplified Game class for headless execution
-class HeadlessGame {
-  boardSize: number;
-  pieces: Map<string, any> = new Map();
-  currentPlayer: number = 0;
-  gameOver: boolean = false;
-  winner: number | null = null;
-  direction: string;
-  pieces_config: any[];
-  isCaptureMandatory: boolean;
-  nextId: number = 0;
-  random: SeededRandom;
-  moveHistory: any[] = [];
-  diceConfig: { faces: number } | null = null;
-  diceHistory: number[] = [];
+/**
+ * SeededBot - Bot avec random reproductible
+ * Réutilise les méthodes greedy et heuristic de Bot.ts
+ */
+class SeededBot extends Bot {
+  private seededRandom: SeededRandom;
 
-  constructor(
-    boardSize: number,
-    direction: string,
-    pieces_config: any[],
-    firstPlayer: number,
-    isCaptureMandatory: boolean,
-    seed: number,
-    diceConfig: { faces: number } | null = null
-  ) {
-    this.boardSize = boardSize;
-    this.direction = direction;
-    this.pieces_config = pieces_config;
-    this.currentPlayer = firstPlayer;
-    this.isCaptureMandatory = isCaptureMandatory;
-    this.random = new SeededRandom(seed);
-    this.diceConfig = diceConfig;
-    this.initBoard();
+  constructor(game: Game, playerId: number, type: string, seed: number) {
+    super(game, playerId, type);
+    this.seededRandom = new SeededRandom(seed);
   }
 
-  private initBoard(): void {
-    for (let playerId = 0; playerId < this.pieces_config.length; playerId++) {
-      const cfg = this.pieces_config[playerId];
-      const positions = this.getStartPositions(playerId, cfg.quantity);
-      
-      for (const pos of positions) {
-        const piece = {
-          id: `p${this.nextId++}`,
-          name: cfg.name,
-          player: playerId,
-          color: cfg.color,
-          row: pos.row,
-          col: pos.col,
-          isQueen: false,
-        };
-        this.pieces.set(piece.id, piece);
-      }
-    }
-  }
-
-  private getStartPositions(playerId: number, quantity: number) {
-    const pos = [];
-    const size = this.boardSize;
-
-    if (this.pieces_config.length === 2) {
-      const isSecond = playerId === 1;
-      if (this.direction === 'diagonal') {
-        let placed = 0;
-        if (isSecond) {
-          for (let r = size - 1; r >= 0 && placed < quantity; r--) {
-            for (let c = size - 1; c >= 0 && placed < quantity; c--) {
-              if ((r + c) % 2 === 1) {
-                pos.push({ row: r, col: c });
-                placed++;
-              }
-            }
-          }
-        } else {
-          for (let r = 0; r < size && placed < quantity; r++) {
-            for (let c = 0; c < size && placed < quantity; c++) {
-              if ((r + c) % 2 === 1) {
-                pos.push({ row: r, col: c });
-                placed++;
-              }
-            }
-          }
-        }
-      } else {
-        let placed = 0;
-        if (isSecond) {
-          for (let r = size - 2; r >= 0 && placed < quantity; r--) {
-            for (let c = 0; c < size && placed < quantity; c++) {
-              pos.push({ row: r, col: c });
-              placed++;
-            }
-          }
-        } else {
-          for (let r = 1; r < size && placed < quantity; r++) {
-            for (let c = 0; c < size && placed < quantity; c++) {
-              pos.push({ row: r, col: c });
-              placed++;
-            }
-          }
-        }
-      }
+  override makeMove(): any | null {
+    if (this.game.currentPlayer !== this.playerId || this.game.gameOver) {
+      return null;
     }
 
-    return pos;
-  }
-
-  getLegalMoves(): any[] {
-    const moves: any[] = [];
-    
-    this.pieces.forEach((piece) => {
-      if (piece.player === this.currentPlayer) {
-        moves.push(...this.getMovesForPiece(piece));
-      }
-    });
-    
-    return moves;
-  }
-
-  private getMovesForPiece(piece: any): any[] {
-    const moves = [];
-    
-    let dirs = this.direction === 'diagonal'
-      ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-      : this.direction === 'orthogonal'
-        ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
-        : [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
-
-    if (this.direction === 'diagonal' && !piece.isQueen) {
-      if (piece.player === 0) {
-        dirs = dirs.filter(([dr]) => dr > 0);
-      } else {
-        dirs = dirs.filter(([dr]) => dr < 0);
-      }
+    const legalMoves = this.game.getLegalMoves();
+    if (legalMoves.length === 0) {
+      return null;
     }
 
-    for (const [dr, dc] of dirs) {
-      const maxDistance = piece.isQueen ? this.boardSize : 1;
-      
-      for (let distance = 1; distance <= maxDistance; distance++) {
-        const newRow = piece.row + dr * distance;
-        const newCol = piece.col + dc * distance;
+    let selectedMove: any;
 
-        if (newRow < 0 || newRow >= this.boardSize || newCol < 0 || newCol >= this.boardSize) {
-          break;
-        }
-
-        const targetPiece = this.getPieceAt(newRow, newCol);
-        if (!targetPiece) {
-          moves.push({ 
-            from: { row: piece.row, col: piece.col }, 
-            to: { row: newRow, col: newCol },
-            pieceId: piece.id
-          });
-        } else {
-          break;
-        }
-      }
-    }
-
-    return moves;
-  }
-
-  private getPieceAt(row: number, col: number): any | null {
-    for (const piece of this.pieces.values()) {
-      if (piece.row === row && piece.col === col) return piece;
-    }
-    return null;
-  }
-
-  executeMove(move: any): boolean {
-    const piece = this.pieces.get(move.pieceId);
-    if (!piece) return false;
-
-    // Record move in history
-    this.moveHistory.push({
-      moveNumber: this.moveHistory.length + 1,
-      player: this.currentPlayer,
-      from: { ...move.from },
-      to: { ...move.to },
-      pieceId: move.pieceId,
-      diceRoll: move.diceRoll || null // Add dice roll to move history
-    });
-
-    // Move the piece
-    piece.row = move.to.row;
-    piece.col = move.to.col;
-
-    // Check for queen promotion
-    if (this.pieces_config.length !== 1) {
-      const isPromotionRow = (piece.player === 0 && piece.row === this.boardSize - 1) ||
-                              (piece.player === 1 && piece.row === 0);
-      
-      if (isPromotionRow && !piece.isQueen) {
-        piece.isQueen = true;
-      }
-    }
-
-    this.checkWin();
-    if (!this.gameOver) {
-      this.currentPlayer = 1 - this.currentPlayer;
-    }
-    
-    return true;
-  }
-
-  rollDice(): number {
-    if (!this.diceConfig) return 1;
-    const result = this.random.nextInt(this.diceConfig.faces) + 1;
-    this.diceHistory.push(result);
-    return result;
-  }
-
-  private checkWin(): void {
-    const p0Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 0);
-    const p1Pieces = Array.from(this.pieces.values()).filter((p) => p.player === 1);
-
-    if (p1Pieces.length === 0) {
-      this.gameOver = true;
-      this.winner = 0;
-    } else if (p0Pieces.length === 0) {
-      this.gameOver = true;
-      this.winner = 1;
-    }
-  }
-
-  selectMove(strategy: string): any | null {
-    const legalMoves = this.getLegalMoves();
-    if (legalMoves.length === 0) return null;
-
-    let bestMove;
-    let bestScore;
-
-    switch (strategy) {
+    switch (this.type) {
       case 'random':
-        return legalMoves[this.random.nextInt(legalMoves.length)];
-      
+        const randomIndex = this.seededRandom.nextInt(legalMoves.length);
+        selectedMove = legalMoves[randomIndex];
+        break;
       case 'greedy':
-        // Simple greedy: prefer moves that advance pieces
-        bestMove = legalMoves[0];
-        bestScore = -Infinity;
-        
-        for (const move of legalMoves) {
-          const piece = this.pieces.get(move.pieceId);
-          if (!piece) continue;
-          
-          const direction = piece.player === 0 ? 1 : -1;
-          const advancement = (move.to.row - move.from.row) * direction;
-          
-          if (advancement > bestScore) {
-            bestScore = advancement;
-            bestMove = move;
-          }
-        }
-        return bestMove;
-      
+        selectedMove = (this as any).selectGreedyMove(legalMoves);
+        break;
       case 'heuristic':
-        // Simple heuristic: advance + center control
-        bestMove = legalMoves[0];
-        bestScore = -Infinity;
-        
-        for (const move of legalMoves) {
-          const piece = this.pieces.get(move.pieceId);
-          if (!piece) continue;
-          
-          const direction = piece.player === 0 ? 1 : -1;
-          const advancement = (move.to.row - move.from.row) * direction;
-          
-          const centerRow = Math.floor(this.boardSize / 2);
-          const centerCol = Math.floor(this.boardSize / 2);
-          const distanceFromCenter = 
-            Math.abs(move.to.row - centerRow) + Math.abs(move.to.col - centerCol);
-          const centerBonus = Math.max(0, 4 - distanceFromCenter);
-          
-          const score = advancement * 10 + centerBonus * 3;
-          
-          if (score > bestScore) {
-            bestScore = score;
-            bestMove = move;
-          }
-        }
-        return bestMove;
-      
+        selectedMove = (this as any).selectHeuristicMove(legalMoves);
+        break;
       default:
-        return legalMoves[this.random.nextInt(legalMoves.length)];
+        selectedMove = legalMoves[0];
     }
-  }
 
-  getState() {
-    return {
-      boardSize: this.boardSize,
-      currentPlayer: this.currentPlayer,
-      gameOver: this.gameOver,
-      winner: this.winner,
-      diceEnabled: this.diceConfig !== null,
-      diceFaces: this.diceConfig?.faces || null,
-      pieces: Array.from(this.pieces.values()).map(p => ({
-        id: p.id,
-        name: p.name,
-        player: p.player,
-        color: p.color,
-        row: p.row,
-        col: p.col,
-        isQueen: p.isQueen
-      })),
-      moveHistory: this.moveHistory,
-      diceHistory: this.diceHistory.length > 0 ? this.diceHistory : null
-    };
+    if (selectedMove) {
+        (selectedMove as any).diceRoll = (this.game as any).diceResult ?? null;
+    }
+    const success = this.game.executeMove(selectedMove);
+    if (success) {
+      return selectedMove;
+    }
+
+    return null;
   }
 }
 
+interface LLMResponse {
+  success: boolean;
+  piece_id: string;
+  target: { row: number; col: number };
+  reasoning: string;
+  cost?: string;
+  tokens_used?: number;
+  error?: string;
+}
+
+/**
+ * Appelle le LLM backend exactement comme UI.ts
+ */
+async function getLLMMove(game: Game, backendUrl: string, turn: number): Promise<any | null> {
+  const legalMoves = game.getLegalMoves();
+  if (legalMoves.length === 0) {
+    return null;
+  }
+
+  // Collect game state - MÊME FORMAT que UI.ts
+  const gameState = {
+    board_size: game.boardSize,
+    direction: game.direction,
+    current_player: game.currentPlayer,
+    mandatory_capture: game.isCaptureMandatory,
+    pieces: Array.from(game.pieces.values()).map(p => ({
+      id: p.id,
+      player: p.player,
+      row: p.row,
+      col: p.col,
+      isQueen: p.isQueen,
+      color: p.color,
+      name: p.name
+    })),
+    legal_moves: legalMoves.map(m => ({
+      from: { row: m.from.row, col: m.from.col },
+      to: { row: m.to.row, col: m.to.col },
+      capturedIds: m.capturedIds
+    })),
+    turn: turn,
+  };
+
+  try {
+    const response = await fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(gameState)
+    });
+
+    if (!response.ok) {
+      console.error(`Backend error: ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json() as LLMResponse;
+
+    if (data.success && data.piece_id && data.target) {
+      const piece = game.pieces.get(data.piece_id);
+      if (piece) {
+        const matchingMove = legalMoves.find(m =>
+          m.from.row === piece.row &&
+          m.from.col === piece.col &&
+          m.to.row === data.target.row &&
+          m.to.col === data.target.col
+        );
+
+        if (matchingMove) {
+          if (data.cost) {
+          }
+          return {
+            ...matchingMove,
+            cost: data.cost,
+            reasoning: data.reasoning,
+            tokens_used: data.tokens_used
+          };
+        } else {
+          console.warn(`   ⚠️  LLM suggested illegal move`);
+        }
+      }
+    } else if (data.error) {
+      console.error(`   ❌ LLM error: ${data.error}`);
+    }
+
+  } catch (error) {
+    console.error('   ❌ Failed to call LLM backend:', error);
+  }
+
+  return null;
+}
+
+/**
+ * Fallback move si LLM échoue
+ */
+function makeFallbackMove(game: Game): any | null {
+  const legalMoves = game.getLegalMoves();
+  if (legalMoves.length === 0) {
+    return null;
+  }
+
+  const captureMoves = legalMoves.filter(m => m.capturedIds && m.capturedIds.length > 0);
+  const moveToMake = captureMoves.length > 0 ? captureMoves[0] : legalMoves[0];
+
+  (moveToMake as any).diceRoll = (game as any).diceResult ?? null;
+  if (game.executeMove(moveToMake)) {
+    console.log(`   🔄 Fallback move executed`);
+    return moveToMake;
+  }
+
+  return null;
+}
+
+/**
+ * Fonction principale du mode headless
+ */
 export async function runHeadless(
   model: Damier,
   options: {
     ai: string;
     seed: number;
-    numMoves?: number;
     outputPath: string;
     firstPlayer?: number;
     mandatoryCapture?: boolean;
+    llm?: boolean;
   }
 ): Promise<void> {
   console.log('🤖 Running headless simulation...');
-  console.log(`   AI Strategy: ${options.ai}`);
+  console.log(`   AI Strategy: ${options.llm ? 'LLM' : options.ai}`);
   console.log(`   Seed: ${options.seed}`);
-  console.log(`   Moves: ${options.numMoves || 1}`);
-
+  console.log(`   Max Moves: 50`);
+  
   const size = model.board.size;
   const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
   const captureRule = model.rules.rule.find((r: any): r is CaptureRule => 'mandatory' in r);
@@ -366,58 +229,200 @@ export async function runHeadless(
 
   const diceConfig = dice ? { faces: dice.faces } : null;
 
-  const game = new HeadlessGame(
+  const game = new Game(
     size,
     direction,
     pieces_config,
     firstPlayer,
     mandatoryCapture,
-    options.seed,
     diceConfig
   );
 
-  const initialState = game.getState();
-  const numMoves = options.numMoves || 1;
-
-  // Execute moves
-  for (let i = 0; i < numMoves && !game.gameOver; i++) {
-    // Roll dice if enabled
-    let diceRoll = null;
-    if (diceConfig) {
-      diceRoll = game.rollDice();
-    }
-
-    const move = game.selectMove(options.ai);
-    if (!move) {
-      console.log(`No legal moves available after ${i} moves`);
-      break;
-    }
-    
-    // Add dice roll to move if applicable
-    if (diceRoll !== null) {
-      move.diceRoll = diceRoll;
-    }
-    
-    game.executeMove(move);
+  // Override rollDice pour reproductibilité
+  const seededRandom = new SeededRandom(options.seed);
+  if (diceConfig) {
+    game.rollDice = function(): number | null {
+      if (!game.diceConfig || !game.mustRollDice) return null;
+      
+      const result = seededRandom.nextInt(game.diceConfig.faces) + 1;
+      game.diceResult = result;
+      game.movesRemaining = result;
+      game.mustRollDice = false;
+      
+      return result;
+    };
   }
 
-  const finalState = game.getState();
+  // Track history
+  const moveHistory: any[] = [];
+  const diceHistory: number[] = [];
 
-  // Generate output
+  const originalExecuteMove = game.executeMove.bind(game);
+  game.executeMove = function(move: any): boolean {
+    const playerBefore = game.currentPlayer;
+    const result = originalExecuteMove(move);
+    
+    if (result) {
+      const piece = game.getPieceAt(move.to.row, move.to.col);
+      moveHistory.push({
+        moveNumber: moveHistory.length + 1,
+        player: playerBefore,
+        from: { ...move.from },
+        to: { ...move.to },
+        pieceId: piece?.id || 'unknown',
+        diceRoll: move.diceRoll || null
+      });
+    }
+    
+    return result;
+  };
+
+  const originalRollDiceTracked = game.rollDice.bind(game);
+  game.rollDice = function(): number | null {
+    const result = originalRollDiceTracked();
+    if (result !== null) {
+      diceHistory.push(result);
+    }
+    return result;
+  };
+
+  const initialState = {
+    boardSize: game.boardSize,
+    currentPlayer: game.currentPlayer,
+    gameOver: game.gameOver,
+    winner: game.winner,
+    diceEnabled: diceConfig !== null,
+    diceFaces: diceConfig?.faces || null,
+    pieces: Array.from(game.pieces.values()).map(p => ({
+      id: p.id,
+      name: p.name,
+      player: p.player,
+      color: p.color,
+      row: p.row,
+      col: p.col,
+      isQueen: p.isQueen
+    }))
+  };
+
+  // Create bots UNIQUEMENT si pas en mode LLM
+  let bot0: SeededBot | null = null;
+  let bot1: SeededBot | null = null;
+  
+  if (!options.llm) {
+    bot0 = new SeededBot(game, 0, options.ai, options.seed);
+    bot1 = new SeededBot(game, 1, options.ai, options.seed + 1000);
+  }
+
+  const llmUrl = 'http://127.0.0.1:5000/api/move';
+  
+  // Limite de moves
+  let maxMoves = 50;
+  
+  let totalMoves = 0;
+  let turn = 0;
+
+  // Main game loop
+  while (!game.gameOver && totalMoves < maxMoves) {
+    // Handle dice if enabled
+    if (diceConfig && game.mustRollDice) {
+      game.rollDice();
+      
+      // Play all moves for this roll
+      while (!game.gameOver && game.movesRemaining > 0 && totalMoves < maxMoves) {
+        let move = null;
+
+        if (options.llm) {
+          // MODE LLM - appel fetch comme UI.ts
+          move = await getLLMMove(game, llmUrl, turn);
+          
+          if (!move) {
+            console.log(`   ⚠️  LLM failed, using fallback`);
+            move = makeFallbackMove(game);
+          } else {
+            (move as any).diceRoll = (game as any).diceResult ?? null;
+            game.executeMove(move);
+          }
+        } else {
+          // MODE BOT
+          const currentBot = game.currentPlayer === 0 ? bot0 : bot1;
+          move = currentBot?.makeMove();
+          
+          if (!move) {
+            console.log(`⚠️  No legal moves for Player ${game.currentPlayer + 1}`);
+            break;
+          }
+        }
+        
+        if (!move) break;
+        
+        totalMoves++;
+        turn++;
+      }
+    } else {
+      // No dice - one move per turn
+      let move = null;
+
+      if (options.llm) {
+        // MODE LLM
+        move = await getLLMMove(game, llmUrl, turn);
+        
+        if (!move) {
+          console.log(`   ⚠️  LLM failed, using fallback`);
+          move = makeFallbackMove(game);
+        } else {
+           (move as any).diceRoll = (game as any).diceResult ?? null;
+            game.executeMove(move);
+        }
+      } else {
+        // MODE BOT
+        const currentBot = game.currentPlayer === 0 ? bot0 : bot1;
+        move = currentBot?.makeMove();
+        
+        if (!move) {
+          console.log(`⚠️  No legal moves available`);
+          break;
+        }
+      }
+      
+      if (!move) break;
+      
+      totalMoves++;
+      turn++;
+    }
+  }
+
+  const finalState = {
+    boardSize: game.boardSize,
+    currentPlayer: game.currentPlayer,
+    gameOver: game.gameOver,
+    winner: game.winner,
+    diceEnabled: diceConfig !== null,
+    diceFaces: diceConfig?.faces || null,
+    pieces: Array.from(game.pieces.values()).map(p => ({
+      id: p.id,
+      name: p.name,
+      player: p.player,
+      color: p.color,
+      row: p.row,
+      col: p.col,
+      isQueen: p.isQueen
+    })),
+    diceHistory: diceHistory.length > 0 ? diceHistory : null
+  };
+
   const output = {
     metadata: {
       variant: model.name,
       seed: options.seed,
-      ai_strategy: options.ai,
-      moves_simulated: finalState.moveHistory.length,
+      ai_strategy: options.llm ? 'LLM' : options.ai,
+      moves_simulated: moveHistory.length,
       timestamp: new Date().toISOString()
     },
     initial_state: initialState,
     final_state: finalState,
-    moves: finalState.moveHistory
+    moves: moveHistory
   };
 
-  // Write to file
   const outputDir = path.dirname(options.outputPath);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -429,10 +434,13 @@ export async function runHeadless(
     'utf-8'
   );
 
-  console.log(`✅ Headless simulation complete!`);
-  console.log(`   Final state: ${game.gameOver ? 'Game Over' : 'In Progress'}`);
+  console.log(`\n✅ Headless simulation complete!`);
+  console.log(`   Total moves: ${moveHistory.length}`);
+  console.log(`   Final state: ${game.gameOver ? '🏁 Game Over' : '⏸️  In Progress (reached move limit)'}`);
   if (game.winner !== null) {
-    console.log(`   Winner: Player ${game.winner + 1}`);
+    console.log(`   Winner: 🏆 Player ${game.winner + 1}`);
+  } else if (!game.gameOver) {
+    console.log(`   ⚠️  Simulation stopped: reached ${maxMoves} moves limit`);
   }
   console.log(`   Output: ${options.outputPath}`);
 }

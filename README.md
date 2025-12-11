@@ -36,12 +36,12 @@ python3 ./packages/cli/src/scripts/LLM/LLM_connection.py
 The game supports multiple player configurations, which can be modified at runtime
 | Mode | Description | 
 |------|-------------|
-| **pvp** | player vs player | 
-| **pvb** | Human vs AI Bot | 
-| **pvl** | Human vs LLM Bot | 
+| **pvp** | Player vs Player | 
+| **pvb** | Player vs AI Bot | 
+| **pvl** | Player vs LLM Bot | 
 | **bvb** | AI Bot vs AI Bot |
 | **lvl** | LLM Bot vs AI Bot | 
-*player is used as short for human player
+*Player is used as short for Human player
 
 ---
 

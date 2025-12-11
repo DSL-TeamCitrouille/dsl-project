@@ -11,7 +11,6 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-
 const packagePath = path.resolve(__dirname, '..', 'package.json');
 const packageContent = await fs.readFile(packagePath, 'utf-8');
 
@@ -23,6 +22,7 @@ export const generateAction = async (source: string, destination: string, option
   const seed = options.seed ? parseInt(options.seed) : Date.now();
   const headless = options.headless ? parseInt(options.headless) : 0;
   const botDifficulty = options.botDifficulty || 'random';
+  const useLLM = options.llm === true;
   
   // Always generate the playable HTML
   const generatedFilePath = await generateOutput(model, source, destination, options);
@@ -31,7 +31,6 @@ export const generateAction = async (source: string, destination: string, option
   // If headless mode is enabled, run simulation
   if (headless === 1) {
     console.log(chalk.yellow('\n🎮 Running headless simulation...'));
-    
     const outputDir = path.dirname(destination);
     const nextStatePath = path.join(outputDir, 'next_state.json');
     
@@ -55,35 +54,34 @@ export const generateAction = async (source: string, destination: string, option
     await runHeadless(model, {
       ai: botDifficulty,
       seed,
-      numMoves: 10, // Simulate 10 moves by default
       outputPath: nextStatePath,
       firstPlayer: firstPlayerIndex,
-      mandatoryCapture
+      mandatoryCapture,
+      llm: useLLM,
     });
   }
 };
 
 export default function(): void {
-    const program = new Command();
-
-    program.version(JSON.parse(packageContent).version);
-
-    // TODO: use Program API to declare the CLI
-    const fileExtensions = DamDamLanguageMetaData.fileExtensions.join(', ');
-    program
-        .command('generate')
-        .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)
-        .argument('<destination>', 'destination file')
-        .description('Generates code for a provided source file.')
-        // Options : variability CT
-        .option('--firstPlayer <player>', 'Override first player (e.g., white, black or 1, 2)')
-        .option('--mandatoryCapture <bool>', 'Override mandatory capture (true/false)')
-        .option('--message <text>', 'Override capture message')
-        .option('--moveBackward <bool>', 'Override backward movement (true/false)')
-        .option('--botDifficulty <text>', 'Override bot difficulty (e.g., random, greedy or heuristic)')
-        .option('--seed <number>', 'Random seed for reproducibility')
-        .option('--headless <number>', 'Headless mode: 0=disabled, 1=enabled (outputs next_state.json)')
-        .action(generateAction);
-
-    program.parse(process.argv);
+  const program = new Command();
+  program.version(JSON.parse(packageContent).version);
+  
+  const fileExtensions = DamDamLanguageMetaData.fileExtensions.join(', ');
+  program
+    .command('generate')
+    .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)
+    .argument('<destination>', 'destination file')
+    .description('Generates code for a provided source file.')
+    // Options : variability CT
+    .option('--firstPlayer <player>', 'Override first player (e.g., white, black or 1, 2)')
+    .option('--mandatoryCapture <bool>', 'Override mandatory capture (true/false)')
+    .option('--message <text>', 'Override capture message')
+    .option('--moveBackward <bool>', 'Override backward movement (true/false)')
+    .option('--botDifficulty <text>', 'Override bot difficulty (random=10 moves, greedy/heuristic=unlimited)')
+    .option('--seed <number>', 'Random seed for reproducibility')
+    .option('--headless <number>', 'Headless mode: 0=disabled, 1=enabled (outputs next_state.json)')
+    .option('--llm', 'Use LLM instead of bot AI (unlimited moves, requires backend server)')
+    .action(generateAction);
+  
+  program.parse(process.argv);
 }
