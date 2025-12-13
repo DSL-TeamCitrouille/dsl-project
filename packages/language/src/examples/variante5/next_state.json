@@ -1,0 +1,750 @@
+{
+  "metadata": {
+    "variant": "DamDamSolitaireLight",
+    "seed": 42,
+    "ai_strategy": "random",
+    "moves_simulated": 23,
+    "timestamp": "2025-12-13T14:23:44.684Z"
+  },
+  "initial_state": {
+    "boardSize": 6,
+    "currentPlayer": 0,
+    "gameOver": false,
+    "winner": null,
+    "diceEnabled": false,
+    "diceFaces": null,
+    "pieces": [
+      {
+        "id": "p0",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p1",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p2",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p3",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p4",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p5",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p6",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p7",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p8",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p9",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p10",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p11",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p12",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p13",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p14",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p15",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p16",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p17",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p18",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p19",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p20",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p21",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p22",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p23",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p24",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p25",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p26",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p27",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p28",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p29",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p30",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p31",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p32",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p33",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p34",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 4,
+        "isQueen": false
+      }
+    ]
+  },
+  "final_state": {
+    "boardSize": 6,
+    "currentPlayer": 0,
+    "gameOver": true,
+    "winner": null,
+    "diceEnabled": false,
+    "diceFaces": null,
+    "pieces": [
+      {
+        "id": "p2",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p4",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p5",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 0,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p11",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 1,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p17",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 2,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p21",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p23",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 3,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p29",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 4,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p33",
+        "name": "marble",
+        "player": 0,
+        "color": "black",
+        "row": 5,
+        "col": 5,
+        "isQueen": false
+      }
+    ],
+    "diceHistory": null
+  },
+  "moves": [
+    {
+      "moveNumber": 1,
+      "player": 0,
+      "from": {
+        "row": 5,
+        "col": 3
+      },
+      "to": {
+        "row": 5,
+        "col": 5
+      },
+      "pieceId": "p33",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 2,
+      "player": 0,
+      "from": {
+        "row": 5,
+        "col": 1
+      },
+      "to": {
+        "row": 5,
+        "col": 3
+      },
+      "pieceId": "p31",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 3,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 4
+      },
+      "to": {
+        "row": 5,
+        "col": 2
+      },
+      "pieceId": "p22",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 4,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 3
+      },
+      "to": {
+        "row": 5,
+        "col": 1
+      },
+      "pieceId": "p21",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 5,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 2
+      },
+      "to": {
+        "row": 5,
+        "col": 2
+      },
+      "pieceId": "p20",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 6,
+      "player": 0,
+      "from": {
+        "row": 5,
+        "col": 1
+      },
+      "to": {
+        "row": 5,
+        "col": 3
+      },
+      "pieceId": "p21",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 7,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 0
+      },
+      "to": {
+        "row": 3,
+        "col": 2
+      },
+      "pieceId": "p18",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 8,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 0
+      },
+      "to": {
+        "row": 3,
+        "col": 0
+      },
+      "pieceId": "p6",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 9,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 2
+      },
+      "to": {
+        "row": 4,
+        "col": 2
+      },
+      "pieceId": "p14",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 10,
+      "player": 0,
+      "from": {
+        "row": 4,
+        "col": 0
+      },
+      "to": {
+        "row": 2,
+        "col": 0
+      },
+      "pieceId": "p24",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 11,
+      "player": 0,
+      "from": {
+        "row": 4,
+        "col": 2
+      },
+      "to": {
+        "row": 4,
+        "col": 0
+      },
+      "pieceId": "p14",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 12,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 2
+      },
+      "to": {
+        "row": 3,
+        "col": 0
+      },
+      "pieceId": "p8",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 13,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 4
+      },
+      "to": {
+        "row": 2,
+        "col": 2
+      },
+      "pieceId": "p16",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 14,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 2
+      },
+      "to": {
+        "row": 2,
+        "col": 0
+      },
+      "pieceId": "p16",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 15,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 4
+      },
+      "to": {
+        "row": 1,
+        "col": 2
+      },
+      "pieceId": "p10",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 16,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 0
+      },
+      "to": {
+        "row": 1,
+        "col": 0
+      },
+      "pieceId": "p8",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 17,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 0
+      },
+      "to": {
+        "row": 2,
+        "col": 0
+      },
+      "pieceId": "p0",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 18,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 2
+      },
+      "to": {
+        "row": 2,
+        "col": 2
+      },
+      "pieceId": "p2",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 19,
+      "player": 0,
+      "from": {
+        "row": 5,
+        "col": 0
+      },
+      "to": {
+        "row": 3,
+        "col": 0
+      },
+      "pieceId": "p30",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 20,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 0
+      },
+      "to": {
+        "row": 1,
+        "col": 0
+      },
+      "pieceId": "p30",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 21,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 4
+      },
+      "to": {
+        "row": 0,
+        "col": 2
+      },
+      "pieceId": "p4",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 22,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 2
+      },
+      "to": {
+        "row": 0,
+        "col": 0
+      },
+      "pieceId": "p4",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 23,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 0
+      },
+      "to": {
+        "row": 2,
+        "col": 0
+      },
+      "pieceId": "p4",
+      "diceRoll": null
+    }
+  ]
+}

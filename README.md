@@ -32,19 +32,6 @@ python3 ./packages/cli/src/scripts/LLM/LLM_connection.py
 
 ---
 
-## Game Modes
-The game supports multiple player configurations, which can be modified at runtime
-| Mode | Description | 
-|------|-------------|
-| **pvp** | Player vs Player | 
-| **pvb** | Player vs AI Bot | 
-| **pvl** | Player vs LLM Bot | 
-| **bvb** | AI Bot vs AI Bot |
-| **lvl** | LLM Bot vs AI Bot | 
-*Player is used as short for Human player
-
----
-
 ## Launching Variants
 ### Basic Command Structure
 ```
@@ -83,8 +70,52 @@ open packages/language/src/outputGenerator/varianteX.html
 
 ---
 
+### Game Modes
+The game supports multiple player configurations, which can be modified at runtime
+| Mode | Description | 
+|------|-------------|
+| **pvp** | Player vs Player | 
+| **pvb** | Player vs AI Bot | 
+| **pvl** | Player vs LLM Bot | 
+| **bvb** | AI Bot vs AI Bot |
+| **lvl** | LLM Bot vs AI Bot | 
+*Player is used as short for Human player
+
+---
+
 ## Headless Mode
-**BLABALBALBALBALABALBALBAABALB**
+Headless mode runs game simulations without UI, outputting results to `next_state.json`.
+
+### Basic Usage AI Bots
+```
+node packages/cli/bin/cli.js generate \
+  packages/language/src/examples/variante1/variante1.dam \
+  packages/language/src/outputGenerator/variante1.html \
+  --headless=1 \
+  --seed=42 \
+  --botDifficulty greedy
+```
+### Basic Usage LLM
+```
+node packages/cli/bin/cli.js generate \
+  packages/language/src/examples/variante1/variante1.dam \
+  packages/language/src/outputGenerator/variante1.html \
+  --headless=1 \
+  --llm \
+  --seed=42
+```
+
+### Output File
+Generates `next_state.json` with:
+- **metadata**: variant name, seed, AI strategy, move count, timestamp
+- **initial_state**: starting board configuration
+- **final_state**: end board configuration, winner, dice history
+- **moves**: complete move-by-move history with piece IDs and positions
+
+### Limits
+- Maximum moves depending on AI used : 50 for random; 250 greedy/heuristic; 150 llm
+- Uses seeded randomness for reproducibility
+- Falls back to rule-based moves if LLM fails
 
 ---
 
@@ -159,16 +190,15 @@ npx tsx packages/language/src/test/generation-test.ts
 
 # Summary of Variants and Tests
 
-| Variant | Board Size | Pieces/side | Movements | Dice | Mandatory Capture | Theme UI | Test : AI | Test : Seed |
-|---------|------------|-------------|----|------------|--------------------|----------|---------------|-----------|
-| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | heuristic | blabla |
-| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | random | balbalb |
-| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | heuristic | blabalba |
-| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | greedy | blabla |
-| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | random | balbal |
-| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | random | blabla |
+| Variant | Board Size | Pieces/side | Movements | Dice | Mandatory Capture | Theme UI | Test : AI | Test : Seed | Test : Result
+|---------|------------|-------------|----|------------|--------------------|----------|---------------|-----------|----------|
+| 1. Classic | 8 | 12 | Diagonal, no return | No | Yes | Beige/Brown | greedy | 42 | Player 1 (71 moves) |
+| 2. Royal | 10 | 10 | All directions + return | Yes | Yes | Gold/Purple | random | 156 | No Winner (Move Limitation Reached)|
+| 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | llm | 53 | Player 1 (41 Moves) |
+| 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | heuristic | 7856 | Player 1 (53 Moves) |
+| 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | random | 42 | No Winner (9 pieces left) |
+| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | llm | 943 | Player 2 (142 Moves) |
 
-*Each test was only extended to 10 moves so there was never any winner
 
 # Validation of Constraints
 

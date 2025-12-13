@@ -204,10 +204,19 @@ export async function runHeadless(
     llm?: boolean;
   }
 ): Promise<void> {
+  
+  // Limite de moves
+  let maxMoves = 50;
+  if(options.ai == "greedy" || options.ai == "heuristic"){
+    maxMoves = 250;
+  }else if(options.llm){
+    maxMoves = 150;
+  }
+
   console.log('🤖 Running headless simulation...');
   console.log(`   AI Strategy: ${options.llm ? 'LLM' : options.ai}`);
   console.log(`   Seed: ${options.seed}`);
-  console.log(`   Max Moves: 50`);
+  console.log(`   Max Moves: ${maxMoves}`);
   
   const size = model.board.size;
   const moveRule = model.rules.rule.find((r: any): r is MoveRule => 'direction' in r);
@@ -314,9 +323,6 @@ export async function runHeadless(
   }
 
   const llmUrl = 'http://127.0.0.1:5000/api/move';
-  
-  // Limite de moves
-  let maxMoves = 50;
   
   let totalMoves = 0;
   let turn = 0;

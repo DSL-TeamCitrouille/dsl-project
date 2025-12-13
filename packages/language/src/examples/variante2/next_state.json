@@ -1,0 +1,1109 @@
+{
+  "metadata": {
+    "variant": "DamDamRoyal",
+    "seed": 156,
+    "ai_strategy": "random",
+    "moves_simulated": 50,
+    "timestamp": "2025-12-13T14:21:39.287Z"
+  },
+  "initial_state": {
+    "boardSize": 10,
+    "currentPlayer": 0,
+    "gameOver": false,
+    "winner": null,
+    "diceEnabled": true,
+    "diceFaces": 6,
+    "pieces": [
+      {
+        "id": "p0",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p1",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p2",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p3",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p4",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p5",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p6",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 6,
+        "isQueen": false
+      },
+      {
+        "id": "p7",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 7,
+        "isQueen": false
+      },
+      {
+        "id": "p8",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 8,
+        "isQueen": false
+      },
+      {
+        "id": "p9",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 9,
+        "isQueen": false
+      },
+      {
+        "id": "p10",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p11",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p12",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p13",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p14",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p15",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p16",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 6,
+        "isQueen": false
+      },
+      {
+        "id": "p17",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 7,
+        "isQueen": false
+      },
+      {
+        "id": "p18",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 8,
+        "isQueen": false
+      },
+      {
+        "id": "p19",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 9,
+        "isQueen": false
+      }
+    ]
+  },
+  "final_state": {
+    "boardSize": 10,
+    "currentPlayer": 1,
+    "gameOver": false,
+    "winner": null,
+    "diceEnabled": true,
+    "diceFaces": 6,
+    "pieces": [
+      {
+        "id": "p0",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 3,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p1",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 0,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p2",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 4,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p3",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p4",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 6,
+        "isQueen": false
+      },
+      {
+        "id": "p5",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 0,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p6",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 2,
+        "col": 8,
+        "isQueen": false
+      },
+      {
+        "id": "p7",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 7,
+        "isQueen": false
+      },
+      {
+        "id": "p8",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 2,
+        "col": 9,
+        "isQueen": false
+      },
+      {
+        "id": "p9",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 0,
+        "col": 8,
+        "isQueen": false
+      },
+      {
+        "id": "p10",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 7,
+        "col": 1,
+        "isQueen": false
+      },
+      {
+        "id": "p11",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 7,
+        "col": 0,
+        "isQueen": false
+      },
+      {
+        "id": "p12",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 2,
+        "isQueen": false
+      },
+      {
+        "id": "p13",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 6,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p14",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 3,
+        "isQueen": false
+      },
+      {
+        "id": "p15",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 7,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p16",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 7,
+        "col": 4,
+        "isQueen": false
+      },
+      {
+        "id": "p17",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 8,
+        "col": 7,
+        "isQueen": false
+      },
+      {
+        "id": "p18",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 7,
+        "col": 7,
+        "isQueen": false
+      },
+      {
+        "id": "p19",
+        "name": "black",
+        "player": 1,
+        "color": "black",
+        "row": 9,
+        "col": 7,
+        "isQueen": false
+      }
+    ],
+    "diceHistory": [
+      3,
+      1,
+      4,
+      2,
+      3,
+      6,
+      6,
+      3,
+      2,
+      5,
+      2,
+      1,
+      1,
+      4,
+      5,
+      4
+    ]
+  },
+  "moves": [
+    {
+      "moveNumber": 1,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 4
+      },
+      "to": {
+        "row": 0,
+        "col": 5
+      },
+      "pieceId": "p4",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 2,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 1
+      },
+      "to": {
+        "row": 0,
+        "col": 1
+      },
+      "pieceId": "p1",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 3,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 6
+      },
+      "to": {
+        "row": 2,
+        "col": 6
+      },
+      "pieceId": "p6",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 4,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 3
+      },
+      "to": {
+        "row": 7,
+        "col": 2
+      },
+      "pieceId": "p13",
+      "diceRoll": 1
+    },
+    {
+      "moveNumber": 5,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 3
+      },
+      "to": {
+        "row": 0,
+        "col": 3
+      },
+      "pieceId": "p3",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 6,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 5
+      },
+      "to": {
+        "row": 0,
+        "col": 4
+      },
+      "pieceId": "p5",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 7,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 9
+      },
+      "to": {
+        "row": 0,
+        "col": 8
+      },
+      "pieceId": "p9",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 8,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 8
+      },
+      "to": {
+        "row": 2,
+        "col": 9
+      },
+      "pieceId": "p8",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 9,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 0
+      },
+      "to": {
+        "row": 7,
+        "col": 1
+      },
+      "pieceId": "p10",
+      "diceRoll": 2
+    },
+    {
+      "moveNumber": 10,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 1
+      },
+      "to": {
+        "row": 9,
+        "col": 2
+      },
+      "pieceId": "p11",
+      "diceRoll": 2
+    },
+    {
+      "moveNumber": 11,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 3
+      },
+      "to": {
+        "row": 1,
+        "col": 4
+      },
+      "pieceId": "p3",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 12,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 2
+      },
+      "to": {
+        "row": 2,
+        "col": 3
+      },
+      "pieceId": "p2",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 13,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 7
+      },
+      "to": {
+        "row": 0,
+        "col": 7
+      },
+      "pieceId": "p7",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 14,
+      "player": 1,
+      "from": {
+        "row": 7,
+        "col": 2
+      },
+      "to": {
+        "row": 6,
+        "col": 3
+      },
+      "pieceId": "p13",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 15,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 6
+      },
+      "to": {
+        "row": 9,
+        "col": 5
+      },
+      "pieceId": "p16",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 16,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 2
+      },
+      "to": {
+        "row": 7,
+        "col": 2
+      },
+      "pieceId": "p12",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 17,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 9
+      },
+      "to": {
+        "row": 9,
+        "col": 8
+      },
+      "pieceId": "p19",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 18,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 4
+      },
+      "to": {
+        "row": 7,
+        "col": 4
+      },
+      "pieceId": "p14",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 19,
+      "player": 1,
+      "from": {
+        "row": 7,
+        "col": 4
+      },
+      "to": {
+        "row": 8,
+        "col": 3
+      },
+      "pieceId": "p14",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 20,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 3
+      },
+      "to": {
+        "row": 2,
+        "col": 4
+      },
+      "pieceId": "p2",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 21,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 0
+      },
+      "to": {
+        "row": 2,
+        "col": 1
+      },
+      "pieceId": "p0",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 22,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 1
+      },
+      "to": {
+        "row": 0,
+        "col": 0
+      },
+      "pieceId": "p1",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 23,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 4
+      },
+      "to": {
+        "row": 1,
+        "col": 3
+      },
+      "pieceId": "p5",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 24,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 7
+      },
+      "to": {
+        "row": 1,
+        "col": 6
+      },
+      "pieceId": "p7",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 25,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 6
+      },
+      "to": {
+        "row": 1,
+        "col": 7
+      },
+      "pieceId": "p6",
+      "diceRoll": 6
+    },
+    {
+      "moveNumber": 26,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 7
+      },
+      "to": {
+        "row": 7,
+        "col": 6
+      },
+      "pieceId": "p17",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 27,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 8
+      },
+      "to": {
+        "row": 7,
+        "col": 8
+      },
+      "pieceId": "p18",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 28,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 5
+      },
+      "to": {
+        "row": 7,
+        "col": 5
+      },
+      "pieceId": "p15",
+      "diceRoll": 3
+    },
+    {
+      "moveNumber": 29,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 7
+      },
+      "to": {
+        "row": 2,
+        "col": 8
+      },
+      "pieceId": "p6",
+      "diceRoll": 2
+    },
+    {
+      "moveNumber": 30,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 6
+      },
+      "to": {
+        "row": 1,
+        "col": 7
+      },
+      "pieceId": "p7",
+      "diceRoll": 2
+    },
+    {
+      "moveNumber": 31,
+      "player": 1,
+      "from": {
+        "row": 9,
+        "col": 8
+      },
+      "to": {
+        "row": 9,
+        "col": 7
+      },
+      "pieceId": "p19",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 32,
+      "player": 1,
+      "from": {
+        "row": 9,
+        "col": 2
+      },
+      "to": {
+        "row": 9,
+        "col": 1
+      },
+      "pieceId": "p11",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 33,
+      "player": 1,
+      "from": {
+        "row": 9,
+        "col": 5
+      },
+      "to": {
+        "row": 8,
+        "col": 5
+      },
+      "pieceId": "p16",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 34,
+      "player": 1,
+      "from": {
+        "row": 9,
+        "col": 1
+      },
+      "to": {
+        "row": 8,
+        "col": 1
+      },
+      "pieceId": "p11",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 35,
+      "player": 1,
+      "from": {
+        "row": 7,
+        "col": 8
+      },
+      "to": {
+        "row": 7,
+        "col": 9
+      },
+      "pieceId": "p18",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 36,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 3
+      },
+      "to": {
+        "row": 0,
+        "col": 2
+      },
+      "pieceId": "p5",
+      "diceRoll": 2
+    },
+    {
+      "moveNumber": 37,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 1
+      },
+      "to": {
+        "row": 3,
+        "col": 0
+      },
+      "pieceId": "p0",
+      "diceRoll": 2
+    },
+    {
+      "moveNumber": 38,
+      "player": 1,
+      "from": {
+        "row": 7,
+        "col": 2
+      },
+      "to": {
+        "row": 8,
+        "col": 2
+      },
+      "pieceId": "p12",
+      "diceRoll": 1
+    },
+    {
+      "moveNumber": 39,
+      "player": 0,
+      "from": {
+        "row": 0,
+        "col": 5
+      },
+      "to": {
+        "row": 1,
+        "col": 6
+      },
+      "pieceId": "p4",
+      "diceRoll": 1
+    },
+    {
+      "moveNumber": 40,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 5
+      },
+      "to": {
+        "row": 7,
+        "col": 4
+      },
+      "pieceId": "p16",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 41,
+      "player": 1,
+      "from": {
+        "row": 6,
+        "col": 3
+      },
+      "to": {
+        "row": 6,
+        "col": 4
+      },
+      "pieceId": "p13",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 42,
+      "player": 1,
+      "from": {
+        "row": 7,
+        "col": 9
+      },
+      "to": {
+        "row": 6,
+        "col": 8
+      },
+      "pieceId": "p18",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 43,
+      "player": 1,
+      "from": {
+        "row": 6,
+        "col": 8
+      },
+      "to": {
+        "row": 7,
+        "col": 7
+      },
+      "pieceId": "p18",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 44,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 4
+      },
+      "to": {
+        "row": 3,
+        "col": 4
+      },
+      "pieceId": "p2",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 45,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 4
+      },
+      "to": {
+        "row": 2,
+        "col": 3
+      },
+      "pieceId": "p2",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 46,
+      "player": 0,
+      "from": {
+        "row": 1,
+        "col": 4
+      },
+      "to": {
+        "row": 1,
+        "col": 3
+      },
+      "pieceId": "p3",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 47,
+      "player": 0,
+      "from": {
+        "row": 2,
+        "col": 3
+      },
+      "to": {
+        "row": 3,
+        "col": 4
+      },
+      "pieceId": "p2",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 48,
+      "player": 0,
+      "from": {
+        "row": 3,
+        "col": 4
+      },
+      "to": {
+        "row": 4,
+        "col": 5
+      },
+      "pieceId": "p2",
+      "diceRoll": 5
+    },
+    {
+      "moveNumber": 49,
+      "player": 1,
+      "from": {
+        "row": 8,
+        "col": 1
+      },
+      "to": {
+        "row": 7,
+        "col": 0
+      },
+      "pieceId": "p11",
+      "diceRoll": 4
+    },
+    {
+      "moveNumber": 50,
+      "player": 1,
+      "from": {
+        "row": 7,
+        "col": 6
+      },
+      "to": {
+        "row": 8,
+        "col": 7
+      },
+      "pieceId": "p17",
+      "diceRoll": 4
+    }
+  ]
+}
