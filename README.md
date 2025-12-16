@@ -40,6 +40,17 @@ node packages/cli/bin/cli.js generate \
   packages/language/src/outputGenerator/[variantX].html \
   [OPTIONS]
 ```
+
+```
+node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante1/variante1.dam packages/language/src/outputGenerator/variante1.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante2/variante2.dam packages/language/src/outputGenerator/variante2.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante3/variante3.dam packages/language/src/outputGenerator/variante3.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante4/variante4.dam packages/language/src/outputGenerator/variante4.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante5/variante5.dam packages/language/src/outputGenerator/variante5.html
+node packages/cli/bin/cli.js generate packages/language/src/examples/variante6/variante6.dam packages/language/src/outputGenerator/variante6.html
+
+```
 ### Available Options
 | Option | Type | Description | Example |
 |--------|------|-------------|---------|
@@ -187,6 +198,34 @@ npx tsx packages/language/src/test/generation-test.ts
 │   └── ...
 
 ```
+
+## Resources
+
+Additional documentation related to the grammar, metamodel, and previous TPs is available in the following locations.
+
+- The detailed documentation covering:
+  - Variability & Scenarios
+  - Comparison between the Metamodel and the TypeScript AST
+  - Services – DSL Design Notes
+  - Mapping of Existing Work and Originality
+  - Unsupported Features and Limitations  
+  is available in:  
+  `packages/language/src/docs/*.md`
+
+- The README file describing the DSL grammar is available at:  
+  `packages/language/README.md`
+
+- The different variants are located in:  
+  `packages/language/src/examples/varianteX/`  
+  where `X` corresponds to the variant number.
+
+- The metamodel diagram (`metamodel.puml`) is available at:  
+  `packages/language/src/model/metamodel.puml`
+
+- The generated output files for each variant are available at:  
+  `packages/language/src/outputGenerator/varianteX.html`  
+  where `X` corresponds to the variant number.
+
 
 # Summary of Variants and Tests
 
