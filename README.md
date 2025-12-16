@@ -1,3 +1,11 @@
+# Project overview
+
+This project was developed using Langium and focuses on designing an DSL for modeling board games.  
+The language targets a limited but expressive subdomain inspired by dame-type games, allowing for precise and structured rule definitions.  
+Variability is a central concern of the DSL, allowing for the derivation of several game variants through configurable parameters at compile time.  
+A complete toolchain is provided, including validation, code generation, and a CLI interface to generate and execute playable game variants.  
+The generated artifacts support downstream services such as graphics rendering, AI-based players, LLM integration, and headless simulations.
+
 # How to generate the code and play the different variants available
 ```
 npm install
