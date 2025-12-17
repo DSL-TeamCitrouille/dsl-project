@@ -1,8 +1,5 @@
 # Lessons Learned
 
-Working with Langium and LLMs made it clear that formal language tools and probabilistic models shine in different ways. Langium was especially helpful for locking down structure, validation, and predictable behavior in a DSL, forcing vague ideas to become explicit and reducing confusion early on.
-LLMs, on the other hand, were great for exploration—quickly generating examples, boilerplate, and alternative ideas—but they needed careful prompting and constraints to stay aligned with the language's rules.
+What we've learned from this project is that using Langium gives a lot of possibilities and is quite powerful to create a DSL. However when discovering it for the first time, it can be very challenging to get to know Langium as it can take some time to understand its main concepts and good practices. Also to get comfortable with the grammars, validation rules took us time and experimentation, especially from the theoretical to our practical implementation.
 
-One important takeaway was that LLMs work best as helpful assistants rather than final decision-makers: they boost productivity, while correctness is still best handled by Langium's grammar, type system, and validators. Bringing these two approaches together resulted in a workflow that felt both creative and reliable, as long as the boundary between free-form generation and strict validation was clearly respected.
-
-Beyond that, the project also showed how important iteration and feedback loops are when combining language engineering with AI. Designing the DSL wasn't a one-shot process—seeing how both humans and LLMs interacted with the language helped reveal rough edges, missing abstractions, and unclear syntax. We also learned that small design choices in the grammar or validation rules can have a big impact on usability, especially when an LLM is one of the "users."
+Overall, this project was quite thorough and allowed us to discover various aspects of the DSL ecosystem. It also helped us understand how to design a language that is both expressive and easy to use. In the end we now have a clear idea of how DSLs are built and used in practice.
