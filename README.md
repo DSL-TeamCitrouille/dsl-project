@@ -49,16 +49,6 @@ node packages/cli/bin/cli.js generate \
   [OPTIONS]
 ```
 
-```
-node packages/cli/bin/cli.js generate packages/language/src/examples/[varianteX/varianteX.dam] packages/language/src/outputGenerator/[varianteX].html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante1/variante1.dam packages/language/src/outputGenerator/variante1.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante2/variante2.dam packages/language/src/outputGenerator/variante2.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante3/variante3.dam packages/language/src/outputGenerator/variante3.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante4/variante4.dam packages/language/src/outputGenerator/variante4.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante5/variante5.dam packages/language/src/outputGenerator/variante5.html
-node packages/cli/bin/cli.js generate packages/language/src/examples/variante6/variante6.dam packages/language/src/outputGenerator/variante6.html
-
-```
 ### Available Options
 | Option | Type | Description | Example |
 |--------|------|-------------|---------|
@@ -67,8 +57,9 @@ node packages/cli/bin/cli.js generate packages/language/src/examples/variante6/v
 | `--message` | string | Override capture message | `--message "MiamMiamMiam!"` |
 | `--moveBackward` | boolean | Allow backward movement | `--moveBackward true` |
 | `--botDifficulty` | string | AI difficulty (random/greedy/heuristic) | `--botDifficulty greedy` |
-| `--seed`  | integer | Deterministic seed to reproduce randomness | `--seed=42` |
-| `--headless` | integer : [0,1] | Launches game with or without UI | `--headless=1` |
+| `--seed`  | integer | Deterministic seed to reproduce randomness [headless] | `--seed=42` |
+| `--headless` | integer : [0,1] | Launches game with or without UI [headless] | `--headless=1` |
+| `--llm`    |  /  | Usage of the LLM when headless mode activativated [headless] | `--llm`  |
 
 ---
 
@@ -84,7 +75,7 @@ node packages/cli/bin/cli.js generate \
 ```
 ---
 
-### Open the generated HTML file in your browser
+### Open the generated HTML file in your browser and enjoy the game
 open packages/language/src/outputGenerator/varianteX.html
 
 ---
@@ -134,7 +125,6 @@ Generates `next_state.json` with:
 ### Limits
 - Maximum moves depending on AI used : 50 for random; 250 greedy/heuristic; 150 llm
 - Uses seeded randomness for reproducibility
-- Falls back to rule-based moves if LLM fails
 
 ---
 
@@ -165,8 +155,7 @@ npx tsx packages/language/src/test/generation-test.ts
 |   │   ├── src/
 |   |   |   ├── scripts/  
 |   |   |   |   ├── LLM/
-|   |   |   |   |   ├── LLM_connection.py
-|   |   |   |   |   └── LLMBot.ts
+|   |   |   |   |   └── LLM_connection.py
 |   |   |   |   ├── app.ts
 |   |   |   |   ├── game.ts
 |   |   |   |   ├── ui.ts
@@ -179,13 +168,12 @@ npx tsx packages/language/src/test/generation-test.ts
 |   |   ├── src/
 |   |   |   ├── docs/      
 |   |   |   |   ├── metamodel_vs_ast.md
-|   |   |   |   ├── services_notes.md
-|   |   |   |   ├── state_of_the_art.md
-|   |   |   |   └── variability.md
+|   |   |   |   └── ...
 |   |   |   ├── examples/      
 |   |   |   |   ├── variante1/
 |   |   |   |   |   ├── variante_preview
 |   |   |   |   |   ├── variante1.dam
+|   |   |   |   |   ├── next_state.json
 |   |   |   |   |   └── NOTESV1.md
 |   |   |   |   ├── variante2/...
 |   |   |   |   └── ...
