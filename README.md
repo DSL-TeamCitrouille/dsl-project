@@ -221,7 +221,7 @@ Additional documentation related to the grammar, metamodel, and previous TPs is 
   `packages/language/src/docs/*.md`
 
 - The README file describing the DSL grammar is available at:  
-  `packages/language/README.md`
+  `packages/language/src/README.md`
 
 - The different variants are located in:  
   `packages/language/src/examples/varianteX/`  
