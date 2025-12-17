@@ -54,8 +54,8 @@ node packages/cli/bin/cli.js generate \
 |--------|------|-------------|---------|
 | `--firstPlayer` | string/number | Override first player | `--firstPlayer white` or `--firstPlayer 1` |
 | `--mandatoryCapture` | boolean | Override mandatory capture rule | `--mandatoryCapture true` |
-| `--message` | string | Override capture message | `--message "MiamMiamMiam!"` |
-| `--moveBackward` | boolean | Allow backward movement | `--moveBackward true` |
+| `--message` | string | Override capture message | `--message MiamMiamMiam!` |
+| `--canMoveBackward` | boolean | Allow backward movement | `--canMoveBackward true` |
 | `--botDifficulty` | string | AI difficulty (random/greedy/heuristic) | `--botDifficulty greedy` |
 | `--seed`  | integer | Deterministic seed to reproduce randomness [headless] | `--seed=42` |
 | `--headless` | integer : [0,1] | Launches game with or without UI [headless] | `--headless=1` |
@@ -69,9 +69,9 @@ node packages/cli/bin/cli.js generate \
   packages/language/src/examples/variante1/variante1.dam \
   packages/language/src/outputGenerator/variante1.html \
   --mandatoryCapture false \
-  --moveBackward true \
-  --message "Gotcha!"
-  --botDifficulty "greedy"
+  --canMoveBackward true \
+  --message Gotcha! \
+  --botDifficulty greedy
 ```
 ---
 
