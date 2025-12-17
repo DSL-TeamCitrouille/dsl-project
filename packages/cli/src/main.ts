@@ -50,6 +50,7 @@ export const generateAction = async (source: string, destination: string, option
     }
     
     const mandatoryCapture = options.mandatoryCapture === 'true';
+    const canMoveBackward = options.canMoveBackward === 'true';
     
     await runHeadless(model, {
       ai: botDifficulty,
@@ -57,6 +58,7 @@ export const generateAction = async (source: string, destination: string, option
       outputPath: nextStatePath,
       firstPlayer: firstPlayerIndex,
       mandatoryCapture,
+      canMoveBackward,
       llm: useLLM,
     });
   }
@@ -76,7 +78,7 @@ export default function(): void {
     .option('--firstPlayer <player>', 'Override first player (e.g., white, black or 1, 2)')
     .option('--mandatoryCapture <bool>', 'Override mandatory capture (true/false)')
     .option('--message <text>', 'Override capture message')
-    .option('--moveBackward <bool>', 'Override backward movement (true/false)')
+    .option('--canMoveBackward <bool>', 'Override backward movement (true/false)')
     .option('--botDifficulty <text>', 'Override bot difficulty (random=10 moves, greedy/heuristic=unlimited)')
     .option('--seed <number>', 'Random seed for reproducibility')
     .option('--headless <number>', 'Headless mode: 0=disabled, 1=enabled (outputs next_state.json)')

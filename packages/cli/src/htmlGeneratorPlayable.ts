@@ -12,6 +12,7 @@ export function generateHTML(model: Damier, options?: any): string {
         : (captureRule?.mandatory || false);
     const captureMessage = options?.message || captureRule?.message || 'Capture!';
     const direction = moveRule?.direction || 'any';
+    const canMoveBackward = options?.canMoveBackward || moveRule?.canMoveBackward || false;
     const theme = model.ui?.theme;
     const dice = model.dice;
     const botDifficulty = options?.botDifficulty || 'random';
@@ -103,6 +104,7 @@ export function generateHTML(model: Damier, options?: any): string {
     const gameConfig = {
         boardSize: size,
         direction,
+        canMoveBackward,
         firstPlayer,
         mandatoryCapture,
         captureMessage,

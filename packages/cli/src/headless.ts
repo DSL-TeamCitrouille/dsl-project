@@ -201,6 +201,7 @@ export async function runHeadless(
     outputPath: string;
     firstPlayer?: number;
     mandatoryCapture?: boolean;
+    canMoveBackward?: boolean;
     llm?: boolean;
   }
 ): Promise<void> {
@@ -224,6 +225,7 @@ export async function runHeadless(
   const dice = model.dice;
   
   const direction = moveRule?.direction || 'any';
+  const canMoveBackward = options.canMoveBackward !== undefined;
   const mandatoryCapture = options.mandatoryCapture !== undefined 
     ? options.mandatoryCapture 
     : (captureRule?.mandatory || false);
@@ -241,6 +243,7 @@ export async function runHeadless(
   const game = new Game(
     size,
     direction,
+    canMoveBackward,
     pieces_config,
     firstPlayer,
     mandatoryCapture,

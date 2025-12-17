@@ -28,6 +28,7 @@ export class Game {
   gameOver: boolean = false;
   winner: number | null = null;
   direction: string;
+  canMoveBackward: boolean;
   pieces_config: any[];
   isCaptureMandatory: boolean;
   nextId: number = 0;
@@ -36,7 +37,7 @@ export class Game {
   movesRemaining: number;
   mustRollDice: boolean;
 
-  constructor(boardSize: number, direction: string, pieces_config: any[], firstPlayer: number = 0,  isCaptureMandatory: boolean = false, diceConfig: { faces: number } | null = null) {
+  constructor(boardSize: number, direction: string, canMoveBackward: boolean, pieces_config: any[], firstPlayer: number = 0,  isCaptureMandatory: boolean = false, diceConfig: { faces: number } | null = null) {
       this.boardSize = boardSize;
       this.pieces = new Map();
       this.firstPlayer = firstPlayer;
@@ -44,6 +45,7 @@ export class Game {
       this.gameOver = false;
       this.winner = null;
       this.direction = direction;
+      this.canMoveBackward = canMoveBackward;
       this.pieces_config = pieces_config;
       this.isCaptureMandatory = isCaptureMandatory;
       this.nextId = 0;
@@ -205,6 +207,7 @@ export class Game {
 
     // Filter based on direction type and piece type
     if (this.direction === 'diagonal' && this.pieces_config.length !== 1) {
+      if(this.canMoveBackward === false) {
         // Diagonal: only forward for normal pieces, all diagonal for queens
         if (!piece.isQueen) {
             if (piece.player === 0) {
@@ -213,7 +216,14 @@ export class Game {
                 dirs = dirs.filter(([dr]) => dr < 0);
             }
         }
+      }else{
+        // Diagonal: allow both forward and backward for normal pieces, all diagonal for queens
+        if (!piece.isQueen) {
+            dirs = dirs.filter(([dr, dc]) => dr !== 0);
+        }
+      }
     } else if (this.direction === 'orthogonal' && this.pieces_config.length !== 1) {
+      if(this.canMoveBackward === false) {
         // Orthogonal: allow forward and sideways for normal pieces, all for queens
         if (!piece.isQueen) {
             if (piece.player === 0) {
@@ -222,8 +232,30 @@ export class Game {
                 dirs = dirs.filter(([dr, dc]) => dr < 0 || dc !== 0);
             }
         }
+      }else{
+        // Orthogonal: allow both forward and backward for normal pieces, all for queens
+        if (!piece.isQueen) {
+            dirs = dirs.filter(([dr, dc]) => dr !== 0 || dc !== 0);
+        }
+      }
     }
-    // else: all-directions mode, no filtering needed
+    else if (this.direction === 'any' && this.pieces_config.length !== 1) {
+      if(this.canMoveBackward === false) {
+        // All-directions: allow orthogonal and diagonal for normal pieces, all for queens
+        if (!piece.isQueen) {
+            if (piece.player === 0) {
+                dirs = dirs.filter(([dr, dc]) => dr > 0 || (dr === 0 && dc !== 0) || (Math.abs(dr) === Math.abs(dc)));
+            } else {
+                dirs = dirs.filter(([dr, dc]) => dr < 0 || (dr === 0 && dc !== 0) || (Math.abs(dr) === Math.abs(dc)));
+            }
+        }
+      }else{
+        // All-directions: allow all directions for normal pieces
+        if (!piece.isQueen) {
+            dirs = dirs.filter(([dr, dc]) => dr !== 0 || dc !== 0);
+        }
+      }
+    }
     
     if (this.pieces_config.length === 1) {
         dirs = [];
