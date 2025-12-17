@@ -237,7 +237,7 @@ Additional documentation related to the grammar, metamodel, and previous TPs is 
 | 3. Limited | 8 | 8  | Orthogonal, no return | No | Yes | Gray/Blue | llm | 53 | Player 1 (41 Moves) |
 | 4. FastDark | 8 | 12 | Diagonal + return | No | Yes | Yellow/Green | heuristic | 7856 | Player 1 (53 Moves) |
 | 5. Solitaire | 6 | 35 (1 player) | Orthogonal, no return | No | Yes | Ivory/Light Blue | random | 42 | No Winner (9 pieces left) |
-| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | llm | 943 | Player 2 (142 Moves) |
+| 6. BubbleGum | 10 | 20 | Orthogonal + return | Yes | No | Pink/Light Blue | llm | 943 | Player 1 (128 Moves) |
 
 
 # Validation of Constraints

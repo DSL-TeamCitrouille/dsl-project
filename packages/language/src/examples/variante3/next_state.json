@@ -4,7 +4,7 @@
     "seed": 53,
     "ai_strategy": "LLM",
     "moves_simulated": 41,
-    "timestamp": "2025-12-13T14:20:23.643Z"
+    "timestamp": "2025-12-17T13:48:36.725Z"
   },
   "initial_state": {
     "boardSize": 8,
@@ -173,7 +173,7 @@
         "name": "white",
         "player": 0,
         "color": "white",
-        "row": 3,
+        "row": 1,
         "col": 0,
         "isQueen": false
       },
@@ -191,8 +191,8 @@
         "name": "white",
         "player": 0,
         "color": "white",
-        "row": 2,
-        "col": 4,
+        "row": 4,
+        "col": 3,
         "isQueen": false
       },
       {
@@ -200,8 +200,17 @@
         "name": "white",
         "player": 0,
         "color": "white",
-        "row": 4,
-        "col": 2,
+        "row": 1,
+        "col": 5,
+        "isQueen": false
+      },
+      {
+        "id": "p6",
+        "name": "white",
+        "player": 0,
+        "color": "white",
+        "row": 1,
+        "col": 6,
         "isQueen": false
       },
       {
@@ -209,7 +218,7 @@
         "name": "white",
         "player": 0,
         "color": "white",
-        "row": 1,
+        "row": 3,
         "col": 7,
         "isQueen": false
       }
@@ -292,13 +301,13 @@
       "player": 1,
       "from": {
         "row": 6,
-        "col": 3
+        "col": 5
       },
       "to": {
-        "row": 5,
-        "col": 3
+        "row": 6,
+        "col": 4
       },
-      "pieceId": "p11",
+      "pieceId": "p13",
       "diceRoll": null
     },
     {
@@ -310,7 +319,7 @@
       },
       "to": {
         "row": 7,
-        "col": 2
+        "col": 4
       },
       "pieceId": "p4",
       "diceRoll": null
@@ -320,13 +329,13 @@
       "player": 1,
       "from": {
         "row": 6,
-        "col": 5
+        "col": 3
       },
       "to": {
-        "row": 6,
-        "col": 4
+        "row": 5,
+        "col": 3
       },
-      "pieceId": "p13",
+      "pieceId": "p11",
       "diceRoll": null
     },
     {
@@ -334,11 +343,11 @@
       "player": 0,
       "from": {
         "row": 7,
-        "col": 2
+        "col": 4
       },
       "to": {
         "row": 7,
-        "col": 4
+        "col": 6
       },
       "pieceId": "p4",
       "diceRoll": null
@@ -347,14 +356,14 @@
       "moveNumber": 10,
       "player": 1,
       "from": {
-        "row": 6,
-        "col": 4
+        "row": 5,
+        "col": 3
       },
       "to": {
-        "row": 5,
-        "col": 4
+        "row": 4,
+        "col": 3
       },
-      "pieceId": "p13",
+      "pieceId": "p11",
       "diceRoll": null
     },
     {
@@ -362,11 +371,11 @@
       "player": 0,
       "from": {
         "row": 7,
-        "col": 4
+        "col": 6
       },
       "to": {
-        "row": 4,
-        "col": 4
+        "row": 5,
+        "col": 6
       },
       "pieceId": "p4",
       "diceRoll": null
@@ -375,26 +384,26 @@
       "moveNumber": 12,
       "player": 1,
       "from": {
-        "row": 6,
-        "col": 6
+        "row": 4,
+        "col": 3
       },
       "to": {
         "row": 5,
-        "col": 6
+        "col": 3
       },
-      "pieceId": "p14",
+      "pieceId": "p11",
       "diceRoll": null
     },
     {
       "moveNumber": 13,
       "player": 0,
       "from": {
-        "row": 4,
-        "col": 4
+        "row": 5,
+        "col": 6
       },
       "to": {
-        "row": 4,
-        "col": 6
+        "row": 5,
+        "col": 2
       },
       "pieceId": "p4",
       "diceRoll": null
@@ -403,14 +412,14 @@
       "moveNumber": 14,
       "player": 1,
       "from": {
-        "row": 5,
-        "col": 6
+        "row": 6,
+        "col": 2
       },
       "to": {
-        "row": 3,
-        "col": 6
+        "row": 4,
+        "col": 2
       },
-      "pieceId": "p14",
+      "pieceId": "p10",
       "diceRoll": null
     },
     {
@@ -418,55 +427,55 @@
       "player": 0,
       "from": {
         "row": 1,
-        "col": 3
+        "col": 2
       },
       "to": {
-        "row": 1,
-        "col": 4
+        "row": 2,
+        "col": 2
       },
-      "pieceId": "p3",
+      "pieceId": "p2",
       "diceRoll": null
     },
     {
       "moveNumber": 16,
       "player": 1,
       "from": {
-        "row": 3,
-        "col": 6
+        "row": 4,
+        "col": 2
       },
       "to": {
-        "row": 2,
-        "col": 6
+        "row": 5,
+        "col": 2
       },
-      "pieceId": "p14",
+      "pieceId": "p10",
       "diceRoll": null
     },
     {
       "moveNumber": 17,
       "player": 0,
       "from": {
-        "row": 1,
-        "col": 6
+        "row": 2,
+        "col": 2
       },
       "to": {
         "row": 3,
-        "col": 6
+        "col": 2
       },
-      "pieceId": "p6",
+      "pieceId": "p2",
       "diceRoll": null
     },
     {
       "moveNumber": 18,
       "player": 1,
       "from": {
-        "row": 6,
-        "col": 7
+        "row": 5,
+        "col": 2
       },
       "to": {
-        "row": 5,
-        "col": 7
+        "row": 4,
+        "col": 2
       },
-      "pieceId": "p15",
+      "pieceId": "p10",
       "diceRoll": null
     },
     {
@@ -474,17 +483,45 @@
       "player": 0,
       "from": {
         "row": 3,
-        "col": 6
+        "col": 2
       },
       "to": {
-        "row": 4,
-        "col": 6
+        "row": 5,
+        "col": 2
       },
-      "pieceId": "p6",
+      "pieceId": "p2",
       "diceRoll": null
     },
     {
       "moveNumber": 20,
+      "player": 1,
+      "from": {
+        "row": 6,
+        "col": 1
+      },
+      "to": {
+        "row": 6,
+        "col": 2
+      },
+      "pieceId": "p9",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 21,
+      "player": 0,
+      "from": {
+        "row": 5,
+        "col": 2
+      },
+      "to": {
+        "row": 7,
+        "col": 2
+      },
+      "pieceId": "p2",
+      "diceRoll": null
+    },
+    {
+      "moveNumber": 22,
       "player": 1,
       "from": {
         "row": 6,
@@ -498,42 +535,14 @@
       "diceRoll": null
     },
     {
-      "moveNumber": 21,
-      "player": 0,
-      "from": {
-        "row": 4,
-        "col": 6
-      },
-      "to": {
-        "row": 5,
-        "col": 6
-      },
-      "pieceId": "p6",
-      "diceRoll": null
-    },
-    {
-      "moveNumber": 22,
-      "player": 1,
-      "from": {
-        "row": 5,
-        "col": 7
-      },
-      "to": {
-        "row": 5,
-        "col": 5
-      },
-      "pieceId": "p15",
-      "diceRoll": null
-    },
-    {
       "moveNumber": 23,
       "player": 0,
       "from": {
-        "row": 1,
+        "row": 7,
         "col": 2
       },
       "to": {
-        "row": 2,
+        "row": 6,
         "col": 2
       },
       "pieceId": "p2",
@@ -543,12 +552,12 @@
       "moveNumber": 24,
       "player": 1,
       "from": {
-        "row": 5,
-        "col": 5
+        "row": 6,
+        "col": 7
       },
       "to": {
-        "row": 4,
-        "col": 5
+        "row": 5,
+        "col": 7
       },
       "pieceId": "p15",
       "diceRoll": null
@@ -557,12 +566,12 @@
       "moveNumber": 25,
       "player": 0,
       "from": {
-        "row": 2,
+        "row": 6,
         "col": 2
       },
       "to": {
-        "row": 3,
-        "col": 2
+        "row": 6,
+        "col": 0
       },
       "pieceId": "p2",
       "diceRoll": null
@@ -571,26 +580,26 @@
       "moveNumber": 26,
       "player": 1,
       "from": {
-        "row": 4,
-        "col": 5
+        "row": 5,
+        "col": 0
       },
       "to": {
-        "row": 3,
-        "col": 5
+        "row": 5,
+        "col": 1
       },
-      "pieceId": "p15",
+      "pieceId": "p8",
       "diceRoll": null
     },
     {
       "moveNumber": 27,
       "player": 0,
       "from": {
-        "row": 3,
-        "col": 2
+        "row": 6,
+        "col": 0
       },
       "to": {
-        "row": 4,
-        "col": 2
+        "row": 6,
+        "col": 1
       },
       "pieceId": "p2",
       "diceRoll": null
@@ -599,54 +608,54 @@
       "moveNumber": 28,
       "player": 1,
       "from": {
-        "row": 3,
-        "col": 5
+        "row": 5,
+        "col": 1
       },
       "to": {
-        "row": 2,
-        "col": 5
+        "row": 4,
+        "col": 1
       },
-      "pieceId": "p15",
+      "pieceId": "p8",
       "diceRoll": null
     },
     {
       "moveNumber": 29,
       "player": 0,
       "from": {
-        "row": 1,
-        "col": 5
+        "row": 6,
+        "col": 1
       },
       "to": {
         "row": 3,
-        "col": 5
+        "col": 1
       },
-      "pieceId": "p5",
+      "pieceId": "p2",
       "diceRoll": null
     },
     {
       "moveNumber": 30,
       "player": 1,
       "from": {
-        "row": 6,
-        "col": 1
+        "row": 5,
+        "col": 7
       },
       "to": {
-        "row": 5,
-        "col": 1
+        "row": 6,
+        "col": 7
       },
-      "pieceId": "p9",
+      "pieceId": "p15",
       "diceRoll": null
     },
     {
       "moveNumber": 31,
       "player": 0,
       "from": {
-        "row": 4,
-        "col": 2
+        "row": 3,
+        "col": 1
       },
       "to": {
-        "row": 5,
-        "col": 2
+        "row": 6,
+        "col": 1
       },
       "pieceId": "p2",
       "diceRoll": null
@@ -655,82 +664,82 @@
       "moveNumber": 32,
       "player": 1,
       "from": {
-        "row": 5,
-        "col": 1
+        "row": 6,
+        "col": 7
       },
       "to": {
-        "row": 5,
-        "col": 3
+        "row": 7,
+        "col": 7
       },
-      "pieceId": "p9",
+      "pieceId": "p15",
       "diceRoll": null
     },
     {
       "moveNumber": 33,
       "player": 0,
       "from": {
-        "row": 3,
-        "col": 5
+        "row": 6,
+        "col": 1
       },
       "to": {
-        "row": 4,
-        "col": 5
+        "row": 6,
+        "col": 7
       },
-      "pieceId": "p5",
+      "pieceId": "p2",
       "diceRoll": null
     },
     {
       "moveNumber": 34,
       "player": 1,
       "from": {
-        "row": 5,
-        "col": 0
+        "row": 7,
+        "col": 7
       },
       "to": {
-        "row": 4,
-        "col": 0
+        "row": 5,
+        "col": 7
       },
-      "pieceId": "p8",
+      "pieceId": "p15",
       "diceRoll": null
     },
     {
       "moveNumber": 35,
       "player": 0,
       "from": {
-        "row": 4,
-        "col": 5
+        "row": 1,
+        "col": 3
       },
       "to": {
-        "row": 4,
-        "col": 4
+        "row": 2,
+        "col": 3
       },
-      "pieceId": "p5",
+      "pieceId": "p3",
       "diceRoll": null
     },
     {
       "moveNumber": 36,
       "player": 1,
       "from": {
-        "row": 4,
-        "col": 0
+        "row": 5,
+        "col": 7
       },
       "to": {
-        "row": 3,
-        "col": 0
+        "row": 4,
+        "col": 7
       },
-      "pieceId": "p8",
+      "pieceId": "p15",
       "diceRoll": null
     },
     {
       "moveNumber": 37,
       "player": 0,
       "from": {
-        "row": 1,
-        "col": 4
+        "row": 2,
+        "col": 3
       },
       "to": {
-        "row": 2,
-        "col": 4
+        "row": 3,
+        "col": 3
       },
       "pieceId": "p3",
       "diceRoll": null
@@ -739,28 +748,28 @@
       "moveNumber": 38,
       "player": 1,
       "from": {
-        "row": 5,
-        "col": 3
+        "row": 4,
+        "col": 7
       },
       "to": {
-        "row": 4,
-        "col": 3
+        "row": 3,
+        "col": 7
       },
-      "pieceId": "p9",
+      "pieceId": "p15",
       "diceRoll": null
     },
     {
       "moveNumber": 39,
       "player": 0,
       "from": {
-        "row": 4,
-        "col": 4
+        "row": 3,
+        "col": 3
       },
       "to": {
         "row": 4,
-        "col": 2
+        "col": 3
       },
-      "pieceId": "p5",
+      "pieceId": "p3",
       "diceRoll": null
     },
     {
@@ -768,13 +777,13 @@
       "player": 1,
       "from": {
         "row": 3,
-        "col": 0
+        "col": 7
       },
       "to": {
         "row": 2,
-        "col": 0
+        "col": 7
       },
-      "pieceId": "p8",
+      "pieceId": "p15",
       "diceRoll": null
     },
     {
@@ -782,13 +791,13 @@
       "player": 0,
       "from": {
         "row": 1,
-        "col": 0
+        "col": 7
       },
       "to": {
         "row": 3,
-        "col": 0
+        "col": 7
       },
-      "pieceId": "p0",
+      "pieceId": "p7",
       "diceRoll": null
     }
   ]

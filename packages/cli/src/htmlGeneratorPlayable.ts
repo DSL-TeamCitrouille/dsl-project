@@ -1,4 +1,6 @@
 // packages/cli/src/htmlGenerator.ts
+/// <reference lib="dom" />
+
 import type { CaptureRule, Damier, MoveRule } from "dam-dam-language";
 
 export function generateHTML(model: Damier, options?: any): string {
