@@ -174,6 +174,8 @@ npx tsx packages/language/src/test/generation-test.ts
 |   |   |   |   |   ├── variante_preview
 |   |   |   |   |   ├── variante1.dam
 |   |   |   |   |   ├── next_state.json
+|   |   |   |   |   ├── variante1BB.mp4
+|   |   |   |   |   ├── variante1HB.mp4
 |   |   |   |   |   └── NOTESV1.md
 |   |   |   |   ├── variante2/...
 |   |   |   |   └── ...
@@ -204,14 +206,17 @@ Additional documentation related to the grammar, metamodel, and previous TPs is 
   - Comparison between the Metamodel and the TypeScript AST
   - Services – DSL Design Notes
   - Mapping of Existing Work and Originality
-  - Unsupported Features and Limitations  
+  - Unsupported Features and Limitations
+  - AI_Bots
+  - LLM_Protocol
+  - Lessons_Learned
   is available in:  
   `packages/language/src/docs/*.md`
 
 - The README file describing the DSL grammar is available at:  
   `packages/language/src/README.md`
 
-- The different variants are located in:  
+- The different variants files (`varianteX.dam, image.png, next_state.json, varianteXBB.mp4 and varianteXHB.mp4`)are located in:  
   `packages/language/src/examples/varianteX/`  
   where `X` corresponds to the variant number.
 
